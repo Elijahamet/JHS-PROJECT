@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, Phone, Mail, Award, BookOpen } from 'lucide-react';
+import { Search, UserPlus, Phone, Mail, Award, BookOpen, MessageSquare } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 
 export const TeachersListView: React.FC = () => {
-  const { teachers, setIsAddTeacherOpen } = useApp();
+  const { teachers, setIsAddTeacherOpen, openChatWith, setCurrentNav } = useApp();
   const [search, setSearch] = useState('');
 
   const filteredTeachers = teachers.filter(
@@ -27,14 +27,24 @@ export const TeachersListView: React.FC = () => {
           </p>
         </div>
 
-        <Button
-          size="sm"
-          variant="primary"
-          icon={UserPlus}
-          onClick={() => setIsAddTeacherOpen(true)}
-        >
-          Add Teacher
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            icon={MessageSquare}
+            onClick={() => setCurrentNav('communications')}
+          >
+            Open Chat Hub
+          </Button>
+          <Button
+            size="sm"
+            variant="primary"
+            icon={UserPlus}
+            onClick={() => setIsAddTeacherOpen(true)}
+          >
+            Add Teacher
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -125,6 +135,18 @@ export const TeachersListView: React.FC = () => {
                   ))}
                 </div>
               </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span className="text-slate-400 text-[11px]">Joined {t.joinDate}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                icon={MessageSquare}
+                onClick={() => openChatWith(t.id)}
+              >
+                Chat with Teacher
+              </Button>
             </div>
           </div>
         ))}

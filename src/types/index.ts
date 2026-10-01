@@ -294,3 +294,34 @@ export interface SchoolPlatformMetric {
   totalRevenueCollected: number;
   platformUptime: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'school_admin' | 'teacher' | 'parent';
+  recipientId: string;
+  recipientName: string;
+  recipientRole: 'school_admin' | 'teacher' | 'parent';
+  message: string;
+  timestamp: string;
+  isRead: boolean;
+  attachmentName?: string;
+}
+
+export interface ParentNotificationRecord {
+  id: string;
+  title: string;
+  message: string;
+  category: 'fee_reminder' | 'academic' | 'pta' | 'emergency' | 'general' | 'transport';
+  targetAudience: 'All Parents' | 'Class' | 'Individual';
+  targetDetail?: string; // e.g. "JHS 2A" or "Mrs. Abena Osei"
+  channels: ('in_app' | 'sms' | 'email')[];
+  priority: 'Normal' | 'Important' | 'Urgent';
+  sentAt: string;
+  sentBy: string;
+  recipientCount: number;
+  deliveredCount: number;
+  status: 'Sent' | 'Delivered';
+}
+

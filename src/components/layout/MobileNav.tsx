@@ -24,6 +24,7 @@ import {
   Bus,
   Package,
   Bell,
+  MessageSquare,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -108,6 +109,7 @@ export const MobileNav: React.FC = () => {
           { id: 'attendance', label: 'Daily Attendance', icon: CalendarCheck, color: 'text-teal-400', gradient: 'from-teal-600 to-cyan-600' },
           { id: 'results', label: 'Results & Reports', icon: FileSpreadsheet, color: 'text-rose-400', gradient: 'from-rose-600 to-pink-600' },
           { id: 'announcements', label: 'School Circulars', icon: Megaphone, color: 'text-yellow-400', gradient: 'from-amber-500 to-orange-600' },
+          { id: 'communications', label: 'Chat & Parent Alerts', icon: MessageSquare, color: 'text-cyan-400', gradient: 'from-cyan-600 to-blue-600' },
           { id: 'fees', label: 'School Fees Register', icon: CreditCard, color: 'text-emerald-400', gradient: 'from-emerald-600 to-teal-600' },
           { id: 'feeding-fees', label: 'Feeding Fees Register', icon: UtensilsCrossed, color: 'text-orange-400', gradient: 'from-orange-600 to-amber-600' },
           { id: 'payments', label: 'Payments & Revenue', icon: Receipt, color: 'text-cyan-400', gradient: 'from-cyan-600 to-blue-600' },

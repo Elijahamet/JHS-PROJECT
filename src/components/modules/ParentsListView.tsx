@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { Search, Phone, Mail, MapPin, Users } from 'lucide-react';
+import { Search, Phone, Mail, MapPin, Users, MessageSquare, Bell } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { formatCurrency } from '../../utils/formatters';
 
 export const ParentsListView: React.FC = () => {
-  const { parents, setCurrentNav, setSelectedStudentId } = useApp();
+  const {
+    parents,
+    setCurrentNav,
+    setSelectedStudentId,
+    openChatWith,
+    setIsSendParentNotificationOpen,
+  } = useApp();
   const [search, setSearch] = useState('');
 
   const filteredParents = parents.filter(
@@ -27,6 +33,25 @@ export const ParentsListView: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">
             Manage parent contacts, linked wards, fee balances, and PTA communication.
           </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            icon={MessageSquare}
+            onClick={() => setCurrentNav('communications')}
+          >
+            Open Chat Hub
+          </Button>
+          <Button
+            size="sm"
+            variant="primary"
+            icon={Bell}
+            onClick={() => setIsSendParentNotificationOpen(true)}
+          >
+            Send Parent Broadcast
+          </Button>
         </div>
       </div>
 
@@ -118,10 +143,25 @@ export const ParentsListView: React.FC = () => {
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500">{parent.occupation}</span>
-              <Button size="sm" variant="outline" icon={Phone}>
-                Contact
-              </Button>
+              <span className="text-slate-500 truncate max-w-[120px]">{parent.occupation}</span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon={Bell}
+                  onClick={() => setIsSendParentNotificationOpen(true)}
+                >
+                  Notify
+                </Button>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  icon={MessageSquare}
+                  onClick={() => openChatWith(parent.id)}
+                >
+                  Chat
+                </Button>
+              </div>
             </div>
           </div>
         ))}

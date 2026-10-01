@@ -30,6 +30,8 @@ import { AnnouncementsView } from './components/modules/AnnouncementsView';
 import { ReportsView } from './components/modules/ReportsView';
 import { NotificationsView } from './components/modules/NotificationsView';
 import { SettingsView } from './components/modules/SettingsView';
+import { CommunicationsView } from './components/modules/CommunicationsView';
+import { SendParentNotificationModal } from './components/modals/SendParentNotificationModal';
 
 // Dedicated Isolated Platforms
 import { TeacherPortalView } from './components/modules/TeacherPortalView';
@@ -176,6 +178,10 @@ export const AppContent: React.FC = () => {
             return <InventoryView />;
           case 'announcements':
             return <AnnouncementsView />;
+          case 'communications':
+          case 'chat':
+          case 'messages':
+            return <CommunicationsView />;
           case 'reports':
             return <ReportsView />;
           case 'notifications':
@@ -217,6 +223,7 @@ export const AppContent: React.FC = () => {
       <AddTransportModal />
       <RecordPaymentModal />
       <CreateAnnouncementModal />
+      <SendParentNotificationModal />
       <ReceiptModal />
       <ReportCardModal />
       <GlobalSearchModal />

@@ -24,6 +24,7 @@ import {
   Bus,
   Package,
   Bell,
+  MessageSquare,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -108,6 +109,15 @@ export const Sidebar: React.FC = () => {
           icon: Megaphone,
           color: 'text-yellow-400',
           activeGradient: 'from-amber-500 to-orange-600',
+        },
+        {
+          id: 'communications',
+          label: 'Chat & Parent Alerts',
+          icon: MessageSquare,
+          badge: 2,
+          badgeColor: 'bg-emerald-500',
+          color: 'text-cyan-400',
+          activeGradient: 'from-cyan-600 to-blue-600',
         },
       ],
     },

@@ -7,6 +7,7 @@ import {
   LogOut,
   Calendar,
   Check,
+  MessageSquare,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -140,6 +141,18 @@ export const Header: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Chat / Messages Button for Admin */}
+        {currentUser.role === 'school_admin' && (
+          <button
+            onClick={() => setCurrentNav('communications')}
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors relative"
+            title="Messages & Chat with Teachers and Parents"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
+          </button>
+        )}
 
         {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>

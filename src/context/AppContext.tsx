@@ -17,6 +17,8 @@ import {
   InventoryItem,
   AnnouncementItem,
   SchoolNotification,
+  ChatMessage,
+  ParentNotificationRecord,
 } from '../types';
 import {
   mockCurrentSchool,
@@ -36,6 +38,8 @@ import {
   mockInventory,
   mockAnnouncements,
   mockNotifications,
+  mockChatMessages,
+  mockParentNotifications,
 } from '../data/mockData';
 
 interface AppContextType {
@@ -91,6 +95,19 @@ interface AppContextType {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
 
+  // Chat & Communication
+  chatMessages: ChatMessage[];
+  activeChatContactId: string | null;
+  setActiveChatContactId: (id: string | null) => void;
+  sendChatMessage: (recipientId: string, message: string, attachmentName?: string) => void;
+  openChatWith: (contactId: string) => void;
+
+  // Parent Notifications
+  parentNotifications: ParentNotificationRecord[];
+  sendParentNotification: (notification: Omit<ParentNotificationRecord, 'id' | 'sentAt' | 'sentBy' | 'status' | 'deliveredCount' | 'recipientCount'>) => void;
+  isSendParentNotificationOpen: boolean;
+  setIsSendParentNotificationOpen: (open: boolean) => void;
+
   // Modals
   isAddStudentOpen: boolean;
   setIsAddStudentOpen: (open: boolean) => void;
@@ -137,6 +154,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [inventory] = useState<InventoryItem[]>(mockInventory);
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(mockAnnouncements);
   const [notifications, setNotifications] = useState<SchoolNotification[]>(mockNotifications);
+
+  // Chat & Messaging
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(mockChatMessages);
+  const [activeChatContactId, setActiveChatContactId] = useState<string | null>('tch_01');
+
+  // Parent Notifications
+  const [parentNotifications, setParentNotifications] = useState<ParentNotificationRecord[]>(mockParentNotifications);
+  const [isSendParentNotificationOpen, setIsSendParentNotificationOpen] = useState(false);
 
   // Modals
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
@@ -404,6 +429,126 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
   };
 
+  const sendChatMessage = (recipientId: string, message: string, attachmentName?: string) => {
+    const teacher = teachers.find((t) => t.id === recipientId);
+    const parent = parents.find((p) => p.id === recipientId);
+    const recipientName = teacher ? teacher.fullName : parent ? parent.fullName : 'Staff / Parent';
+    const recipientRole: 'teacher' | 'parent' = teacher ? 'teacher' : 'parent';
+
+    const newMsg: ChatMessage = {
+      id: `msg_${Date.now()}`,
+      senderId: currentUser.id,
+      senderName: currentUser.name,
+      senderRole: currentUser.role as 'school_admin',
+      recipientId,
+      recipientName,
+      recipientRole,
+      message,
+      timestamp: 'Just now',
+      isRead: true,
+      attachmentName,
+    };
+
+    setChatMessages((prev) => [...prev, newMsg]);
+
+    // Simulate realistic intelligent auto-reply after 1.2s
+    setTimeout(() => {
+      let replyText = '';
+      if (recipientRole === 'teacher') {
+        const replies = [
+          `Thank you for the directive, Madam Cynthia. I have noted this and will act on it immediately.`,
+          `Understood! The academic records and student performance metrics have been updated in the portal.`,
+          `Thank you, Headmistress. I will discuss this with the form students and keep you informed.`,
+          `Received clearly. I will ensure the terminal remarks are reviewed.`,
+        ];
+        replyText = replies[Math.floor(Math.random() * replies.length)];
+      } else {
+        const replies = [
+          `Thank you very much, Madam Headmistress, for the prompt update regarding our ward.`,
+          `Understood and received. We really appreciate the school's communication and dedication to the pupils.`,
+          `Thank you. I have received the alert and will follow up accordingly.`,
+          `Great, thank you! I will review the report card on the parent dashboard.`,
+        ];
+        replyText = replies[Math.floor(Math.random() * replies.length)];
+      }
+
+      const autoReply: ChatMessage = {
+        id: `msg_${Date.now() + 1}`,
+        senderId: recipientId,
+        senderName: recipientName,
+        senderRole: recipientRole,
+        recipientId: currentUser.id,
+        recipientName: currentUser.name,
+        recipientRole: 'school_admin',
+        message: replyText,
+        timestamp: 'Just now',
+        isRead: true,
+      };
+
+      setChatMessages((prev) => [...prev, autoReply]);
+    }, 1200);
+  };
+
+  const sendParentNotification = (
+    notifData: Omit<ParentNotificationRecord, 'id' | 'sentAt' | 'sentBy' | 'status' | 'deliveredCount' | 'recipientCount'>
+  ) => {
+    const count =
+      notifData.targetAudience === 'All Parents'
+        ? parents.length || 34
+        : notifData.targetAudience === 'Class'
+        ? 12
+        : 1;
+
+    const newNotif: ParentNotificationRecord = {
+      ...notifData,
+      id: `pnotif_${Date.now()}`,
+      sentAt: 'Just now',
+      sentBy: currentUser.name || 'Mrs. Cynthia Arthur (Headmistress)',
+      status: 'Delivered',
+      recipientCount: count,
+      deliveredCount: count,
+    };
+
+    setParentNotifications((prev) => [newNotif, ...prev]);
+
+    // Also push into global notifications so parent portal / notification dropdown sees it
+    const appNotif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: notifData.title,
+      message: notifData.message,
+      type:
+        notifData.category === 'fee_reminder'
+          ? 'payment'
+          : notifData.category === 'academic'
+          ? 'attendance'
+          : 'announcement',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'parent-announcements',
+    };
+    setNotifications((prev) => [appNotif, ...prev]);
+
+    // Also inject into announcements
+    const ann: AnnouncementItem = {
+      id: `ann_${Date.now()}`,
+      title: notifData.title,
+      message: notifData.message,
+      audience: notifData.targetAudience === 'All Parents' ? 'Parents Only' : 'Whole School',
+      targetClass: notifData.targetDetail,
+      authorName: currentUser.name,
+      authorRole: 'School Headmistress',
+      publishDate: 'Today',
+      status: 'Published',
+      priority: notifData.priority,
+    };
+    setAnnouncements((prev) => [ann, ...prev]);
+  };
+
+  const openChatWith = (contactId: string) => {
+    setActiveChatContactId(contactId);
+    setCurrentNav('communications');
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -447,6 +592,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         notifications,
         markNotificationRead,
         markAllNotificationsRead,
+        chatMessages,
+        activeChatContactId,
+        setActiveChatContactId,
+        sendChatMessage,
+        openChatWith,
+        parentNotifications,
+        sendParentNotification,
+        isSendParentNotificationOpen,
+        setIsSendParentNotificationOpen,
         isAddStudentOpen,
         setIsAddStudentOpen,
         isAddTeacherOpen,
