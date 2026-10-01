@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
   User,
   UserRole,
@@ -95,12 +95,15 @@ interface AppContextType {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
 
-  // Chat & Communication
+  // Chat & Communication (Offline-First)
   chatMessages: ChatMessage[];
   activeChatContactId: string | null;
   setActiveChatContactId: (id: string | null) => void;
   sendChatMessage: (recipientId: string, message: string, attachmentName?: string) => void;
   openChatWith: (contactId: string) => void;
+  isOnline: boolean;
+  isSimulatedOffline: boolean;
+  toggleSimulatedOffline: () => void;
 
   // Parent Notifications
   parentNotifications: ParentNotificationRecord[];
@@ -155,9 +158,83 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(mockAnnouncements);
   const [notifications, setNotifications] = useState<SchoolNotification[]>(mockNotifications);
 
-  // Chat & Messaging
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(mockChatMessages);
+  // Network & Offline Status
+  const [isOnline, setIsOnline] = useState<boolean>(() => {
+    return typeof navigator !== 'undefined' ? navigator.onLine : true;
+  });
+  const [isSimulatedOffline, setIsSimulatedOffline] = useState<boolean>(false);
+
+  const effectiveOnline = isOnline && !isSimulatedOffline;
+
+  const toggleSimulatedOffline = () => {
+    setIsSimulatedOffline((prev) => !prev);
+  };
+
+  // Chat & Messaging (Offline-First Persistent Storage)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_chat_messages_v2');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Failed to parse cached chat messages', e);
+    }
+    return mockChatMessages;
+  });
+
   const [activeChatContactId, setActiveChatContactId] = useState<string | null>('tch_01');
+
+  // Sync to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_chat_messages_v2', JSON.stringify(chatMessages));
+    } catch (e) {
+      console.warn('Failed to cache chat messages locally', e);
+    }
+  }, [chatMessages]);
+
+  // Listen to cross-tab storage changes
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'schoolos_chat_messages_v2' && e.newValue) {
+        try {
+          setChatMessages(JSON.parse(e.newValue));
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  // Listen to browser online / offline events
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // When returning online, flush / sync any queued offline messages
+  useEffect(() => {
+    if (effectiveOnline) {
+      setChatMessages((prev) => {
+        const hasQueued = prev.some((m) => m.status === 'queued' || m.isOffline);
+        if (!hasQueued) return prev;
+        return prev.map((m) =>
+          m.status === 'queued' || m.isOffline
+            ? { ...m, status: 'delivered', isOffline: false }
+            : m
+        );
+      });
+    }
+  }, [effectiveOnline]);
 
   // Parent Notifications
   const [parentNotifications, setParentNotifications] = useState<ParentNotificationRecord[]>(mockParentNotifications);
@@ -430,63 +507,91 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const sendChatMessage = (recipientId: string, message: string, attachmentName?: string) => {
-    const teacher = teachers.find((t) => t.id === recipientId);
-    const parent = parents.find((p) => p.id === recipientId);
-    const recipientName = teacher ? teacher.fullName : parent ? parent.fullName : 'Staff / Parent';
-    const recipientRole: 'teacher' | 'parent' = teacher ? 'teacher' : 'parent';
+    let recName = 'Staff / Parent';
+    let recRole: 'school_admin' | 'teacher' | 'parent' = 'school_admin';
+
+    if (currentUser.role === 'school_admin') {
+      const teacher = teachers.find((t) => t.id === recipientId);
+      const parent = parents.find((p) => p.id === recipientId);
+      recName = teacher ? teacher.fullName : parent ? parent.fullName : 'Staff / Parent';
+      recRole = teacher ? 'teacher' : 'parent';
+    } else {
+      // If teacher or parent is sending to Admin
+      recName = 'Mrs. Cynthia Arthur (Headmistress)';
+      recRole = 'school_admin';
+    }
+
+    const isOfflineMsg = !effectiveOnline;
 
     const newMsg: ChatMessage = {
       id: `msg_${Date.now()}`,
       senderId: currentUser.id,
       senderName: currentUser.name,
-      senderRole: currentUser.role as 'school_admin',
+      senderRole: currentUser.role as 'school_admin' | 'teacher' | 'parent',
       recipientId,
-      recipientName,
-      recipientRole,
+      recipientName: recName,
+      recipientRole: recRole,
       message,
       timestamp: 'Just now',
       isRead: true,
       attachmentName,
+      status: isOfflineMsg ? 'queued' : 'delivered',
+      isOffline: isOfflineMsg,
     };
 
     setChatMessages((prev) => [...prev, newMsg]);
 
-    // Simulate realistic intelligent auto-reply after 1.2s
-    setTimeout(() => {
-      let replyText = '';
-      if (recipientRole === 'teacher') {
-        const replies = [
-          `Thank you for the directive, Madam Cynthia. I have noted this and will act on it immediately.`,
-          `Understood! The academic records and student performance metrics have been updated in the portal.`,
-          `Thank you, Headmistress. I will discuss this with the form students and keep you informed.`,
-          `Received clearly. I will ensure the terminal remarks are reviewed.`,
-        ];
-        replyText = replies[Math.floor(Math.random() * replies.length)];
-      } else {
-        const replies = [
-          `Thank you very much, Madam Headmistress, for the prompt update regarding our ward.`,
-          `Understood and received. We really appreciate the school's communication and dedication to the pupils.`,
-          `Thank you. I have received the alert and will follow up accordingly.`,
-          `Great, thank you! I will review the report card on the parent dashboard.`,
-        ];
-        replyText = replies[Math.floor(Math.random() * replies.length)];
-      }
+    // If online, simulate realistic auto-reply after 1.2s
+    if (!isOfflineMsg) {
+      setTimeout(() => {
+        let replyText = '';
+        if (currentUser.role === 'school_admin') {
+          if (recRole === 'teacher') {
+            const replies = [
+              `Thank you for the directive, Madam Cynthia. I have noted this and will act on it immediately.`,
+              `Understood! The academic records and student performance metrics have been updated in the portal.`,
+              `Thank you, Headmistress. I will discuss this with the form students and keep you informed.`,
+              `Received clearly. I will ensure the terminal remarks are reviewed.`,
+            ];
+            replyText = replies[Math.floor(Math.random() * replies.length)];
+          } else {
+            const replies = [
+              `Thank you very much, Madam Headmistress, for the prompt update regarding our ward.`,
+              `Understood and received. We really appreciate the school's communication and dedication to the pupils.`,
+              `Thank you. I have received the alert and will follow up accordingly.`,
+              `Great, thank you! I will review the report card on the parent dashboard.`,
+            ];
+            replyText = replies[Math.floor(Math.random() * replies.length)];
+          }
+        } else {
+          // If teacher or parent sent message to Admin
+          const replies = [
+            `Hello ${currentUser.name}, message received and noted by the Headmistress's desk. We will attend to this promptly.`,
+            `Thank you for the update ${currentUser.name}. I have reviewed your submission.`,
+            `Received with thanks. Keep up the good work.`,
+            `Acknowledged. If urgent, feel free to visit the administration office.`,
+          ];
+          replyText = replies[Math.floor(Math.random() * replies.length)];
+        }
 
-      const autoReply: ChatMessage = {
-        id: `msg_${Date.now() + 1}`,
-        senderId: recipientId,
-        senderName: recipientName,
-        senderRole: recipientRole,
-        recipientId: currentUser.id,
-        recipientName: currentUser.name,
-        recipientRole: 'school_admin',
-        message: replyText,
-        timestamp: 'Just now',
-        isRead: true,
-      };
+        const autoReply: ChatMessage = {
+          id: `msg_${Date.now() + 1}`,
+          senderId: recipientId,
+          senderName: recName,
+          senderRole: recRole,
+          recipientId: currentUser.id,
+          recipientName: currentUser.name,
+          recipientRole: currentUser.role as 'school_admin' | 'teacher' | 'parent',
+          message: replyText,
+          timestamp: 'Just now',
+          isRead: true,
+          status: 'delivered',
+          isOffline: false,
+        };
 
-      setChatMessages((prev) => [...prev, autoReply]);
-    }, 1200);
+        setChatMessages((prev) => [...prev, autoReply]);
+      }, 1200);
+    }
   };
 
   const sendParentNotification = (
@@ -597,6 +702,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setActiveChatContactId,
         sendChatMessage,
         openChatWith,
+        isOnline,
+        isSimulatedOffline,
+        toggleSimulatedOffline,
         parentNotifications,
         sendParentNotification,
         isSendParentNotificationOpen,

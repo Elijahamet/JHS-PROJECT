@@ -9,14 +9,16 @@ import {
   ShieldCheck,
   Receipt,
   Download,
+  MessageSquare,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { formatCurrency, formatDate } from '../../utils/formatters';
+import { PortalChatView } from './PortalChatView';
 
 interface ParentPortalProps {
-  tab?: 'overview' | 'reports' | 'attendance' | 'fees' | 'pay' | 'announcements';
+  tab?: 'overview' | 'reports' | 'attendance' | 'fees' | 'pay' | 'announcements' | 'chat';
 }
 
 export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview' }) => {
@@ -29,7 +31,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
     addPayment,
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'attendance' | 'fees' | 'pay' | 'announcements'>(tab);
+  const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'attendance' | 'fees' | 'pay' | 'announcements' | 'chat'>(tab);
 
   React.useEffect(() => {
     setActiveTab(tab);
@@ -166,6 +168,17 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
               className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-md`}
             >
               Pay Online (MoMo)
+            </button>
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'chat'
+                  ? 'bg-purple-500 text-white font-bold shadow-md'
+                  : 'bg-white/10 hover:bg-white/20 text-white'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Admin Chat</span>
             </button>
           </div>
         </div>
@@ -641,6 +654,27 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 6. ADMIN & SCHOOL CHAT (OFFLINE-FIRST) */}
+      {/* ========================================================================= */}
+      {activeTab === 'chat' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Direct Parent-to-School Chat</h2>
+              <p className="text-xs text-slate-500">
+                Direct inquiry desk with Mrs. Cynthia Arthur (Headmistress). Fully offline enabled with local sync.
+              </p>
+            </div>
+          </div>
+          <PortalChatView
+            partnerName="Mrs. Cynthia Arthur"
+            partnerRole="School Headmistress & Administration"
+            partnerSubtitle="Direct communication desk for parents & guardians"
+          />
         </div>
       )}
     </div>

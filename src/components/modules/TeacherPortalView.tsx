@@ -22,15 +22,16 @@ import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { ReportCardSheet } from './ReportCardSheet';
+import { PortalChatView } from './PortalChatView';
 
 interface TeacherPortalProps {
-  tab?: 'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements';
+  tab?: 'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat';
 }
 
 export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit' }) => {
   const { currentUser, setCurrentNav, setIsReportCardModalOpen, announcements } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements'>(tab);
+  const [activeTab, setActiveTab] = useState<'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat'>(tab);
   const [remarksSubTab, setRemarksSubTab] = useState<'generator' | 'roster'>('generator');
 
   React.useEffect(() => {
@@ -169,6 +170,17 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
             >
               <BookOpen className="w-4 h-4" />
               <span>Report Card Generator</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'chat'
+                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-md'
+                  : 'bg-white/10 hover:bg-white/20 text-white'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Admin Chat</span>
             </button>
           </div>
         </div>
@@ -687,6 +699,27 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 7. ADMIN & HELPDESK CHAT (OFFLINE-FIRST) */}
+      {/* ========================================================================= */}
+      {activeTab === 'chat' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Direct Staff-to-Admin Messaging</h2>
+              <p className="text-xs text-slate-500">
+                Communicate directly with the Headmistress. Operates offline with local message queueing and auto-sync.
+              </p>
+            </div>
+          </div>
+          <PortalChatView
+            partnerName="Mrs. Cynthia Arthur"
+            partnerRole="School Headmistress & Administration"
+            partnerSubtitle="Direct executive line • Headteacher Desk"
+          />
         </div>
       )}
     </div>

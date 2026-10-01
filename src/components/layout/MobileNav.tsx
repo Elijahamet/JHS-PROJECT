@@ -78,6 +78,7 @@ export const MobileNav: React.FC = () => {
           { id: 'teacher-marks', label: 'Marks & Continuous Assessment', icon: FileSpreadsheet, color: 'text-rose-400', gradient: 'from-rose-600 to-pink-600' },
           { id: 'teacher-reports', label: 'Report Card Generator', icon: BookOpenCheck, color: 'text-violet-400', gradient: 'from-purple-600 to-indigo-600' },
           { id: 'teacher-announcements', label: 'Staff Room Notices', icon: Megaphone, color: 'text-yellow-400', gradient: 'from-amber-500 to-orange-600' },
+          { id: 'teacher-chat', label: 'Admin Chat & Offline Desk', icon: MessageSquare, color: 'text-cyan-400', gradient: 'from-cyan-600 to-blue-600' },
         ];
       case 'accountant':
         return [
@@ -97,6 +98,7 @@ export const MobileNav: React.FC = () => {
           { id: 'parent-fees', label: 'Fee Statement & Arrears', icon: CreditCard, color: 'text-emerald-400', gradient: 'from-emerald-600 to-teal-600' },
           { id: 'parent-pay', label: 'Pay Fees Online (MoMo & Card)', icon: Receipt, color: 'text-cyan-400', gradient: 'from-cyan-600 to-blue-600' },
           { id: 'parent-announcements', label: 'School Notices & Circulars', icon: Megaphone, color: 'text-yellow-400', gradient: 'from-amber-500 to-orange-600' },
+          { id: 'parent-chat', label: 'School Admin Chat', icon: MessageSquare, color: 'text-pink-400', gradient: 'from-pink-600 to-purple-600' },
         ];
       case 'school_admin':
       default:

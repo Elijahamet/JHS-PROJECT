@@ -20,6 +20,9 @@ import {
   ArrowRight,
   ShieldCheck,
   Plus,
+  Wifi,
+  WifiOff,
+  Clock,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -41,7 +44,12 @@ export const CommunicationsView: React.FC = () => {
     setIsSendParentNotificationOpen,
     setCurrentNav,
     setSelectedStudentId,
+    isOnline,
+    isSimulatedOffline,
+    toggleSimulatedOffline,
   } = useApp();
+
+  const effectiveOnline = isOnline && !isSimulatedOffline;
 
   const [activeTab, setActiveTab] = useState<'chat' | 'broadcast'>('chat');
   const [contactFilter, setContactFilter] = useState<'all' | 'teachers' | 'parents'>('all');
@@ -121,11 +129,34 @@ export const CommunicationsView: React.FC = () => {
   const activeContact = allContacts.find((c) => c.id === activeChatContactId) || allContacts[0];
 
   // Messages between current admin and active contact
-  const currentConversation = chatMessages.filter(
-    (m) =>
-      (m.senderId === activeContact?.id && m.recipientId === currentUser.id) ||
-      (m.senderId === currentUser.id && m.recipientId === activeContact?.id)
-  );
+  const currentConversation = chatMessages.filter((m) => {
+    if (!activeContact) return false;
+    const isToActive =
+      m.recipientId === activeContact.id ||
+      (activeContact.role === 'teacher' &&
+        (m.recipientRole === 'teacher' || m.recipientId === 'usr_teacher')) ||
+      (activeContact.role === 'parent' &&
+        (m.recipientRole === 'parent' || m.recipientId === 'usr_parent'));
+
+    const isFromActive =
+      m.senderId === activeContact.id ||
+      (activeContact.role === 'teacher' &&
+        (m.senderRole === 'teacher' || m.senderId === 'usr_teacher')) ||
+      (activeContact.role === 'parent' &&
+        (m.senderRole === 'parent' || m.senderId === 'usr_parent'));
+
+    const isToAdmin =
+      m.recipientId === 'usr_admin' ||
+      m.recipientId === currentUser.id ||
+      m.recipientRole === 'school_admin';
+
+    const isFromAdmin =
+      m.senderId === 'usr_admin' ||
+      m.senderId === currentUser.id ||
+      m.senderRole === 'school_admin';
+
+    return (isFromActive && isToAdmin) || (isFromAdmin && isToActive);
+  });
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -244,6 +275,29 @@ export const CommunicationsView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Network & Offline Status Toggle */}
+          <button
+            onClick={toggleSimulatedOffline}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+              !effectiveOnline
+                ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-xs'
+                : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+            }`}
+            title="Click to toggle offline mode simulation"
+          >
+            {!effectiveOnline ? (
+              <>
+                <WifiOff className="w-3.5 h-3.5" />
+                <span>Simulated Offline Mode</span>
+              </>
+            ) : (
+              <>
+                <Wifi className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Online (Local & Cloud Sync)</span>
+              </>
+            )}
+          </button>
+
           {/* Main Tab Switcher */}
           <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200">
             <button
@@ -280,6 +334,27 @@ export const CommunicationsView: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Offline Alert Banner */}
+      {!effectiveOnline && (
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-center justify-between text-xs text-amber-900 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <WifiOff className="w-4 h-4 text-amber-600 shrink-0" />
+            <div>
+              <span className="font-bold">Offline Messaging Mode Active: </span>
+              <span>
+                All messages to teachers and parents will be stored locally on this machine and will automatically sync and deliver when your connection is restored.
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={toggleSimulatedOffline}
+            className="text-xs font-bold text-amber-800 underline hover:text-amber-950 shrink-0 ml-3"
+          >
+            Go Online Now
+          </button>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 1. LIVE CHAT HUB VIEW */}
@@ -519,10 +594,30 @@ export const CommunicationsView: React.FC = () => {
                           )}
                         </div>
 
-                        {isFromAdmin && (
-                          <span className="text-[10px] text-blue-600 flex items-center gap-0.5 mt-0.5 px-1 font-medium">
-                            <CheckCheck className="w-3.5 h-3.5" /> Delivered
+                        {isFromAdmin ? (
+                          <span
+                            className={`text-[10px] flex items-center gap-1 mt-0.5 px-1 font-medium ${
+                              msg.status === 'queued' || msg.isOffline
+                                ? 'text-amber-600 font-semibold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60'
+                                : 'text-blue-600'
+                            }`}
+                          >
+                            {msg.status === 'queued' || msg.isOffline ? (
+                              <>
+                                <Clock className="w-3 h-3 text-amber-500 animate-spin" /> Stored locally (Queued offline)
+                              </>
+                            ) : (
+                              <>
+                                <CheckCheck className="w-3.5 h-3.5" /> Delivered
+                              </>
+                            )}
                           </span>
+                        ) : (
+                          (msg.status === 'queued' || msg.isOffline) && (
+                            <span className="text-[10px] text-amber-600 flex items-center gap-1 mt-0.5 px-1 font-semibold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">
+                              <Clock className="w-3 h-3 text-amber-500 animate-spin" /> Queued offline
+                            </span>
+                          )
                         )}
                       </div>
                     );
@@ -567,7 +662,11 @@ export const CommunicationsView: React.FC = () => {
                 >
                   <input
                     type="text"
-                    placeholder={`Write a message to ${activeContact.name}... (Press Enter to send)`}
+                    placeholder={
+                      effectiveOnline
+                        ? `Write a message to ${activeContact.name}... (Press Enter to send)`
+                        : `(Offline Mode) Write to ${activeContact.name}... Stored locally & will auto-sync`
+                    }
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 placeholder:text-slate-400"

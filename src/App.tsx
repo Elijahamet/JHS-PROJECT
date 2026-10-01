@@ -75,6 +75,8 @@ export const AppContent: React.FC = () => {
             return <TeacherPortalView tab="remarks" />;
           case 'teacher-announcements':
             return <TeacherPortalView tab="announcements" />;
+          case 'teacher-chat':
+            return <TeacherPortalView tab="chat" />;
           case 'teacher-cockpit':
           default:
             return <TeacherPortalView tab="cockpit" />;
@@ -118,6 +120,8 @@ export const AppContent: React.FC = () => {
             return <ParentPortalView tab="pay" />;
           case 'parent-announcements':
             return <ParentPortalView tab="announcements" />;
+          case 'parent-chat':
+            return <ParentPortalView tab="chat" />;
           case 'parent-cockpit':
           default:
             return <ParentPortalView tab="overview" />;

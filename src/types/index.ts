@@ -307,6 +307,8 @@ export interface ChatMessage {
   timestamp: string;
   isRead: boolean;
   attachmentName?: string;
+  status?: 'queued' | 'sending' | 'delivered';
+  isOffline?: boolean;
 }
 
 export interface ParentNotificationRecord {
