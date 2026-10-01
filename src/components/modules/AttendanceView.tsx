@@ -245,13 +245,20 @@ export const AttendanceView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {classStudents.map((s) => {
-                const currentStatus = rosterStatus[s.id] || 'Present';
-                return (
-                  <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-mono font-medium text-slate-700">
-                      {s.studentId}
-                    </td>
+              {classStudents.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-slate-400">
+                    No students currently enrolled in {selectedClass.name}. Enroll students in this class to record their daily attendance.
+                  </td>
+                </tr>
+              ) : (
+                classStudents.map((s) => {
+                  const currentStatus = rosterStatus[s.id] || 'Present';
+                  return (
+                    <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-4 font-mono font-medium text-slate-700">
+                        {s.studentId}
+                      </td>
                     <td className="py-3 px-4 font-semibold text-slate-900">
                       <div className="flex items-center gap-2.5">
                         <img
@@ -318,8 +325,9 @@ export const AttendanceView: React.FC = () => {
                     </td>
                   </tr>
                 );
-              })}
-            </tbody>
+              })
+            )}
+          </tbody>
           </table>
         </div>
       </div>

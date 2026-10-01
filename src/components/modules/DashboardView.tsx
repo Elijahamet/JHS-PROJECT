@@ -27,6 +27,7 @@ export const DashboardView: React.FC = () => {
     classes,
     payments,
     announcements,
+    attendance,
     setIsAddStudentOpen,
     setIsRecordPaymentOpen,
     setIsCreateAnnouncementOpen,
@@ -35,13 +36,19 @@ export const DashboardView: React.FC = () => {
     setIsReceiptModalOpen,
   } = useApp();
 
-  // Calculated metrics
-  const totalStudents = 642; // total registered
-  const totalTeachers = teachers.length > 0 ? 38 : 38;
+  // Dynamically calculated real-time metrics
+  const totalStudents = students.length;
+  const totalTeachers = teachers.length;
   const totalClasses = classes.length;
 
-  const totalSchoolFeesOutstanding = 42500;
-  const totalFeedingFeesOutstanding = 8400;
+  const totalSchoolFeesOutstanding = students.reduce((sum, s) => sum + (s.schoolFeeBalance || 0), 0);
+  const totalFeedingFeesOutstanding = students.reduce((sum, s) => sum + (s.feedingFeeBalance || 0), 0);
+  const totalFeesCollected = payments.filter(p => p.category === 'School Fees').reduce((sum, p) => sum + (p.amount || 0), 0);
+  const totalFeedingCollected = payments.filter(p => p.category === 'Feeding Fees').reduce((sum, p) => sum + (p.amount || 0), 0);
+
+  const totalAttendanceRecords = attendance.length;
+  const presentCount = attendance.filter((a) => a.status === 'Present').length;
+  const attendanceRate = totalAttendanceRecords > 0 ? ((presentCount / totalAttendanceRecords) * 100).toFixed(1) : '0.0';
 
   const recentPayments = payments.slice(0, 5);
   const recentAnnouncements = announcements.slice(0, 3);
@@ -132,10 +139,9 @@ export const DashboardView: React.FC = () => {
         />
         <StatCard
           title="Attendance"
-          value="94.2%"
-          subtitle="614 present today"
+          value={`${attendanceRate}%`}
+          subtitle={`${presentCount} present today`}
           icon={CalendarCheck}
-          trend={{ value: '+1.4%', isPositive: true }}
         />
         <StatCard
           title="School Fees Due"
@@ -161,19 +167,21 @@ export const DashboardView: React.FC = () => {
                 Today&apos;s Attendance Rate
               </h3>
               <p className="text-xs text-slate-500">
-                Thursday, 4 February 2025 • Daily Roll
+                Daily Roll Register
               </p>
             </div>
-            <Badge variant="success">94.2% Present</Badge>
+            <Badge variant={Number(attendanceRate) > 0 ? 'success' : 'neutral'}>
+              {attendanceRate}% Present
+            </Badge>
           </div>
 
           <div className="mt-5 space-y-4">
             {/* Visual Progress Bar */}
             <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
               <div
-                style={{ width: '94.2%' }}
-                className="bg-emerald-600 h-full"
-                title="Present: 94.2%"
+                style={{ width: `${attendanceRate}%` }}
+                className="bg-emerald-600 h-full transition-all duration-500"
+                title={`Present: ${attendanceRate}%`}
               />
               <div
                 style={{ width: '3.8%' }}
@@ -255,7 +263,7 @@ export const DashboardView: React.FC = () => {
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-500">Collected to Date:</span>
                   <span className="font-semibold text-slate-900">
-                    {formatCurrency(185600)}
+                    {formatCurrency(totalFeesCollected)}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
@@ -266,11 +274,35 @@ export const DashboardView: React.FC = () => {
                 </div>
                 {/* Progress */}
                 <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden mt-1">
-                  <div className="bg-slate-900 h-full" style={{ width: '81%' }} />
+                  <div
+                    className="bg-slate-900 h-full transition-all duration-500"
+                    style={{
+                      width: `${
+                        totalFeesCollected + totalSchoolFeesOutstanding > 0
+                          ? Math.min(
+                              100,
+                              Math.round(
+                                (totalFeesCollected /
+                                  (totalFeesCollected + totalSchoolFeesOutstanding)) *
+                                  100
+                              )
+                            )
+                          : 0
+                      }%`,
+                    }}
+                  />
                 </div>
                 <div className="flex justify-between text-[11px] text-slate-500 pt-1">
-                  <span>81.4% Target Cleared</span>
-                  <span>524 Students Paid</span>
+                  <span>
+                    {totalFeesCollected + totalSchoolFeesOutstanding > 0
+                      ? `${Math.round(
+                          (totalFeesCollected /
+                            (totalFeesCollected + totalSchoolFeesOutstanding)) *
+                            100
+                        )}% Target Cleared`
+                      : '0% Target Cleared'}
+                  </span>
+                  <span>{payments.filter((p) => p.category === 'School Fees').length} Transactions</span>
                 </div>
               </div>
             </div>
@@ -287,7 +319,7 @@ export const DashboardView: React.FC = () => {
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-500">Collected to Date:</span>
                   <span className="font-semibold text-slate-900">
-                    {formatCurrency(42600)}
+                    {formatCurrency(totalFeedingCollected)}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
@@ -298,11 +330,35 @@ export const DashboardView: React.FC = () => {
                 </div>
                 {/* Progress */}
                 <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden mt-1">
-                  <div className="bg-blue-600 h-full" style={{ width: '83%' }} />
+                  <div
+                    className="bg-blue-600 h-full transition-all duration-500"
+                    style={{
+                      width: `${
+                        totalFeedingCollected + totalFeedingFeesOutstanding > 0
+                          ? Math.min(
+                              100,
+                              Math.round(
+                                (totalFeedingCollected /
+                                  (totalFeedingCollected + totalFeedingFeesOutstanding)) *
+                                  100
+                              )
+                            )
+                          : 0
+                      }%`,
+                    }}
+                  />
                 </div>
                 <div className="flex justify-between text-[11px] text-slate-500 pt-1">
-                  <span>83.5% Target Cleared</span>
-                  <span>410 Subscribers</span>
+                  <span>
+                    {totalFeedingCollected + totalFeedingFeesOutstanding > 0
+                      ? `${Math.round(
+                          (totalFeedingCollected /
+                            (totalFeedingCollected + totalFeedingFeesOutstanding)) *
+                            100
+                        )}% Target Cleared`
+                      : '0% Target Cleared'}
+                  </span>
+                  <span>{payments.filter((p) => p.category === 'Feeding Fees').length} Subscriptions</span>
                 </div>
               </div>
             </div>
@@ -358,39 +414,47 @@ export const DashboardView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {recentPayments.map((pmt) => (
-                  <tr key={pmt.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4">
-                      <p className="font-semibold text-slate-900">{pmt.studentName}</p>
-                      <p className="text-[11px] text-slate-500">{pmt.className}</p>
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className="font-medium text-slate-700">
-                        {pmt.category}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 font-bold text-slate-900">
-                      {formatCurrency(pmt.amount)}
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">
-                      {formatDate(pmt.date)}
-                    </td>
-                    <td className="py-3 px-3">
-                      <Badge variant="success">Completed</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedReceiptPayment(pmt);
-                          setIsReceiptModalOpen(true);
-                        }}
-                        className="text-xs text-blue-600 font-medium hover:underline"
-                      >
-                        View Receipt
-                      </button>
+                {recentPayments.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-slate-400">
+                      No payment transactions recorded yet. Click &quot;Record Payment&quot; above to issue your first receipt.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  recentPayments.map((pmt) => (
+                    <tr key={pmt.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3 px-4">
+                        <p className="font-semibold text-slate-900">{pmt.studentName}</p>
+                        <p className="text-[11px] text-slate-500">{pmt.className}</p>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-medium text-slate-700">
+                          {pmt.category}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-bold text-slate-900">
+                        {formatCurrency(pmt.amount)}
+                      </td>
+                      <td className="py-3 px-3 text-slate-600">
+                        {formatDate(pmt.date)}
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge variant="success">Completed</Badge>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          onClick={() => {
+                            setSelectedReceiptPayment(pmt);
+                            setIsReceiptModalOpen(true);
+                          }}
+                          className="text-xs text-blue-600 font-medium hover:underline"
+                        >
+                          View Receipt
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -413,27 +477,33 @@ export const DashboardView: React.FC = () => {
             </div>
 
             <div className="mt-3 divide-y divide-slate-100">
-              {recentAnnouncements.map((ann) => (
-                <div key={ann.id} className="py-3 first:pt-1 last:pb-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-slate-900 hover:text-blue-600 cursor-pointer">
-                      {ann.title}
-                    </span>
-                    <Badge variant={ann.priority === 'Important' ? 'warning' : 'neutral'}>
-                      {ann.audience}
-                    </Badge>
-                  </div>
-                  <p className="mt-1 text-slate-600 text-[11px] line-clamp-2 leading-relaxed">
-                    {ann.message}
-                  </p>
-                  <div className="mt-1.5 flex items-center gap-2 text-[10px] text-slate-400">
-                    <Clock className="w-3 h-3" />
-                    <span>Published: {formatDate(ann.publishDate)}</span>
-                    <span>•</span>
-                    <span>By {ann.authorName}</span>
-                  </div>
+              {recentAnnouncements.length === 0 ? (
+                <div className="py-6 text-center text-xs text-slate-400">
+                  No announcements published yet. Click &quot;Broadcast Announcement&quot; above to post a school notice.
                 </div>
-              ))}
+              ) : (
+                recentAnnouncements.map((ann) => (
+                  <div key={ann.id} className="py-3 first:pt-1 last:pb-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-slate-900 hover:text-blue-600 cursor-pointer">
+                        {ann.title}
+                      </span>
+                      <Badge variant={ann.priority === 'Important' ? 'warning' : 'neutral'}>
+                        {ann.audience}
+                      </Badge>
+                    </div>
+                    <p className="mt-1 text-slate-600 text-[11px] line-clamp-2 leading-relaxed">
+                      {ann.message}
+                    </p>
+                    <div className="mt-1.5 flex items-center gap-2 text-[10px] text-slate-400">
+                      <Clock className="w-3 h-3" />
+                      <span>Published: {formatDate(ann.publishDate)}</span>
+                      <span>•</span>
+                      <span>By {ann.authorName}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

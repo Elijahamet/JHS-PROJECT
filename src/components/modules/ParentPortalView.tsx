@@ -13,6 +13,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
+import { EmptyState } from '../common/EmptyState';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
 export const ParentPortalView: React.FC = () => {
@@ -24,9 +25,20 @@ export const ParentPortalView: React.FC = () => {
     setIsRecordPaymentOpen,
   } = useApp();
 
-  // Primary linked student for parent persona: Kwame Mensah (std_01)
-  const child = students.find((s) => s.id === 'std_01') || students[0];
-  const busRoute = routes.find((r) => r.id === 'rt_01') || routes[0];
+  // Primary linked student for parent persona
+  const child = students[0];
+  const busRoute = routes[0];
+
+  if (!child) {
+    return (
+      <div className="max-w-2xl mx-auto py-12">
+        <EmptyState
+          title="No Ward Linked Yet"
+          description="There are currently no students registered in the system linked to your parent portal. Once a student is enrolled, their academic reports, fees, and attendance will appear here."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

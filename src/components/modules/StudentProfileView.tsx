@@ -17,6 +17,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
+import { EmptyState } from '../common/EmptyState';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
 interface StudentProfileViewProps {
@@ -47,7 +48,21 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
     | 'documents'
   >('overview');
 
-  const student = students.find((s) => s.id === studentId) || students[0];
+  const student = students.find((s) => s.id === studentId);
+
+  if (!student) {
+    return (
+      <div className="max-w-3xl mx-auto py-12">
+        <EmptyState
+          title="Student Record Not Found"
+          description="This student record has either been removed or has not yet been enrolled in the system."
+          actionLabel="Back to Student Directory"
+          onAction={onBack}
+        />
+      </div>
+    );
+  }
+
   const studentAssessments = assessments.filter(
     (a) => a.studentId === student.id
   );

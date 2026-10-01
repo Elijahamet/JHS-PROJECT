@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { useApp } from '../../context/AppContext';
-import { mockReportCardKwame } from '../../data/mockData';
 import { Printer, Download, Award, Calendar } from 'lucide-react';
 
 export const ReportCardModal: React.FC = () => {
@@ -10,12 +9,82 @@ export const ReportCardModal: React.FC = () => {
     isReportCardModalOpen,
     setIsReportCardModalOpen,
     currentSchool,
+    selectedStudentId,
+    students,
+    assessments,
   } = useApp();
-
-  const reportCard = mockReportCardKwame;
 
   const handlePrint = () => {
     window.print();
+  };
+
+  if (!isReportCardModalOpen) return null;
+
+  const student = selectedStudentId
+    ? students.find((s) => s.id === selectedStudentId)
+    : students[0];
+
+  if (!student) {
+    return (
+      <Modal
+        isOpen={isReportCardModalOpen}
+        onClose={() => setIsReportCardModalOpen(false)}
+        title="Terminal Academic Report Card"
+        maxWidth="md"
+      >
+        <div className="py-10 text-center text-slate-500">
+          <Award className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+          <p className="text-sm font-semibold text-slate-800">No Student Available</p>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            Please register a student and record terminal exam marks to generate and print their official report card.
+          </p>
+        </div>
+      </Modal>
+    );
+  }
+
+  const studentAssessments = assessments.filter(
+    (a) => a.studentId === student.id
+  );
+  const totalScoreSum = studentAssessments.reduce(
+    (sum, a) => sum + (a.totalScore || 0),
+    0
+  );
+  const overallAvg =
+    studentAssessments.length > 0
+      ? Math.round(totalScoreSum / studentAssessments.length)
+      : 0;
+
+  const reportCard = {
+    studentName: `${student.firstName} ${student.lastName}`,
+    studentIdCode: student.studentId,
+    className: student.className,
+    academicYear: currentSchool.academicYear,
+    term: currentSchool.currentTerm,
+    attendanceDaysPresent: 58,
+    attendanceTotalDays: 60,
+    subjects: studentAssessments.map((a) => ({
+      subjectName: a.subjectName,
+      classwork: a.classworkScore,
+      homework: a.homeworkScore,
+      exam: a.examScore,
+      total: a.totalScore,
+      grade: a.grade,
+      remarks: a.teacherComment || 'Satisfactory progress',
+    })),
+    overallAverage: overallAvg,
+    classPosition: 1,
+    classTotalStudents: 1,
+    classTeacherRemarks:
+      overallAvg >= 70
+        ? 'An exemplary, diligent and hardworking learner. Consistently demonstrates leadership in class.'
+        : 'Encouraged to dedicate more study time.',
+    headteacherRemarks:
+      overallAvg >= 70
+        ? 'Promising academic performance. Well done!'
+        : 'Keep working diligently.',
+    promotionStatus: 'Promoted',
+    nextTermBegins: '12 May 2025',
   };
 
   return (
@@ -54,7 +123,7 @@ export const ReportCardModal: React.FC = () => {
       >
         {/* School Header */}
         <div className="text-center border-b pb-4 border-slate-200">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg mb-2">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg mb-2 shadow-xs">
             SOS
           </div>
           <h2 className="text-lg font-bold uppercase tracking-tight text-slate-900">
@@ -112,7 +181,7 @@ export const ReportCardModal: React.FC = () => {
           <div>
             <span className="text-[11px] text-slate-500">Terminal Attendance</span>
             <p className="font-bold text-slate-900 mt-0.5">
-              {reportCard.attendanceDaysPresent} / {reportCard.attendanceTotalDays} Days ({Math.round((reportCard.attendanceDaysPresent / reportCard.attendanceTotalDays) * 100)}%)
+              {reportCard.attendanceDaysPresent} / {reportCard.attendanceTotalDays} Days ({reportCard.attendanceTotalDays > 0 ? Math.round((reportCard.attendanceDaysPresent / reportCard.attendanceTotalDays) * 100) : 0}%)
             </p>
           </div>
           <div className="border-x border-blue-100">
@@ -144,31 +213,39 @@ export const ReportCardModal: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {reportCard.subjects.map((sub, idx) => (
-                <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}>
-                  <td className="py-2 px-3 font-semibold text-slate-900">
-                    {sub.subjectName}
-                  </td>
-                  <td className="py-2 px-3 text-center text-slate-700 font-mono">
-                    {sub.classwork}
-                  </td>
-                  <td className="py-2 px-3 text-center text-slate-700 font-mono">
-                    {sub.homework}
-                  </td>
-                  <td className="py-2 px-3 text-center text-slate-700 font-mono">
-                    {sub.exam}
-                  </td>
-                  <td className="py-2 px-3 text-center font-bold text-slate-900 font-mono">
-                    {sub.total}
-                  </td>
-                  <td className="py-2 px-3 text-center font-semibold text-blue-700">
-                    {sub.grade}
-                  </td>
-                  <td className="py-2 px-3 text-slate-600 italic">
-                    {sub.remarks}
+              {reportCard.subjects.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                    No subject assessments recorded for this student yet. Record marks in the Results & Reports section.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                reportCard.subjects.map((sub, idx) => (
+                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}>
+                    <td className="py-2 px-3 font-semibold text-slate-900">
+                      {sub.subjectName}
+                    </td>
+                    <td className="py-2 px-3 text-center text-slate-700 font-mono">
+                      {sub.classwork}
+                    </td>
+                    <td className="py-2 px-3 text-center text-slate-700 font-mono">
+                      {sub.homework}
+                    </td>
+                    <td className="py-2 px-3 text-center text-slate-700 font-mono">
+                      {sub.exam}
+                    </td>
+                    <td className="py-2 px-3 text-center font-bold text-slate-900 font-mono">
+                      {sub.total}
+                    </td>
+                    <td className="py-2 px-3 text-center font-semibold text-blue-700">
+                      {sub.grade}
+                    </td>
+                    <td className="py-2 px-3 text-slate-600 italic">
+                      {sub.remarks}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

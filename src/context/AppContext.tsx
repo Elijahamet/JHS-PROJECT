@@ -113,7 +113,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [authScreen, setAuthScreen] = useState<'authenticated' | 'login' | 'forgot_password' | 'reset_password'>('authenticated');
 
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
-  const [selectedReceiptPayment, setSelectedReceiptPayment] = useState<PaymentRecord | null>(mockPayments[0]);
+  const [selectedReceiptPayment, setSelectedReceiptPayment] = useState<PaymentRecord | null>(null);
 
   // Data collections
   const [students, setStudents] = useState<Student[]>(mockStudents);
