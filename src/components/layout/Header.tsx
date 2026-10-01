@@ -57,46 +57,6 @@ export const Header: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setIsGlobalSearchOpen]);
 
-  const getPlatformBadge = () => {
-    switch (currentUser.role) {
-      case 'school_admin':
-        return {
-          title: 'School Admin Platform',
-          tag: 'Administration',
-          classes: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
-          dot: 'bg-indigo-500',
-        };
-      case 'teacher':
-        return {
-          title: 'Teacher Workspace Platform',
-          tag: 'Classroom & Marks',
-          classes: 'bg-sky-50 text-sky-700 border-sky-200/80',
-          dot: 'bg-sky-500',
-        };
-      case 'accountant':
-        return {
-          title: 'Bursary & Accounts Platform',
-          tag: 'Finance & Cashier',
-          classes: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
-          dot: 'bg-emerald-500',
-        };
-      case 'parent':
-        return {
-          title: 'Parent & Guardian Platform',
-          tag: 'Ward Portal',
-          classes: 'bg-purple-50 text-purple-700 border-purple-200/80',
-          dot: 'bg-purple-500',
-        };
-      default:
-        return {
-          title: 'SchoolOS Platform',
-          tag: 'Portal',
-          classes: 'bg-slate-100 text-slate-700 border-slate-200',
-          dot: 'bg-slate-500',
-        };
-    }
-  };
-
   const getRoleLabel = () => {
     switch (currentUser.role) {
       case 'teacher':
@@ -111,17 +71,10 @@ export const Header: React.FC = () => {
     }
   };
 
-  const platformBadge = getPlatformBadge();
-
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between z-20">
-      {/* Left: Platform Indicator & Global Search */}
+      {/* Left: Global Search */}
       <div className="flex items-center gap-4 flex-1 max-w-xl">
-        <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold shadow-2xs ${platformBadge.classes}`}>
-          <span className={`w-2 h-2 rounded-full ${platformBadge.dot} animate-pulse`} />
-          <span>{platformBadge.title}</span>
-        </div>
-
         <button
           onClick={() => setIsGlobalSearchOpen(true)}
           className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-slate-400 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
