@@ -12,17 +12,25 @@ import {
   User,
   Phone,
   MapPin,
-  Sparkles,
   School as SchoolIcon,
   Check,
-  Star,
   GraduationCap,
   Award,
+  BookOpen,
+  CreditCard,
+  Users,
+  KeyRound,
+  HelpCircle,
+  FileCheck2,
+  ShieldCheck,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const AuthScreens: React.FC = () => {
   const { authScreen, setAuthScreen, setUserRole, setCurrentSchool } = useApp();
+
+  // Selected portal role for login
+  const [selectedPortalRole, setSelectedPortalRole] = useState<'school_admin' | 'teacher' | 'accountant' | 'parent'>('school_admin');
 
   // Login Form States
   const [loginEmail, setLoginEmail] = useState('admin@brightfutureacademy.edu.gh');
@@ -31,12 +39,15 @@ export const AuthScreens: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
 
   // Signup Form States
+  const [signupStep, setSignupStep] = useState<1 | 2>(1);
   const [signupRole, setSignupRole] = useState<'school_admin' | 'teacher' | 'accountant' | 'parent'>('school_admin');
   const [schoolName, setSchoolName] = useState('');
   const [schoolLevel, setSchoolLevel] = useState('Basic 1 - 6 & JHS 1 - 3');
+  const [emisCode, setEmisCode] = useState('');
   const [region, setRegion] = useState('Greater Accra');
   const [city, setCity] = useState('');
   const [adminName, setAdminName] = useState('');
+  const [adminDesignation, setAdminDesignation] = useState('Headmistress / Principal');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPhone, setAdminPhone] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
@@ -51,7 +62,30 @@ export const AuthScreens: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Handle Login with auto-role detection from email
+  // Auto-fill preset demo credentials per role
+  const handleSelectPortalRole = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
+    setSelectedPortalRole(role);
+    switch (role) {
+      case 'school_admin':
+        setLoginEmail('admin@brightfutureacademy.edu.gh');
+        setLoginPassword('password123');
+        break;
+      case 'teacher':
+        setLoginEmail('darko@brightfutureacademy.edu.gh');
+        setLoginPassword('password123');
+        break;
+      case 'accountant':
+        setLoginEmail('bursar@brightfutureacademy.edu.gh');
+        setLoginPassword('password123');
+        break;
+      case 'parent':
+        setLoginEmail('parent@brightfutureacademy.edu.gh');
+        setLoginPassword('password123');
+        break;
+    }
+  };
+
+  // Handle Login
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const em = loginEmail.toLowerCase();
@@ -62,12 +96,12 @@ export const AuthScreens: React.FC = () => {
     } else if (em.includes('parent') || em.includes('osei')) {
       setUserRole('parent');
     } else {
-      setUserRole('school_admin');
+      setUserRole(selectedPortalRole);
     }
     setAuthScreen('authenticated');
   };
 
-  // Quick Demo Persona Login
+  // Quick Demo One-Click Access
   const handleQuickLogin = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
     setUserRole(role);
     setAuthScreen('authenticated');
@@ -76,12 +110,21 @@ export const AuthScreens: React.FC = () => {
   // Handle Signup
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    if (signupStep === 1) {
+      if (!schoolName.trim()) {
+        alert('Please enter your official School Name to proceed.');
+        return;
+      }
+      setSignupStep(2);
+      return;
+    }
+
     if (signupPassword !== confirmSignupPassword) {
-      alert('Passwords do not match. Please re-enter.');
+      alert('Passwords do not match. Please verify and re-enter.');
       return;
     }
     if (!agreeTerms) {
-      alert('Please agree to the Terms of Service to continue.');
+      alert('Please accept the Ghana Education Service (GES) data compliance terms.');
       return;
     }
 
@@ -97,7 +140,7 @@ export const AuthScreens: React.FC = () => {
         country: 'Ghana',
         phone: adminPhone || '+233 24 000 0000',
         email: adminEmail || 'contact@school.edu.gh',
-        website: 'https://schoolos.org',
+        website: 'https://schoolos.edu.gh',
         academicYear: '2024 / 2025',
         currentTerm: 'Term 2',
         studentCount: 0,
@@ -123,249 +166,357 @@ export const AuthScreens: React.FC = () => {
   // Handle Reset Password
   const handleReset = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Password updated successfully! Logging into your account...');
+    alert('Password updated successfully! Logging into your portal...');
     setAuthScreen('authenticated');
   };
 
+  const portalRoles = [
+    {
+      id: 'school_admin' as const,
+      title: 'School Admin',
+      subtitle: 'Headteacher & Board',
+      icon: Shield,
+      badge: 'Executive',
+      color: 'blue',
+    },
+    {
+      id: 'teacher' as const,
+      title: 'Teaching Staff',
+      subtitle: 'Form Masters & Faculty',
+      icon: BookOpen,
+      badge: 'Academic',
+      color: 'indigo',
+    },
+    {
+      id: 'accountant' as const,
+      title: 'Bursary & Finance',
+      subtitle: 'Fees & Accounts',
+      icon: CreditCard,
+      badge: 'Bursar',
+      color: 'emerald',
+    },
+    {
+      id: 'parent' as const,
+      title: 'Parent & Guardian',
+      subtitle: 'Student Portal & Fees',
+      icon: Users,
+      badge: 'Family',
+      color: 'purple',
+    },
+  ];
+
   return (
-    <div className="h-screen w-screen max-h-screen overflow-hidden bg-[#0A0F1D] text-white flex flex-col selection:bg-blue-600 selection:text-white">
+    <div className="h-screen w-screen max-h-screen overflow-hidden bg-slate-900 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+      {/* Top Ghana National Branding Bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-red-600 via-amber-400 to-emerald-600 shrink-0 z-20" />
+
       {/* ========================================================================= */}
-      {/* 1. SIGN IN SCREEN (Picture 1: Classroom Students in Yellow/White Uniform) */}
+      {/* 1. SIGN IN SCREEN                                                         */}
       {/* ========================================================================= */}
       {authScreen === 'login' && (
-        <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden">
-          {/* Left Hero Picture 1 Column */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-900 flex-col justify-between p-6 xl:p-8 flex-shrink-0">
-            {/* Background Image: Picture 1 */}
+        <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
+          {/* Left Hero Column: Authentic Editorial Brand Showcase */}
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-12 shrink-0 border-r border-slate-800">
+            {/* Background Image: Authentic Ghanaian Classroom */}
             <img
               src="/assets/login-hero.jpg"
               alt="Ghanaian school pupils learning happily in classroom"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.78] contrast-[1.05]"
+              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.72] contrast-[1.08]"
             />
 
-            {/* Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1D] via-[#0A0F1D]/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0A0F1D]/80" />
+            {/* Cinematic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-950/30 to-slate-950/80" />
 
-            {/* Top Brand Badge */}
-            <div className="relative z-10 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-xl shadow-blue-500/25 flex-shrink-0">
-                SOS
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base tracking-tight text-white leading-none">
-                    SchoolOS
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-cyan-400/30">
-                    Ghana Basic & JHS
-                  </span>
+            {/* Top Institutional Seal & Logo */}
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-1 ring-white/20 shrink-0">
+                  SOS
                 </div>
-                <p className="text-[11px] text-slate-300 font-medium mt-0.5">
-                  The Modern Operating System for Ghanaian Schools
-                </p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-lg text-white tracking-tight leading-none">
+                      SchoolOS
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-cyan-300 border border-white/20">
+                      Ghana
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium mt-1">
+                    Basic & Junior High School Operating System
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] text-slate-300 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>GES Compliant</span>
               </div>
             </div>
 
-            {/* Floating Glassmorphism Testimonial Card */}
-            <div className="relative z-10 space-y-3">
-              <div className="bg-slate-900/75 backdrop-blur-md p-4 xl:p-5 rounded-2xl border border-white/10 shadow-2xl space-y-2.5">
-                <div className="flex items-center gap-1 text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                  ))}
-                  <span className="ml-1.5 text-xs font-bold text-white">4.9 / 5.0</span>
+            {/* Center Editorial Institutional Statement */}
+            <div className="relative z-10 space-y-6 my-auto max-w-lg">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs font-semibold">
+                  <GraduationCap className="w-3.5 h-3.5 text-cyan-300" />
+                  <span>Republic of Ghana Education Standards</span>
                 </div>
-                <p className="text-xs text-slate-200 leading-relaxed font-normal italic">
-                  &ldquo;SchoolOS has completely modernized how we manage continuous assessments, terminal report cards, and feeding fees across our Basic and JHS streams. Parents receive instant MoMo confirmations!&rdquo;
+                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight">
+                  Modernizing Basic & JHS Education Across Ghana.
+                </h1>
+                <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                  Standardized terminal report cards with 30/70 continuous assessment, BECE stanine evaluation, automated feeding fee registers, and instant Mobile Money reconciliations.
                 </p>
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-                  <div>
-                    <p className="font-bold text-white leading-none">Mrs. Cynthia Arthur</p>
-                    <p className="text-[10px] text-cyan-300 mt-0.5">Headmistress, Greater Accra Region</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Verified School
-                  </div>
+              </div>
+
+              {/* Three Institutional Pillars */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="p-3 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-white/10">
+                  <BookOpen className="w-4 h-4 text-cyan-400 mb-1.5" />
+                  <h4 className="text-xs font-bold text-white">30% / 70% CA</h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">GES Assessment Standard</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-white/10">
+                  <CreditCard className="w-4 h-4 text-emerald-400 mb-1.5" />
+                  <h4 className="text-xs font-bold text-white">Instant MoMo</h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">MTN & Telecel Receipts</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-white/10">
+                  <FileCheck2 className="w-4 h-4 text-purple-400 mb-1.5" />
+                  <h4 className="text-xs font-bold text-white">BECE Stanine</h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Automatic Grading & Remarks</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Testimonial & Security Notice */}
+            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-[10px]">
+                  CA
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-200 text-xs">Mrs. Cynthia Arthur</p>
+                  <p className="text-[10px] text-slate-400">Headmistress, Bright Future Academy</p>
                 </div>
               </div>
 
-              {/* Bottom live statistic pill */}
-              <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>10,000+ Basic & JHS Students Tracked</span>
-                </div>
-                <span className="text-[11px] font-semibold text-cyan-400">Term 2 Active</span>
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                <Lock className="w-3.5 h-3.5 text-slate-500" />
+                <span>256-Bit SSL Encryption</span>
               </div>
             </div>
           </div>
 
-          {/* Right Form Column: Fits viewport height smoothly */}
-          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-center px-6 sm:px-10 lg:px-12 xl:px-16 py-6 bg-[#0B132B]">
-            <div className="w-full max-w-md mx-auto my-auto space-y-5">
-              {/* Mobile Header Logo */}
-              <div className="lg:hidden flex items-center gap-2.5 pb-2 border-b border-slate-800">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+          {/* Right Column: Clean, Authoritative Institutional Sign-In Form */}
+          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-20 py-8 bg-white">
+            {/* Top Bar with Sign In / Register Switcher */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="lg:hidden w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
                   SOS
                 </div>
-                <div>
-                  <h1 className="text-xs font-extrabold text-white">SchoolOS Ghana</h1>
-                  <p className="text-[10px] text-slate-400">Basic & JHS Management Portal</p>
-                </div>
+                <span className="font-bold text-slate-900 text-sm">
+                  SchoolOS Portal
+                </span>
               </div>
 
-              {/* Title & Subtitle */}
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-slate-500 hidden sm:inline">New institution in Ghana?</span>
+                <button
+                  type="button"
+                  onClick={() => setAuthScreen('signup')}
+                  className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                >
+                  Register School
+                </button>
+              </div>
+            </div>
+
+            {/* Main Form Center Box */}
+            <div className="w-full max-w-md mx-auto my-auto py-6 space-y-6">
+              {/* Header Title */}
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-cyan-300 border border-cyan-500/20 mb-2">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Secure School Portal Access</span>
-                </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">
-                  Welcome Back
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                  Sign In to School Portal
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Sign in to access your administrative dashboard or staff workbench.
+                <p className="text-xs text-slate-500 mt-1">
+                  Access your designated operational cockpit, gradebook, or parent dashboard.
                 </p>
               </div>
 
-              {/* Quick Persona Demo Switcher */}
-              <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5 text-blue-400" />
-                    Quick Demo One-Click Sign In:
-                  </span>
-                  <span className="text-slate-500 text-[10px]">Select Role</span>
-                </div>
-                <div className="grid grid-cols-2 gap-1.5 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('school_admin')}
-                    className="flex items-center gap-2 p-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-200 transition-all text-left font-medium"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-blue-400" />
-                    <span className="truncate">Admin / Head</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('teacher')}
-                    className="flex items-center gap-2 p-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-200 transition-all text-left font-medium"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                    <span className="truncate">Teacher (Darko)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('accountant')}
-                    className="flex items-center gap-2 p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-200 transition-all text-left font-medium"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="truncate">Bursar / Accounts</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('parent')}
-                    className="flex items-center gap-2 p-1.5 rounded-lg bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 text-pink-200 transition-all text-left font-medium"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-pink-400" />
-                    <span className="truncate">Parent Portal</span>
-                  </button>
+              {/* Professional Segmented Role Switcher */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Select Your Portal Role:
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+                  {portalRoles.map((role) => {
+                    const Icon = role.icon;
+                    const isSelected = selectedPortalRole === role.id;
+                    return (
+                      <button
+                        key={role.id}
+                        type="button"
+                        onClick={() => handleSelectPortalRole(role.id)}
+                        className={`py-2 px-2 rounded-lg text-left transition-all flex flex-col justify-between gap-1 ${
+                          isSelected
+                            ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80 ring-1 ring-blue-600/20'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
+                          <span className={`text-[9px] font-bold uppercase tracking-wider px-1 rounded ${
+                            isSelected ? 'bg-blue-50 text-blue-700' : 'text-slate-400'
+                          }`}>
+                            {role.badge}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-bold truncate">
+                          {role.title}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Login Form */}
-              <form onSubmit={handleLogin} className="space-y-3.5">
+              <form onSubmit={handleLogin} className="space-y-4">
+                {/* Email / Username Input */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Work Email or Staff ID
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Official Work Email or Staff ID
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       type="email"
                       required
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      placeholder="e.g. admin@schoolos.com"
-                      className="w-full pl-9 pr-3 py-2 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      placeholder="e.g. admin@brightfutureacademy.edu.gh"
+                      className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
                     />
                   </div>
                 </div>
 
+                {/* Password Input */}
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-300">
-                      Password
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-700">
+                      Account Password
                     </label>
                     <button
                       type="button"
                       onClick={() => setAuthScreen('forgot_password')}
-                      className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
+                      className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors"
                     >
                       Forgot password?
                     </button>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       type={showLoginPassword ? 'text' : 'password'}
                       required
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full pl-9 pr-9 py-2 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      placeholder="Enter your security password"
+                      className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-200 transition-colors p-0.5"
+                      className="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600 transition-colors p-0.5"
                     >
-                      {showLoginPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
+                      {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
+                {/* Remember Me Checkbox */}
                 <div className="flex items-center justify-between pt-0.5">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-xs text-slate-400 font-medium">
-                      Keep me signed in
+                    <span className="text-xs text-slate-600 font-medium">
+                      Keep me authenticated on this device
                     </span>
                   </label>
                 </div>
 
+                {/* Submit Sign In Button */}
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 transform active:scale-98"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
                 >
-                  <span>Sign In to SchoolOS</span>
+                  <span>Sign In as {portalRoles.find((r) => r.id === selectedPortalRole)?.title}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
 
-              {/* Toggle to Sign Up */}
-              <div className="pt-3 border-t border-slate-800 text-center">
-                <p className="text-xs text-slate-400">
-                  New institution or basic school in Ghana?{' '}
+              {/* Discreet Demo Credentials Toolbar */}
+              <div className="pt-4 border-t border-slate-100 space-y-2">
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span className="font-semibold flex items-center gap-1.5 text-slate-700">
+                    <KeyRound className="w-3.5 h-3.5 text-slate-500" />
+                    Instant Demo Login:
+                  </span>
+                  <span className="text-[11px] text-slate-400">Click to test as:</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5 text-xs">
                   <button
                     type="button"
-                    onClick={() => setAuthScreen('signup')}
-                    className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
+                    onClick={() => handleQuickLogin('school_admin')}
+                    className="p-2 rounded-lg bg-slate-50 hover:bg-blue-50 border border-slate-200 text-slate-700 hover:text-blue-900 transition-all text-left font-medium flex items-center justify-between"
                   >
-                    Register your school
+                    <span className="truncate">Mrs. Cynthia Arthur</span>
+                    <span className="text-[10px] text-blue-600 font-bold shrink-0">Admin</span>
                   </button>
-                </p>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickLogin('teacher')}
+                    className="p-2 rounded-lg bg-slate-50 hover:bg-indigo-50 border border-slate-200 text-slate-700 hover:text-indigo-900 transition-all text-left font-medium flex items-center justify-between"
+                  >
+                    <span className="truncate">Mr. Emmanuel Darko</span>
+                    <span className="text-[10px] text-indigo-600 font-bold shrink-0">Teacher</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickLogin('accountant')}
+                    className="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-slate-700 hover:text-emerald-900 transition-all text-left font-medium flex items-center justify-between"
+                  >
+                    <span className="truncate">Mr. Samuel Boakye</span>
+                    <span className="text-[10px] text-emerald-600 font-bold shrink-0">Bursar</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickLogin('parent')}
+                    className="p-2 rounded-lg bg-slate-50 hover:bg-purple-50 border border-slate-200 text-slate-700 hover:text-purple-900 transition-all text-left font-medium flex items-center justify-between"
+                  >
+                    <span className="truncate">Mrs. Abena Osei</span>
+                    <span className="text-[10px] text-purple-600 font-bold shrink-0">Parent</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Support & Legal Links */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-2">
+              <p>Ghana Education Service (GES) Accredited Platform</p>
+              <div className="flex items-center gap-4 text-slate-500 font-medium">
+                <a href="#help" className="hover:text-slate-900 transition-colors">Help Desk</a>
+                <span>•</span>
+                <a href="#privacy" className="hover:text-slate-900 transition-colors">Data Privacy Act</a>
               </div>
             </div>
           </div>
@@ -373,403 +524,449 @@ export const AuthScreens: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* 2. SIGN UP SCREEN (Picture 2: Energetic Students Singing in Blue Uniform) */}
+      {/* 2. SIGN UP SCREEN (INSTITUTIONAL REGISTRATION)                             */}
       {/* ========================================================================= */}
       {authScreen === 'signup' && (
-        <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden">
-          {/* Left Hero Picture 2 Column */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-900 flex-col justify-between p-6 xl:p-8 flex-shrink-0">
-            {/* Background Image: Picture 2 */}
+        <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
+          {/* Left Column: Picture 2 With Joyful Ghanaian Pupils in Uniform */}
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-12 shrink-0 border-r border-slate-800">
+            {/* Background Image: Joyful Ghanaian pupils in blue school uniform */}
             <img
               src="/assets/signup-hero.jpg"
               alt="Joyful Ghanaian pupils raising hands and singing in blue school uniforms"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.82] contrast-[1.05]"
+              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.76] contrast-[1.08]"
             />
 
-            {/* Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1D] via-[#0A0F1D]/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0A0F1D]/80" />
+            {/* Cinematic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-950/30 to-slate-950/80" />
 
-            {/* Top Brand Badge */}
-            <div className="relative z-10 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-xl shadow-blue-500/25 flex-shrink-0">
-                SOS
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base tracking-tight text-white leading-none">
-                    SchoolOS
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-cyan-400/30">
-                    Registration
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-300 font-medium mt-0.5">
-                  Onboard Your Basic School or Junior High School
-                </p>
-              </div>
-            </div>
-
-            {/* Floating Glassmorphism Feature Card */}
-            <div className="relative z-10 space-y-3">
-              <div className="bg-slate-900/75 backdrop-blur-md p-4 xl:p-5 rounded-2xl border border-white/10 shadow-2xl space-y-2.5">
-                <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider">
-                  <GraduationCap className="w-4 h-4" />
-                  <span>Why Leading Ghanaian Schools Choose Us</span>
-                </div>
-
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex items-start gap-2 text-slate-200">
-                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 flex-shrink-0 mt-0.5">
-                      <Check className="w-2.5 h-2.5" />
-                    </div>
-                    <span className="text-[11px] leading-snug">
-                      <strong>Terminal Reports:</strong> 30% Continuous Assessment + 70% Exam with instant BECE stanine grading.
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-2 text-slate-200">
-                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 flex-shrink-0 mt-0.5">
-                      <Check className="w-2.5 h-2.5" />
-                    </div>
-                    <span className="text-[11px] leading-snug">
-                      <strong>Ghana Feeding Fees:</strong> Dedicated separate ledger for daily, weekly, and termly meals.
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-2 text-slate-200">
-                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 flex-shrink-0 mt-0.5">
-                      <Check className="w-2.5 h-2.5" />
-                    </div>
-                    <span className="text-[11px] leading-snug">
-                      <strong>MoMo & Bank Reconciliation:</strong> Instant receipts sent directly to parents on WhatsApp/SMS.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400">
-                  <span>Zero setup fees • 14-day free trial</span>
-                  <span className="text-cyan-300 font-semibold">Join 40+ Top Academies</span>
-                </div>
-              </div>
-
-              {/* Bottom pill */}
-              <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-xs text-slate-300">
-                <div className="flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="text-[11px]">Compliant with Ghana Education Service (GES)</span>
-                </div>
-                <span className="text-emerald-400 font-semibold text-[11px]">Instant Setup</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Form Column: Seamlessly fitted on one page */}
-          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-center px-6 sm:px-10 lg:px-12 xl:px-16 py-5 bg-[#0B132B]">
-            <div className="w-full max-w-xl mx-auto my-auto space-y-4">
-              {/* Mobile Header Logo */}
-              <div className="lg:hidden flex items-center gap-2.5 pb-2 border-b border-slate-800">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+            {/* Top Brand Lockup */}
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-1 ring-white/20 shrink-0">
                   SOS
                 </div>
                 <div>
-                  <h1 className="text-xs font-extrabold text-white">SchoolOS Registration</h1>
-                  <p className="text-[10px] text-slate-400">Register Your Ghanaian School</p>
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-lg text-white tracking-tight leading-none">
+                      SchoolOS
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-cyan-300 border border-white/20">
+                      Registration
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium mt-1">
+                    Onboard Your Basic or Junior High School
+                  </p>
                 </div>
               </div>
 
-              {/* Title & Subtitle */}
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-1.5">
-                  <Sparkles className="w-3 h-3" />
-                  <span>New School Onboarding</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] text-slate-300 font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Instant Onboarding</span>
+              </div>
+            </div>
+
+            {/* Center Content: Ghanaian School Benefits */}
+            <div className="relative z-10 space-y-6 my-auto max-w-lg">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 text-xs font-semibold">
+                  <Award className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Trusted by Private & Public Basic Schools</span>
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tight leading-tight">
-                  Register Your Institution
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Set up your official school account in under two minutes.
+                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight">
+                  Deploy Your Digital School Management System Today.
+                </h1>
+                <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                  Everything your school administration needs: student enrollment registries, continuous assessment marksheets, terminal report card generators, and fee collection reconciliation.
                 </p>
+              </div>
+
+              {/* Feature Checklist */}
+              <div className="space-y-2.5 pt-2">
+                <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <strong className="text-white">Ghanaian Standard Terminal Reports:</strong> Automatic 30% class test + 70% exam weighting with headmistress and form teacher auto-remarks.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <strong className="text-white">Dedicated Feeding Fees Ledger:</strong> Separate billing and daily meal attendance tracking for nursery, primary, and JHS pupils.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <strong className="text-white">Direct Parent SMS Alerts & MoMo:</strong> Keep parents informed on exam performance and receive payments with instant receipts.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Security Compliance Notice */}
+            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+              <span className="text-slate-300 font-medium">Compliance: Ghana Data Protection Act 2012 (Act 843)</span>
+              <span className="text-slate-400">Zero Setup Fees</span>
+            </div>
+          </div>
+
+          {/* Right Column: Structured Two-Step Registration Form */}
+          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-18 py-8 bg-white">
+            {/* Top Navigation Bar */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-900 text-sm">
+                  School Registration
+                </span>
+                <span className="text-xs text-slate-400">• Step {signupStep} of 2</span>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-slate-500 hidden sm:inline">Already registered?</span>
+                <button
+                  type="button"
+                  onClick={() => setAuthScreen('login')}
+                  className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                >
+                  Sign In Here
+                </button>
+              </div>
+            </div>
+
+            {/* Main Form Center Content */}
+            <div className="w-full max-w-xl mx-auto my-auto py-4 space-y-5">
+              <div>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                  {signupStep === 1 ? 'Step 1: School Identity & Location' : 'Step 2: Administrator & Security Setup'}
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  {signupStep === 1
+                    ? 'Enter your official basic school details and Ghanaian regional location.'
+                    : 'Designate the principal administrator account to manage your institution.'}
+                </p>
+              </div>
+
+              {/* Progress Indicator */}
+              <div className="flex items-center gap-2">
+                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 2 ? 'bg-blue-600' : 'bg-slate-200'}`} />
               </div>
 
               {/* Success Notification */}
               {signupSuccess && (
-                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                   <div>
-                    <p className="font-bold text-white">School Account Created Successfully!</p>
-                    <p className="text-[10px] text-emerald-300">
-                      Redirecting to your administrative dashboard...
+                    <p className="font-bold">Institution Registered Successfully!</p>
+                    <p className="text-[11px] text-emerald-700">
+                      Redirecting to your administrative school cockpit...
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Registration Form: Two-column grid fitting comfortably on screen */}
-              <form onSubmit={handleSignup} className="space-y-3 text-xs">
-                {/* School Information Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {/* Account / Role Selection */}
-                  <div className="sm:col-span-2">
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Registering As Platform Role <span className="text-cyan-400">*</span>
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
-                      <button
-                        type="button"
-                        onClick={() => setSignupRole('school_admin')}
-                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
-                          signupRole === 'school_admin'
-                            ? 'bg-blue-600 text-white border-blue-400 shadow-md ring-1 ring-blue-400'
-                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
-                        }`}
-                      >
-                        School Admin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSignupRole('teacher')}
-                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
-                          signupRole === 'teacher'
-                            ? 'bg-sky-600 text-white border-sky-400 shadow-md ring-1 ring-sky-400'
-                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
-                        }`}
-                      >
-                        Teacher
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSignupRole('accountant')}
-                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
-                          signupRole === 'accountant'
-                            ? 'bg-emerald-600 text-white border-emerald-400 shadow-md ring-1 ring-emerald-400'
-                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
-                        }`}
-                      >
-                        Accountant
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSignupRole('parent')}
-                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
-                          signupRole === 'parent'
-                            ? 'bg-purple-600 text-white border-purple-400 shadow-md ring-1 ring-purple-400'
-                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
-                        }`}
-                      >
-                        Parent
-                      </button>
+              <form onSubmit={handleSignup} className="space-y-4 text-xs">
+                {/* STEP 1: SCHOOL IDENTITY */}
+                {signupStep === 1 && (
+                  <div className="space-y-3.5">
+                    <div>
+                      <label className="block font-semibold text-slate-700 mb-1">
+                        Official School Name <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                        <input
+                          type="text"
+                          required
+                          value={schoolName}
+                          onChange={(e) => setSchoolName(e.target.value)}
+                          placeholder="e.g. St. Augustine Basic & JHS Academy"
+                          className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="sm:col-span-2">
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Official School Name <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <Building2 className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type="text"
-                        required
-                        value={schoolName}
-                        onChange={(e) => setSchoolName(e.target.value)}
-                        placeholder="e.g. St. Augustine Basic & JHS Academy"
-                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Curriculum & Stream Level
+                        </label>
+                        <select
+                          value={schoolLevel}
+                          onChange={(e) => setSchoolLevel(e.target.value)}
+                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                        >
+                          <option value="Basic 1 - 6 & JHS 1 - 3">Basic 1–6 & JHS 1–3 (Comprehensive)</option>
+                          <option value="Junior High School (JHS 1 - 3)">Junior High School (JHS 1–3 Only)</option>
+                          <option value="Primary School (Basic 1 - 6)">Primary School (Basic 1–6 Only)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          GES / EMIS School Code (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={emisCode}
+                          onChange={(e) => setEmisCode(e.target.value)}
+                          placeholder="e.g. GES-GAR-2024-048"
+                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Curriculum Stream
-                    </label>
-                    <select
-                      value={schoolLevel}
-                      onChange={(e) => setSchoolLevel(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Region in Ghana <span className="text-rose-500">*</span>
+                        </label>
+                        <select
+                          value={region}
+                          onChange={(e) => setRegion(e.target.value)}
+                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                        >
+                          <option value="Greater Accra">Greater Accra</option>
+                          <option value="Ashanti">Ashanti</option>
+                          <option value="Central">Central</option>
+                          <option value="Eastern">Eastern</option>
+                          <option value="Western">Western</option>
+                          <option value="Western North">Western North</option>
+                          <option value="Volta">Volta</option>
+                          <option value="Oti">Oti</option>
+                          <option value="Northern">Northern</option>
+                          <option value="Savannah">Savannah</option>
+                          <option value="North East">North East</option>
+                          <option value="Upper East">Upper East</option>
+                          <option value="Upper West">Upper West</option>
+                          <option value="Bono">Bono</option>
+                          <option value="Bono East">Bono East</option>
+                          <option value="Ahafo">Ahafo</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          City / Municipality / Suburb
+                        </label>
+                        <div className="relative">
+                          <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <input
+                            type="text"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            placeholder="e.g. East Legon / Kumasi"
+                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 mt-4"
                     >
-                      <option value="Basic 1 - 6 & JHS 1 - 3">Basic 1–6 & JHS 1–3</option>
-                      <option value="Junior High School (JHS 1 - 3)">Junior High (JHS 1–3 Only)</option>
-                      <option value="Primary School (Basic 1 - 6)">Primary (Basic 1–6 Only)</option>
-                    </select>
+                      <span>Continue to Administrator Setup</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
+                )}
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Region in Ghana <span className="text-rose-400">*</span>
-                    </label>
-                    <select
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                    >
-                      <option value="Greater Accra">Greater Accra</option>
-                      <option value="Ashanti">Ashanti</option>
-                      <option value="Central">Central</option>
-                      <option value="Eastern">Eastern</option>
-                      <option value="Western">Western</option>
-                      <option value="Volta">Volta</option>
-                      <option value="Northern">Northern</option>
-                      <option value="Upper East">Upper East</option>
-                      <option value="Upper West">Upper West</option>
-                      <option value="Bono">Bono</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Administrator Full Name <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <User className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type="text"
-                        required
-                        value={adminName}
-                        onChange={(e) => setAdminName(e.target.value)}
-                        placeholder="e.g. Rev. Kwabena Frimpong"
-                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                      />
+                {/* STEP 2: ADMINISTRATOR & CREDENTIALS */}
+                {signupStep === 2 && (
+                  <div className="space-y-3.5">
+                    {/* Role selector */}
+                    <div>
+                      <label className="block font-semibold text-slate-700 mb-1">
+                        Registering Account Role:
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+                        {portalRoles.map((role) => (
+                          <button
+                            key={role.id}
+                            type="button"
+                            onClick={() => setSignupRole(role.id)}
+                            className={`py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all ${
+                              signupRole === role.id
+                                ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                          >
+                            {role.title}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Phone / WhatsApp (+233) <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type="tel"
-                        required
-                        value={adminPhone}
-                        onChange={(e) => setAdminPhone(e.target.value)}
-                        placeholder="+233 24 000 0000"
-                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Administrator Full Name <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <input
+                            type="text"
+                            required
+                            value={adminName}
+                            onChange={(e) => setAdminName(e.target.value)}
+                            placeholder="e.g. Mrs. Cynthia Arthur"
+                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Official Designation
+                        </label>
+                        <input
+                          type="text"
+                          value={adminDesignation}
+                          onChange={(e) => setAdminDesignation(e.target.value)}
+                          placeholder="e.g. Headmistress / Principal"
+                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Official School Email <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type="email"
-                        required
-                        value={adminEmail}
-                        onChange={(e) => setAdminEmail(e.target.value)}
-                        placeholder="e.g. headmaster@staugustine.edu.gh"
-                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Official School Email <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <input
+                            type="email"
+                            required
+                            value={adminEmail}
+                            onChange={(e) => setAdminEmail(e.target.value)}
+                            placeholder="admin@school.edu.gh"
+                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Phone / WhatsApp (+233) <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <input
+                            type="tel"
+                            required
+                            value={adminPhone}
+                            onChange={(e) => setAdminPhone(e.target.value)}
+                            placeholder="+233 24 123 4567"
+                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      City / Suburb
-                    </label>
-                    <div className="relative">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        placeholder="e.g. East Legon / Kumasi"
-                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Security Password <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <input
+                            type={showSignupPassword ? 'text' : 'password'}
+                            required
+                            minLength={6}
+                            value={signupPassword}
+                            onChange={(e) => setSignupPassword(e.target.value)}
+                            placeholder="Minimum 6 characters"
+                            className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">
+                          Confirm Password <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <input
+                            type={showSignupPassword ? 'text' : 'password'}
+                            required
+                            minLength={6}
+                            value={confirmSignupPassword}
+                            onChange={(e) => setConfirmSignupPassword(e.target.value)}
+                            placeholder="Repeat password"
+                            className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowSignupPassword(!showSignupPassword)}
+                            className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5"
+                          >
+                            {showSignupPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Password <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                    <label className="flex items-start gap-2 pt-1 cursor-pointer select-none">
                       <input
-                        type={showSignupPassword ? 'text' : 'password'}
+                        type="checkbox"
                         required
-                        minLength={6}
-                        value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
-                        placeholder="Min 6 characters"
-                        className="w-full pl-8 pr-7 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
+                        className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0 mt-0.5"
                       />
-                    </div>
-                  </div>
+                      <span className="text-[11px] text-slate-600 leading-snug">
+                        I verify that I am an authorized representative of this educational institution and agree to the{' '}
+                        <span className="text-blue-600 font-semibold underline">Terms of Service</span> and{' '}
+                        <span className="text-blue-600 font-semibold underline">Ghana Data Protection Standards</span>.
+                      </span>
+                    </label>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">
-                      Confirm Password <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type={showSignupPassword ? 'text' : 'password'}
-                        required
-                        minLength={6}
-                        value={confirmSignupPassword}
-                        onChange={(e) => setConfirmSignupPassword(e.target.value)}
-                        placeholder="Repeat password"
-                        className="w-full pl-8 pr-7 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-                      />
+                    <div className="flex items-center gap-3 pt-2">
                       <button
                         type="button"
-                        onClick={() => setShowSignupPassword(!showSignupPassword)}
-                        className="absolute right-2 top-2 text-slate-400 hover:text-slate-200"
+                        onClick={() => setSignupStep(1)}
+                        className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5"
                       >
-                        {showSignupPassword ? (
-                          <EyeOff className="w-3 h-3" />
-                        ) : (
-                          <Eye className="w-3 h-3" />
-                        )}
+                        <ArrowLeft className="w-4 h-4" />
+                        <span>Back</span>
+                      </button>
+
+                      <button
+                        type="submit"
+                        className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2"
+                      >
+                        <span>Create School Account & Launch</span>
+                        <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                </div>
-
-                {/* Terms agreement */}
-                <label className="flex items-center gap-2 pt-0.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    required
-                    checked={agreeTerms}
-                    onChange={(e) => setAgreeTerms(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 flex-shrink-0"
-                  />
-                  <span className="text-[10px] text-slate-400 leading-snug">
-                    I agree to the{' '}
-                    <span className="text-cyan-400 underline">Terms of Service</span> and{' '}
-                    <span className="text-cyan-400 underline">Ghana Data Protection Standards</span>.
-                  </span>
-                </label>
-
-                {/* Submit button */}
-                <button
-                  type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 transform active:scale-98"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-                  <span>Create School Account & Launch</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                )}
               </form>
+            </div>
 
-              {/* Toggle to Sign In */}
-              <div className="pt-2 border-t border-slate-800 text-center">
-                <p className="text-xs text-slate-400">
-                  Already registered your school?{' '}
-                  <button
-                    type="button"
-                    onClick={() => setAuthScreen('login')}
-                    className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
-                  >
-                    Sign in here
-                  </button>
-                </p>
+            {/* Bottom Support & Legal Links */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-2">
+              <p>Ghana Education Service (GES) Compliant Registration</p>
+              <div className="flex items-center gap-4 text-slate-500 font-medium">
+                <a href="#help" className="hover:text-slate-900 transition-colors">Help Desk</a>
+                <span>•</span>
+                <a href="#privacy" className="hover:text-slate-900 transition-colors">Data Privacy Act</a>
               </div>
             </div>
           </div>
@@ -780,42 +977,42 @@ export const AuthScreens: React.FC = () => {
       {/* 3. FORGOT PASSWORD SCREEN                                                 */}
       {/* ========================================================================= */}
       {authScreen === 'forgot_password' && (
-        <div className="h-full w-full flex items-center justify-center p-6 bg-[#0B132B]">
-          <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 p-8 rounded-2xl shadow-2xl space-y-6">
+        <div className="h-full w-full flex items-center justify-center p-6 bg-slate-50">
+          <div className="w-full max-w-md bg-white border border-slate-200 p-8 rounded-2xl shadow-xl space-y-6">
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 mx-auto">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mx-auto">
                 <Mail className="w-6 h-6" />
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                 Reset Account Password
               </h2>
-              <p className="text-xs text-slate-400">
-                Enter your verified staff or parent email to receive password reset instructions.
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Enter your registered school email address and we will dispatch password recovery instructions.
               </p>
             </div>
 
             {resetSent ? (
-              <div className="p-4 bg-emerald-500/20 border border-emerald-500/40 rounded-xl space-y-3 text-emerald-200 text-xs">
-                <div className="flex items-center gap-2 font-bold text-white">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Reset instructions sent!</span>
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-3 text-emerald-900 text-xs">
+                <div className="flex items-center gap-2 font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Reset instructions dispatched!</span>
                 </div>
-                <p className="text-[11px] text-emerald-300 leading-relaxed">
-                  We have dispatched a secure password reset link to <strong>{resetEmail}</strong>.
+                <p className="text-[11px] text-emerald-700 leading-relaxed">
+                  We have sent a secure verification link to <strong>{resetEmail}</strong>.
                 </p>
                 <button
                   type="button"
                   onClick={() => setAuthScreen('reset_password')}
-                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors"
+                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors"
                 >
-                  Proceed to Enter New Password
+                  Proceed to Set New Password
                 </button>
               </div>
             ) : (
               <form onSubmit={handleForgot} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Account Email Address
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Official Registered Email Address
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -824,32 +1021,32 @@ export const AuthScreens: React.FC = () => {
                       required
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
-                      placeholder="e.g. admin@schoolos.com"
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                      placeholder="e.g. admin@brightfutureacademy.edu.gh"
+                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors"
                 >
-                  Send Reset Link
+                  Send Recovery Link
                 </button>
               </form>
             )}
 
-            <div className="pt-2 text-center border-t border-slate-800">
+            <div className="pt-2 text-center border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => {
                   setResetSent(false);
                   setAuthScreen('login');
                 }}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 font-medium transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Sign In</span>
+                <span>Return to Sign In</span>
               </button>
             </div>
           </div>
@@ -860,23 +1057,23 @@ export const AuthScreens: React.FC = () => {
       {/* 4. RESET PASSWORD SCREEN                                                  */}
       {/* ========================================================================= */}
       {authScreen === 'reset_password' && (
-        <div className="h-full w-full flex items-center justify-center p-6 bg-[#0B132B]">
-          <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 p-8 rounded-2xl shadow-2xl space-y-6">
+        <div className="h-full w-full flex items-center justify-center p-6 bg-slate-50">
+          <div className="w-full max-w-md bg-white border border-slate-200 p-8 rounded-2xl shadow-xl space-y-6">
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 mx-auto">
+              <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mx-auto">
                 <Lock className="w-6 h-6" />
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Create New Password
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                Create New Secure Password
               </h2>
-              <p className="text-xs text-slate-400">
-                Enter your new secure password (at least 6 characters).
+              <p className="text-xs text-slate-500">
+                Enter your new security password (at least 6 characters).
               </p>
             </div>
 
             <form onSubmit={handleReset} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   New Password
                 </label>
                 <div className="relative">
@@ -887,14 +1084,14 @@ export const AuthScreens: React.FC = () => {
                     minLength={6}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-400"
+                    placeholder="Enter new password"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Confirm New Password
                 </label>
                 <div className="relative">
@@ -905,28 +1102,28 @@ export const AuthScreens: React.FC = () => {
                     minLength={6}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-400"
+                    placeholder="Repeat new password"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold text-xs shadow-md transition-all"
+                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-all"
               >
-                Update Password & Sign In
+                Update Password & Return to Portal
               </button>
             </form>
 
-            <div className="pt-2 text-center border-t border-slate-800">
+            <div className="pt-2 text-center border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setAuthScreen('login')}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 font-medium transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Sign In</span>
+                <span>Return to Sign In</span>
               </button>
             </div>
           </div>
