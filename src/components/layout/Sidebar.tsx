@@ -25,6 +25,7 @@ import {
   WalletCards,
   Building2,
   Sparkles,
+  LogOut,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -39,7 +40,7 @@ interface NavItem {
 }
 
 export const Sidebar: React.FC = () => {
-  const { currentNav, setCurrentNav, currentSchool, currentUser, setSelectedStudentId } = useApp();
+  const { currentNav, setCurrentNav, currentSchool, currentUser, setSelectedStudentId, setAuthScreen } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const mainNavItems: NavItem[] = [
@@ -363,33 +364,68 @@ export const Sidebar: React.FC = () => {
         {renderNavGroup('Role Portals', portalNavItems, 'bg-pink-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]')}
       </div>
 
-      {/* Footer Info / User Pill */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60">
+      {/* Footer Info / User Pill & Auth Links */}
+      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 space-y-2">
         {!isCollapsed ? (
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-700/50">
-            <div className="relative flex-shrink-0">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-                {currentUser.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .slice(0, 2)
-                  .join('')}
+          <>
+            <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-700/50">
+              <div className="relative flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                  {currentUser.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join('')}
+                </div>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0F172A]" />
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0F172A]" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-white truncate">
+                  {currentUser.name}
+                </p>
+                <p className="text-[10px] text-cyan-300 capitalize truncate font-medium">
+                  {currentUser.role.replace('_', ' ')}
+                </p>
+              </div>
+              <button
+                onClick={() => setAuthScreen('login')}
+                title="Log Out & Open Login Page"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-white truncate">
-                {currentUser.name}
-              </p>
-              <p className="text-[10px] text-cyan-300 capitalize truncate font-medium">
-                {currentUser.role.replace('_', ' ')}
-              </p>
+
+            {/* Quick Auth Testing Buttons */}
+            <div className="grid grid-cols-2 gap-1.5 pt-0.5 text-[10px]">
+              <button
+                onClick={() => setAuthScreen('login')}
+                className="px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/50 font-semibold transition-colors flex items-center justify-center gap-1"
+              >
+                <span>Log In</span>
+              </button>
+              <button
+                onClick={() => setAuthScreen('signup')}
+                className="px-2 py-1.5 rounded-lg bg-blue-600/25 hover:bg-blue-600/40 text-cyan-300 hover:text-white border border-cyan-500/30 font-semibold transition-colors flex items-center justify-center gap-1"
+              >
+                <Sparkles className="w-3 h-3 text-cyan-300" />
+                <span>Sign Up</span>
+              </button>
             </div>
-          </div>
+          </>
         ) : (
-          <div className="relative w-8 h-8 mx-auto rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-            {currentUser.name[0]}
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 rounded-full border border-[#0F172A]" />
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative w-8 h-8 mx-auto rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+              {currentUser.name[0]}
+              <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 rounded-full border border-[#0F172A]" />
+            </div>
+            <button
+              onClick={() => setAuthScreen('login')}
+              title="Log Out"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         )}
       </div>
