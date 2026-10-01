@@ -31,6 +31,7 @@ export const AuthScreens: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
 
   // Signup Form States
+  const [signupRole, setSignupRole] = useState<'school_admin' | 'teacher' | 'accountant' | 'parent'>('school_admin');
   const [schoolName, setSchoolName] = useState('');
   const [schoolLevel, setSchoolLevel] = useState('Basic 1 - 6 & JHS 1 - 3');
   const [region, setRegion] = useState('Greater Accra');
@@ -50,9 +51,19 @@ export const AuthScreens: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Handle Login
+  // Handle Login with auto-role detection from email
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    const em = loginEmail.toLowerCase();
+    if (em.includes('teacher') || em.includes('darko')) {
+      setUserRole('teacher');
+    } else if (em.includes('bursar') || em.includes('accountant') || em.includes('boakye')) {
+      setUserRole('accountant');
+    } else if (em.includes('parent') || em.includes('osei')) {
+      setUserRole('parent');
+    } else {
+      setUserRole('school_admin');
+    }
     setAuthScreen('authenticated');
   };
 
@@ -96,6 +107,7 @@ export const AuthScreens: React.FC = () => {
       });
     }
 
+    setUserRole(signupRole);
     setSignupSuccess(true);
     setTimeout(() => {
       setAuthScreen('authenticated');
@@ -497,6 +509,59 @@ export const AuthScreens: React.FC = () => {
               <form onSubmit={handleSignup} className="space-y-3 text-xs">
                 {/* School Information Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {/* Account / Role Selection */}
+                  <div className="sm:col-span-2">
+                    <label className="block font-semibold text-slate-300 mb-1">
+                      Registering As Platform Role <span className="text-cyan-400">*</span>
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setSignupRole('school_admin')}
+                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
+                          signupRole === 'school_admin'
+                            ? 'bg-blue-600 text-white border-blue-400 shadow-md ring-1 ring-blue-400'
+                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                        }`}
+                      >
+                        School Admin
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSignupRole('teacher')}
+                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
+                          signupRole === 'teacher'
+                            ? 'bg-sky-600 text-white border-sky-400 shadow-md ring-1 ring-sky-400'
+                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                        }`}
+                      >
+                        Teacher
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSignupRole('accountant')}
+                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
+                          signupRole === 'accountant'
+                            ? 'bg-emerald-600 text-white border-emerald-400 shadow-md ring-1 ring-emerald-400'
+                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                        }`}
+                      >
+                        Accountant
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSignupRole('parent')}
+                        className={`py-1.5 px-2 rounded-lg border text-center font-bold transition-all ${
+                          signupRole === 'parent'
+                            ? 'bg-purple-600 text-white border-purple-400 shadow-md ring-1 ring-purple-400'
+                            : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                        }`}
+                      >
+                        Parent
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="sm:col-span-2">
                     <label className="block font-semibold text-slate-300 mb-1">
                       Official School Name <span className="text-rose-400">*</span>

@@ -12,20 +12,15 @@ import {
   UtensilsCrossed,
   Receipt,
   FileText,
-  Bus,
   UserPlus,
-  Package,
-  Bell,
   Settings,
   ChevronLeft,
   ChevronRight,
-  Shield,
-  HeartHandshake,
   BookOpenCheck,
   WalletCards,
   Building2,
-  Sparkles,
   LogOut,
+  HeartHandshake,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -39,187 +34,307 @@ interface NavItem {
   badgeColor?: string;
 }
 
+interface NavGroup {
+  title: string;
+  dotColorClass: string;
+  items: NavItem[];
+}
+
 export const Sidebar: React.FC = () => {
   const { currentNav, setCurrentNav, currentSchool, currentUser, setSelectedStudentId, setAuthScreen } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const mainNavItems: NavItem[] = [
+  // 1. School Admin Navigation
+  const adminNavGroups: NavGroup[] = [
     {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      color: 'text-sky-400',
-      activeGradient: 'from-blue-600 to-indigo-600',
+      title: 'Administration',
+      dotColorClass: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]',
+      items: [
+        {
+          id: 'dashboard',
+          label: 'Admin Overview',
+          icon: LayoutDashboard,
+          color: 'text-sky-400',
+          activeGradient: 'from-blue-600 to-indigo-600',
+        },
+        {
+          id: 'students',
+          label: 'Student Directory',
+          icon: GraduationCap,
+          color: 'text-indigo-400',
+          activeGradient: 'from-indigo-600 to-violet-600',
+        },
+        {
+          id: 'teachers',
+          label: 'Staff & Teachers',
+          icon: Briefcase,
+          color: 'text-amber-400',
+          activeGradient: 'from-amber-600 to-orange-600',
+        },
+        {
+          id: 'parents',
+          label: 'Parent Directory',
+          icon: Users,
+          color: 'text-emerald-400',
+          activeGradient: 'from-emerald-600 to-teal-600',
+        },
+        {
+          id: 'classes',
+          label: 'Classes & Subjects',
+          icon: Layers,
+          color: 'text-violet-400',
+          activeGradient: 'from-purple-600 to-indigo-600',
+        },
+      ],
     },
     {
-      id: 'students',
-      label: 'Students',
-      icon: GraduationCap,
-      color: 'text-indigo-400',
-      activeGradient: 'from-indigo-600 to-violet-600',
-    },
-    {
-      id: 'parents',
-      label: 'Parents',
-      icon: Users,
-      color: 'text-emerald-400',
-      activeGradient: 'from-emerald-600 to-teal-600',
-    },
-    {
-      id: 'teachers',
-      label: 'Teachers',
-      icon: Briefcase,
-      color: 'text-amber-400',
-      activeGradient: 'from-amber-600 to-orange-600',
-    },
-    {
-      id: 'classes',
-      label: 'Classes & Subjects',
-      icon: Layers,
-      color: 'text-violet-400',
-      activeGradient: 'from-purple-600 to-indigo-600',
-    },
-    {
-      id: 'attendance',
-      label: 'Attendance',
-      icon: CalendarCheck,
-      color: 'text-teal-400',
-      activeGradient: 'from-teal-600 to-cyan-600',
-    },
-    {
-      id: 'results',
-      label: 'Results & Reports',
-      icon: FileSpreadsheet,
-      color: 'text-rose-400',
-      activeGradient: 'from-rose-600 to-pink-600',
-    },
-    {
-      id: 'announcements',
-      label: 'Announcements',
-      icon: Megaphone,
-      color: 'text-yellow-400',
-      activeGradient: 'from-amber-500 to-orange-600',
-    },
-  ];
-
-  const financeNavItems: NavItem[] = [
-    {
-      id: 'fees',
-      label: 'School Fees',
-      icon: CreditCard,
-      color: 'text-emerald-400',
-      activeGradient: 'from-emerald-600 to-teal-600',
-    },
-    {
-      id: 'feeding-fees',
-      label: 'Feeding Fees',
-      icon: UtensilsCrossed,
-      color: 'text-orange-400',
-      activeGradient: 'from-orange-600 to-amber-600',
-    },
-    {
-      id: 'payments',
-      label: 'Payments',
-      icon: Receipt,
-      color: 'text-cyan-400',
-      activeGradient: 'from-cyan-600 to-blue-600',
-    },
-    {
-      id: 'receipts',
-      label: 'Official Receipts',
-      icon: FileText,
-      color: 'text-blue-400',
-      activeGradient: 'from-blue-600 to-indigo-600',
-    },
-    {
-      id: 'financial-reports',
-      label: 'Financial Reports',
-      icon: WalletCards,
-      color: 'text-lime-400',
-      activeGradient: 'from-lime-600 to-emerald-600',
+      title: 'Governance & Operations',
+      dotColorClass: 'bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]',
+      items: [
+        {
+          id: 'admissions',
+          label: 'Admissions Desk',
+          icon: UserPlus,
+          color: 'text-fuchsia-400',
+          activeGradient: 'from-fuchsia-600 to-pink-600',
+        },
+        {
+          id: 'announcements',
+          label: 'School Circulars',
+          icon: Megaphone,
+          color: 'text-yellow-400',
+          activeGradient: 'from-amber-500 to-orange-600',
+        },
+        {
+          id: 'reports',
+          label: 'Executive Reports',
+          icon: FileText,
+          color: 'text-purple-400',
+          activeGradient: 'from-purple-600 to-violet-600',
+        },
+        {
+          id: 'settings',
+          label: 'School Settings',
+          icon: Settings,
+          color: 'text-slate-300',
+          activeGradient: 'from-slate-700 to-slate-800',
+        },
+      ],
     },
   ];
 
-  const operationsNavItems: NavItem[] = [
+  // 2. Teacher Navigation
+  const teacherNavGroups: NavGroup[] = [
     {
-      id: 'transport',
-      label: 'Transport',
-      icon: Bus,
-      color: 'text-sky-400',
-      activeGradient: 'from-sky-600 to-blue-600',
+      title: 'Classroom Workbench',
+      dotColorClass: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]',
+      items: [
+        {
+          id: 'teacher-cockpit',
+          label: 'Teacher Workbench',
+          icon: LayoutDashboard,
+          color: 'text-sky-400',
+          activeGradient: 'from-blue-600 to-cyan-600',
+        },
+        {
+          id: 'teacher-classes',
+          label: 'My Classes & Rosters',
+          icon: Layers,
+          color: 'text-indigo-400',
+          activeGradient: 'from-indigo-600 to-blue-600',
+        },
+        {
+          id: 'teacher-attendance',
+          label: 'Roll Call Attendance',
+          icon: CalendarCheck,
+          color: 'text-teal-400',
+          activeGradient: 'from-teal-600 to-cyan-600',
+        },
+      ],
     },
     {
-      id: 'admissions',
-      label: 'Admissions',
-      icon: UserPlus,
-      color: 'text-fuchsia-400',
-      activeGradient: 'from-fuchsia-600 to-pink-600',
-    },
-    {
-      id: 'inventory',
-      label: 'Inventory',
-      icon: Package,
-      color: 'text-amber-400',
-      activeGradient: 'from-amber-600 to-yellow-600',
+      title: 'Academics & Evaluation',
+      dotColorClass: 'bg-pink-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]',
+      items: [
+        {
+          id: 'teacher-marks',
+          label: 'Marks & Assessments',
+          icon: FileSpreadsheet,
+          color: 'text-rose-400',
+          activeGradient: 'from-rose-600 to-pink-600',
+        },
+        {
+          id: 'teacher-reports',
+          label: 'Terminal Report Remarks',
+          icon: BookOpenCheck,
+          color: 'text-violet-400',
+          activeGradient: 'from-purple-600 to-indigo-600',
+        },
+        {
+          id: 'teacher-announcements',
+          label: 'Staff Room Notices',
+          icon: Megaphone,
+          color: 'text-yellow-400',
+          activeGradient: 'from-amber-500 to-orange-600',
+        },
+      ],
     },
   ];
 
-  const systemNavItems: NavItem[] = [
+  // 3. Accountant Navigation
+  const accountantNavGroups: NavGroup[] = [
     {
-      id: 'reports',
-      label: 'Reports & Analytics',
-      icon: FileText,
-      color: 'text-purple-400',
-      activeGradient: 'from-purple-600 to-violet-600',
+      title: 'Bursary & Billing',
+      dotColorClass: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]',
+      items: [
+        {
+          id: 'accountant-cockpit',
+          label: 'Bursary Cockpit',
+          icon: LayoutDashboard,
+          color: 'text-emerald-400',
+          activeGradient: 'from-emerald-600 to-teal-600',
+        },
+        {
+          id: 'accountant-fees',
+          label: 'Tuition Fees Register',
+          icon: CreditCard,
+          color: 'text-sky-400',
+          activeGradient: 'from-blue-600 to-indigo-600',
+        },
+        {
+          id: 'accountant-feeding',
+          label: 'Feeding Fees Ledger',
+          icon: UtensilsCrossed,
+          color: 'text-orange-400',
+          activeGradient: 'from-orange-600 to-amber-600',
+        },
+      ],
     },
     {
-      id: 'notifications',
-      label: 'Notifications',
-      icon: Bell,
-      color: 'text-rose-400',
-      activeGradient: 'from-rose-600 to-red-600',
-      badge: 2,
-      badgeColor: 'bg-rose-500',
-    },
-    {
-      id: 'settings',
-      label: 'Settings',
-      icon: Settings,
-      color: 'text-slate-300',
-      activeGradient: 'from-slate-700 to-slate-800',
+      title: 'Cashier & Reconciliations',
+      dotColorClass: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]',
+      items: [
+        {
+          id: 'accountant-payments',
+          label: 'Receive Payments',
+          icon: Receipt,
+          color: 'text-cyan-400',
+          activeGradient: 'from-cyan-600 to-blue-600',
+        },
+        {
+          id: 'accountant-receipts',
+          label: 'Official Stamped Receipts',
+          icon: FileText,
+          color: 'text-blue-400',
+          activeGradient: 'from-blue-600 to-indigo-600',
+        },
+        {
+          id: 'accountant-defaulters',
+          label: 'Defaulters & Arrears',
+          icon: WalletCards,
+          color: 'text-rose-400',
+          activeGradient: 'from-rose-600 to-red-600',
+        },
+        {
+          id: 'accountant-reports',
+          label: 'Financial Audit & Reports',
+          icon: FileSpreadsheet,
+          color: 'text-lime-400',
+          activeGradient: 'from-lime-600 to-emerald-600',
+        },
+      ],
     },
   ];
 
-  const portalNavItems: NavItem[] = [
+  // 4. Parent Navigation
+  const parentNavGroups: NavGroup[] = [
     {
-      id: 'portal-parent',
-      label: 'Parent Portal',
-      icon: HeartHandshake,
-      color: 'text-pink-400',
-      activeGradient: 'from-pink-600 to-rose-600',
+      title: 'Ward Academics',
+      dotColorClass: 'bg-pink-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]',
+      items: [
+        {
+          id: 'parent-cockpit',
+          label: 'Child Overview',
+          icon: HeartHandshake,
+          color: 'text-pink-400',
+          activeGradient: 'from-pink-600 to-rose-600',
+        },
+        {
+          id: 'parent-reports',
+          label: 'Terminal Report Card',
+          icon: FileSpreadsheet,
+          color: 'text-violet-400',
+          activeGradient: 'from-purple-600 to-indigo-600',
+        },
+        {
+          id: 'parent-attendance',
+          label: 'Attendance History',
+          icon: CalendarCheck,
+          color: 'text-teal-400',
+          activeGradient: 'from-teal-600 to-cyan-600',
+        },
+      ],
     },
     {
-      id: 'portal-teacher',
-      label: 'Teacher Portal',
-      icon: BookOpenCheck,
-      color: 'text-blue-400',
-      activeGradient: 'from-blue-600 to-cyan-600',
-    },
-    {
-      id: 'portal-accountant',
-      label: 'Accountant Portal',
-      icon: WalletCards,
-      color: 'text-emerald-400',
-      activeGradient: 'from-emerald-600 to-teal-600',
-    },
-    {
-      id: 'portal-super-admin',
-      label: 'Super Admin Portal',
-      icon: Shield,
-      color: 'text-violet-400',
-      activeGradient: 'from-violet-600 to-purple-600',
+      title: 'Fees & School Notices',
+      dotColorClass: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]',
+      items: [
+        {
+          id: 'parent-fees',
+          label: 'Fees & Bill Statement',
+          icon: CreditCard,
+          color: 'text-emerald-400',
+          activeGradient: 'from-emerald-600 to-teal-600',
+        },
+        {
+          id: 'parent-pay',
+          label: 'Pay Fees Online (MoMo)',
+          icon: Receipt,
+          color: 'text-cyan-400',
+          activeGradient: 'from-cyan-600 to-blue-600',
+        },
+        {
+          id: 'parent-announcements',
+          label: 'School Circulars',
+          icon: Megaphone,
+          color: 'text-yellow-400',
+          activeGradient: 'from-amber-500 to-orange-600',
+        },
+      ],
     },
   ];
+
+  // Select groups strictly for the active role
+  const getRoleNavGroups = (): NavGroup[] => {
+    switch (currentUser.role) {
+      case 'teacher':
+        return teacherNavGroups;
+      case 'accountant':
+        return accountantNavGroups;
+      case 'parent':
+        return parentNavGroups;
+      case 'school_admin':
+      default:
+        return adminNavGroups;
+    }
+  };
+
+  const getPlatformLabel = () => {
+    switch (currentUser.role) {
+      case 'teacher':
+        return { name: 'Teacher Portal', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/30' };
+      case 'accountant':
+        return { name: 'Bursary Portal', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30' };
+      case 'parent':
+        return { name: 'Parent Portal', badge: 'bg-purple-500/20 text-purple-300 border-purple-400/30' };
+      case 'school_admin':
+      default:
+        return { name: 'Admin Portal', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/30' };
+    }
+  };
+
+  const roleNavGroups = getRoleNavGroups();
+  const platformInfo = getPlatformLabel();
 
   const renderNavGroup = (
     title: string,
@@ -314,8 +429,8 @@ export const Sidebar: React.FC = () => {
                 <h1 className="text-sm font-extrabold text-white tracking-tight leading-none">
                   SchoolOS
                 </h1>
-                <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-blue-500/20 text-cyan-300 border border-cyan-400/30">
-                  GH
+                <span className={`inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold border ${platformInfo.badge}`}>
+                  {platformInfo.name}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 truncate mt-0.5 font-medium">
@@ -355,16 +470,16 @@ export const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {/* Scrollable Navigation Groups */}
+      {/* Scrollable Navigation Groups - Strictly Scoped to Role */}
       <div className="flex-1 overflow-y-auto px-2 py-4 space-y-1">
-        {renderNavGroup('Main Modules', mainNavItems, 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]')}
-        {renderNavGroup('Finance & Fees', financeNavItems, 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]')}
-        {renderNavGroup('Operations', operationsNavItems, 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]')}
-        {renderNavGroup('Administration', systemNavItems, 'bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]')}
-        {renderNavGroup('Role Portals', portalNavItems, 'bg-pink-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]')}
+        {roleNavGroups.map((group, idx) => (
+          <React.Fragment key={idx}>
+            {renderNavGroup(group.title, group.items, group.dotColorClass)}
+          </React.Fragment>
+        ))}
       </div>
 
-      {/* Footer Info / User Pill & Auth Links */}
+      {/* Footer Info / User Pill & Direct Log Out Button */}
       <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 space-y-2">
         {!isCollapsed ? (
           <>
@@ -387,31 +502,16 @@ export const Sidebar: React.FC = () => {
                   {currentUser.role.replace('_', ' ')}
                 </p>
               </div>
-              <button
-                onClick={() => setAuthScreen('login')}
-                title="Log Out & Open Login Page"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
             </div>
 
-            {/* Quick Auth Testing Buttons */}
-            <div className="grid grid-cols-2 gap-1.5 pt-0.5 text-[10px]">
-              <button
-                onClick={() => setAuthScreen('login')}
-                className="px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/50 font-semibold transition-colors flex items-center justify-center gap-1"
-              >
-                <span>Log In</span>
-              </button>
-              <button
-                onClick={() => setAuthScreen('signup')}
-                className="px-2 py-1.5 rounded-lg bg-blue-600/25 hover:bg-blue-600/40 text-cyan-300 hover:text-white border border-cyan-500/30 font-semibold transition-colors flex items-center justify-center gap-1"
-              >
-                <Sparkles className="w-3 h-3 text-cyan-300" />
-                <span>Sign Up</span>
-              </button>
-            </div>
+            {/* Direct Log Out Button */}
+            <button
+              onClick={() => setAuthScreen('login')}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 text-xs font-semibold transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out</span>
+            </button>
           </>
         ) : (
           <div className="flex flex-col items-center gap-2">

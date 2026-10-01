@@ -65,18 +65,10 @@ export const mockUsers: User[] = [
   {
     id: 'usr_admin',
     name: 'Mrs. Cynthia Arthur',
-    email: 'admin@schoolos.com',
+    email: 'admin@brightfutureacademy.edu.gh',
     role: 'school_admin',
     schoolId: 'sch_bright_future',
     schoolName: 'Bright Future Academy',
-  },
-  {
-    id: 'usr_super',
-    name: 'Dr. Joseph K. Mensah',
-    email: 'superadmin@schoolos.com',
-    role: 'super_admin',
-    schoolId: 'sch_bright_future',
-    schoolName: 'SchoolOS Global HQ',
   },
   {
     id: 'usr_teacher',
@@ -97,35 +89,12 @@ export const mockUsers: User[] = [
   },
   {
     id: 'usr_parent',
-    name: 'Parent / Guardian',
-    email: 'parent@schoolos.com',
+    name: 'Mrs. Abena Osei',
+    email: 'parent@brightfutureacademy.edu.gh',
     role: 'parent',
     schoolId: 'sch_bright_future',
     schoolName: 'Bright Future Academy',
-  },
-  {
-    id: 'usr_admissions',
-    name: 'Ms. Grace Ofori',
-    email: 'admissions@brightfutureacademy.edu.gh',
-    role: 'admission_officer',
-    schoolId: 'sch_bright_future',
-    schoolName: 'Bright Future Academy',
-  },
-  {
-    id: 'usr_transport',
-    name: 'Mr. David Appiah',
-    email: 'transport@brightfutureacademy.edu.gh',
-    role: 'transport_manager',
-    schoolId: 'sch_bright_future',
-    schoolName: 'Bright Future Academy',
-  },
-  {
-    id: 'usr_inventory',
-    name: 'Mr. Isaac Quarshie',
-    email: 'inventory@brightfutureacademy.edu.gh',
-    role: 'inventory_officer',
-    schoolId: 'sch_bright_future',
-    schoolName: 'Bright Future Academy',
+    linkedStudentId: 'std_01',
   },
 ];
 

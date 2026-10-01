@@ -151,21 +151,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       });
     }
 
-    // Smart auto-redirect to relevant dashboard
+    // Auto-redirect to dedicated role cockpit
     if (role === 'parent') {
-      setCurrentNav('portal-parent');
+      setCurrentNav('parent-cockpit');
     } else if (role === 'teacher') {
-      setCurrentNav('portal-teacher');
+      setCurrentNav('teacher-cockpit');
     } else if (role === 'accountant') {
-      setCurrentNav('portal-accountant');
-    } else if (role === 'super_admin') {
-      setCurrentNav('portal-super-admin');
-    } else if (role === 'transport_manager') {
-      setCurrentNav('transport');
-    } else if (role === 'admission_officer') {
-      setCurrentNav('admissions');
-    } else if (role === 'inventory_officer') {
-      setCurrentNav('inventory');
+      setCurrentNav('accountant-cockpit');
     } else {
       setCurrentNav('dashboard');
     }

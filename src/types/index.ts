@@ -1,12 +1,8 @@
 export type UserRole =
-  | 'super_admin'
   | 'school_admin'
   | 'teacher'
   | 'accountant'
-  | 'parent'
-  | 'admission_officer'
-  | 'transport_manager'
-  | 'inventory_officer';
+  | 'parent';
 
 export interface User {
   id: string;
