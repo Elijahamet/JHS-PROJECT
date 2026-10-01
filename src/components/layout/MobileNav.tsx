@@ -21,6 +21,9 @@ import {
   WalletCards,
   FileText,
   LogOut,
+  Bus,
+  Package,
+  Bell,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -57,8 +60,8 @@ export const MobileNav: React.FC = () => {
         return [
           { id: 'dashboard', label: 'Overview', icon: LayoutDashboard, color: 'text-sky-400' },
           { id: 'students', label: 'Students', icon: GraduationCap, color: 'text-indigo-400' },
-          { id: 'classes', label: 'Classes', icon: Layers, color: 'text-violet-400' },
-          { id: 'admissions', label: 'Admissions', icon: UserPlus, color: 'text-fuchsia-400' },
+          { id: 'transport', label: 'Transport', icon: Bus, color: 'text-sky-400' },
+          { id: 'fees', label: 'Fees', icon: CreditCard, color: 'text-emerald-400' },
         ];
     }
   };
@@ -102,9 +105,17 @@ export const MobileNav: React.FC = () => {
           { id: 'teachers', label: 'Teachers & Staff', icon: Briefcase, color: 'text-amber-400', gradient: 'from-amber-600 to-orange-600' },
           { id: 'parents', label: 'Parents Directory', icon: Users, color: 'text-emerald-400', gradient: 'from-emerald-600 to-teal-600' },
           { id: 'classes', label: 'Classes & Subjects', icon: Layers, color: 'text-violet-400', gradient: 'from-purple-600 to-indigo-600' },
-          { id: 'admissions', label: 'Admissions Desk', icon: UserPlus, color: 'text-fuchsia-400', gradient: 'from-fuchsia-600 to-pink-600' },
+          { id: 'attendance', label: 'Daily Attendance', icon: CalendarCheck, color: 'text-teal-400', gradient: 'from-teal-600 to-cyan-600' },
+          { id: 'results', label: 'Results & Reports', icon: FileSpreadsheet, color: 'text-rose-400', gradient: 'from-rose-600 to-pink-600' },
           { id: 'announcements', label: 'School Circulars', icon: Megaphone, color: 'text-yellow-400', gradient: 'from-amber-500 to-orange-600' },
+          { id: 'fees', label: 'School Fees Register', icon: CreditCard, color: 'text-emerald-400', gradient: 'from-emerald-600 to-teal-600' },
+          { id: 'feeding-fees', label: 'Feeding Fees Register', icon: UtensilsCrossed, color: 'text-orange-400', gradient: 'from-orange-600 to-amber-600' },
+          { id: 'payments', label: 'Payments & Revenue', icon: Receipt, color: 'text-cyan-400', gradient: 'from-cyan-600 to-blue-600' },
+          { id: 'transport', label: 'Transport & Fleet', icon: Bus, color: 'text-sky-400', gradient: 'from-sky-600 to-blue-600' },
+          { id: 'admissions', label: 'Admissions Desk', icon: UserPlus, color: 'text-fuchsia-400', gradient: 'from-fuchsia-600 to-pink-600' },
+          { id: 'inventory', label: 'School Inventory', icon: Package, color: 'text-amber-400', gradient: 'from-amber-600 to-yellow-600' },
           { id: 'reports', label: 'Executive Reports', icon: FileText, color: 'text-purple-400', gradient: 'from-purple-600 to-violet-600' },
+          { id: 'notifications', label: 'System Notifications', icon: Bell, color: 'text-rose-400', gradient: 'from-rose-600 to-pink-600' },
           { id: 'settings', label: 'School Settings', icon: Settings, color: 'text-slate-300', gradient: 'from-slate-700 to-slate-800' },
         ];
     }

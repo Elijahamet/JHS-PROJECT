@@ -5,7 +5,7 @@ import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 
 export const TeachersListView: React.FC = () => {
-  const { teachers } = useApp();
+  const { teachers, setIsAddTeacherOpen } = useApp();
   const [search, setSearch] = useState('');
 
   const filteredTeachers = teachers.filter(
@@ -31,7 +31,7 @@ export const TeachersListView: React.FC = () => {
           size="sm"
           variant="primary"
           icon={UserPlus}
-          onClick={() => alert('Add Teacher modal will open.')}
+          onClick={() => setIsAddTeacherOpen(true)}
         >
           Add Teacher
         </Button>

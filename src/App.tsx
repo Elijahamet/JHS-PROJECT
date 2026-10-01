@@ -7,6 +7,8 @@ import { GlobalSearchModal } from './components/layout/GlobalSearchModal';
 
 // Modals
 import { AddStudentModal } from './components/modals/AddStudentModal';
+import { AddTeacherModal } from './components/modals/AddTeacherModal';
+import { AddTransportModal } from './components/modals/AddTransportModal';
 import { RecordPaymentModal } from './components/modals/RecordPaymentModal';
 import { CreateAnnouncementModal } from './components/modals/CreateAnnouncementModal';
 import { ReceiptModal } from './components/modals/ReceiptModal';
@@ -19,7 +21,11 @@ import { StudentProfileView } from './components/modules/StudentProfileView';
 import { ParentsListView } from './components/modules/ParentsListView';
 import { TeachersListView } from './components/modules/TeachersListView';
 import { ClassesView } from './components/modules/ClassesView';
+import { AttendanceView } from './components/modules/AttendanceView';
+import { ResultsView } from './components/modules/ResultsView';
+import { TransportView } from './components/modules/TransportView';
 import { AdmissionsView } from './components/modules/AdmissionsView';
+import { InventoryView } from './components/modules/InventoryView';
 import { AnnouncementsView } from './components/modules/AnnouncementsView';
 import { ReportsView } from './components/modules/ReportsView';
 import { NotificationsView } from './components/modules/NotificationsView';
@@ -149,8 +155,25 @@ export const AppContent: React.FC = () => {
             return <TeachersListView />;
           case 'classes':
             return <ClassesView />;
+          case 'attendance':
+            return <AttendanceView />;
+          case 'results':
+            return <ResultsView />;
+          case 'fees':
+            return <SchoolFeesView />;
+          case 'feeding-fees':
+            return <FeedingFeesView />;
+          case 'payments':
+          case 'receipts':
+            return <PaymentsView />;
+          case 'financial-reports':
+            return <ReportsView />;
+          case 'transport':
+            return <TransportView />;
           case 'admissions':
             return <AdmissionsView />;
+          case 'inventory':
+            return <InventoryView />;
           case 'announcements':
             return <AnnouncementsView />;
           case 'reports':
@@ -190,6 +213,8 @@ export const AppContent: React.FC = () => {
 
       {/* Global Modals */}
       <AddStudentModal />
+      <AddTeacherModal />
+      <AddTransportModal />
       <RecordPaymentModal />
       <CreateAnnouncementModal />
       <ReceiptModal />

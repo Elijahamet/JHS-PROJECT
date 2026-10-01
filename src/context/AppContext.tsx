@@ -61,6 +61,7 @@ interface AppContextType {
   addStudent: (studentData: Partial<Student>) => void;
   parents: Parent[];
   teachers: Teacher[];
+  addTeacher: (teacherData: Partial<Teacher>) => void;
   classes: ClassRoom[];
   feeStructures: FeeStructureItem[];
   payments: PaymentRecord[];
@@ -77,7 +78,9 @@ interface AppContextType {
   attendance: AttendanceRecord[];
   saveClassAttendance: (classId: string, updatedRecords: AttendanceRecord[]) => void;
   buses: TransportBus[];
+  addTransportBus: (busData: Partial<TransportBus>) => void;
   routes: TransportRoute[];
+  addTransportRoute: (routeData: Partial<TransportRoute>) => void;
   updateRouteStatus: (routeId: string, status: TransportRoute['status']) => void;
   applications: AdmissionApplication[];
   updateApplicationStatus: (appId: string, status: AdmissionApplication['status']) => void;
@@ -91,6 +94,10 @@ interface AppContextType {
   // Modals
   isAddStudentOpen: boolean;
   setIsAddStudentOpen: (open: boolean) => void;
+  isAddTeacherOpen: boolean;
+  setIsAddTeacherOpen: (open: boolean) => void;
+  isAddTransportOpen: boolean;
+  setIsAddTransportOpen: (open: boolean) => void;
   isRecordPaymentOpen: boolean;
   setIsRecordPaymentOpen: (open: boolean) => void;
   isCreateAnnouncementOpen: boolean;
@@ -118,13 +125,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Data collections
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [parents] = useState<Parent[]>(mockParents);
-  const [teachers] = useState<Teacher[]>(mockTeachers);
+  const [teachers, setTeachers] = useState<Teacher[]>(mockTeachers);
   const [classes] = useState<ClassRoom[]>(mockClasses);
   const [feeStructures] = useState<FeeStructureItem[]>(mockFeeStructure);
   const [payments, setPayments] = useState<PaymentRecord[]>(mockPayments);
   const [assessments, setAssessments] = useState<AssessmentRecord[]>(mockAssessments);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(mockAttendanceToday);
-  const [buses] = useState<TransportBus[]>(mockBuses);
+  const [buses, setBuses] = useState<TransportBus[]>(mockBuses);
   const [routes, setRoutes] = useState<TransportRoute[]>(mockRoutes);
   const [applications, setApplications] = useState<AdmissionApplication[]>(mockApplications);
   const [inventory] = useState<InventoryItem[]>(mockInventory);
@@ -133,6 +140,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Modals
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [isAddTeacherOpen, setIsAddTeacherOpen] = useState(false);
+  const [isAddTransportOpen, setIsAddTransportOpen] = useState(false);
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
   const [isCreateAnnouncementOpen, setIsCreateAnnouncementOpen] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
@@ -198,6 +207,69 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     setStudents([newStudent, ...students]);
+  };
+
+  const addTeacher = (teacherData: Partial<Teacher>) => {
+    const newId = `tch_${Date.now()}`;
+    const staffId = teacherData.staffId || `STF-2025-${String(teachers.length + 1).padStart(3, '0')}`;
+    const newTeacher: Teacher = {
+      id: newId,
+      staffId,
+      fullName: teacherData.fullName || 'New Teacher',
+      email: teacherData.email || 'teacher@brightfuture.edu.gh',
+      phone: teacherData.phone || '+233 24 000 0000',
+      qualification: teacherData.qualification || 'B.Ed. Education',
+      classesAssigned: teacherData.classesAssigned || ['JHS 1A'],
+      subjectsAssigned: teacherData.subjectsAssigned || ['General Science'],
+      isClassTeacherOf: teacherData.isClassTeacherOf,
+      status: teacherData.status || 'Active',
+      joinDate: new Date().toISOString().split('T')[0],
+    };
+    setTeachers([newTeacher, ...teachers]);
+
+    const newNotif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Teacher Appointed — ${newTeacher.fullName}`,
+      message: `${newTeacher.fullName} (${staffId}) was registered successfully to academic staff.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'teachers',
+    };
+    setNotifications([newNotif, ...notifications]);
+  };
+
+  const addTransportBus = (busData: Partial<TransportBus>) => {
+    const newId = `bus_${Date.now()}`;
+    const newBus: TransportBus = {
+      id: newId,
+      busNumber: busData.busNumber || `School Bus ${buses.length + 1}`,
+      registrationNumber: busData.registrationNumber || `GE-${Math.floor(1000 + Math.random() * 9000)}-24`,
+      capacity: busData.capacity || 30,
+      driverName: busData.driverName || 'Kofi Asare',
+      driverPhone: busData.driverPhone || '+233 24 555 0100',
+      routeId: busData.routeId || (routes[0]?.id || 'rt_01'),
+      routeName: busData.routeName || (routes[0]?.name || 'Madina - Adenta Route'),
+      status: busData.status || 'Active',
+    };
+    setBuses([newBus, ...buses]);
+  };
+
+  const addTransportRoute = (routeData: Partial<TransportRoute>) => {
+    const newId = `rt_${Date.now()}`;
+    const newRoute: TransportRoute = {
+      id: newId,
+      name: routeData.name || 'New Shuttle Corridor',
+      busNumber: routeData.busNumber || (buses[0]?.busNumber || 'Bus 01'),
+      driverName: routeData.driverName || (buses[0]?.driverName || 'Assigned Driver'),
+      driverPhone: routeData.driverPhone || (buses[0]?.driverPhone || '+233 24 000 0000'),
+      stops: routeData.stops && routeData.stops.length > 0 ? routeData.stops : ['Campus Gate', 'Main Junction'],
+      studentCount: routeData.studentCount || 0,
+      status: 'Not Started',
+      morningDeparture: routeData.morningDeparture || '06:30 AM',
+      afternoonDeparture: routeData.afternoonDeparture || '03:45 PM',
+    };
+    setRoutes([newRoute, ...routes]);
   };
 
   const addPayment = (paymentData: {
@@ -353,6 +425,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addStudent,
         parents,
         teachers,
+        addTeacher,
         classes,
         feeStructures,
         payments,
@@ -362,7 +435,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         attendance,
         saveClassAttendance,
         buses,
+        addTransportBus,
         routes,
+        addTransportRoute,
         updateRouteStatus,
         applications,
         updateApplicationStatus,
@@ -374,6 +449,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         markAllNotificationsRead,
         isAddStudentOpen,
         setIsAddStudentOpen,
+        isAddTeacherOpen,
+        setIsAddTeacherOpen,
+        isAddTransportOpen,
+        setIsAddTransportOpen,
         isRecordPaymentOpen,
         setIsRecordPaymentOpen,
         isCreateAnnouncementOpen,

@@ -21,6 +21,9 @@ import {
   Building2,
   LogOut,
   HeartHandshake,
+  Bus,
+  Package,
+  Bell,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -44,36 +47,36 @@ export const Sidebar: React.FC = () => {
   const { currentNav, setCurrentNav, currentSchool, currentUser, setSelectedStudentId, setAuthScreen } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // 1. School Admin Navigation
+  // 1. School Admin Navigation (Full Management Suite)
   const adminNavGroups: NavGroup[] = [
     {
-      title: 'Administration',
+      title: 'Main Modules',
       dotColorClass: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]',
       items: [
         {
           id: 'dashboard',
-          label: 'Admin Overview',
+          label: 'Dashboard',
           icon: LayoutDashboard,
           color: 'text-sky-400',
           activeGradient: 'from-blue-600 to-indigo-600',
         },
         {
           id: 'students',
-          label: 'Student Directory',
+          label: 'Students Directory',
           icon: GraduationCap,
           color: 'text-indigo-400',
           activeGradient: 'from-indigo-600 to-violet-600',
         },
         {
           id: 'teachers',
-          label: 'Staff & Teachers',
+          label: 'Teachers & Staff',
           icon: Briefcase,
           color: 'text-amber-400',
           activeGradient: 'from-amber-600 to-orange-600',
         },
         {
           id: 'parents',
-          label: 'Parent Directory',
+          label: 'Parents Directory',
           icon: Users,
           color: 'text-emerald-400',
           activeGradient: 'from-emerald-600 to-teal-600',
@@ -85,12 +88,81 @@ export const Sidebar: React.FC = () => {
           color: 'text-violet-400',
           activeGradient: 'from-purple-600 to-indigo-600',
         },
+        {
+          id: 'attendance',
+          label: 'Daily Attendance',
+          icon: CalendarCheck,
+          color: 'text-teal-400',
+          activeGradient: 'from-teal-600 to-cyan-600',
+        },
+        {
+          id: 'results',
+          label: 'Results & Reports',
+          icon: FileSpreadsheet,
+          color: 'text-rose-400',
+          activeGradient: 'from-rose-600 to-pink-600',
+        },
+        {
+          id: 'announcements',
+          label: 'Announcements',
+          icon: Megaphone,
+          color: 'text-yellow-400',
+          activeGradient: 'from-amber-500 to-orange-600',
+        },
       ],
     },
     {
-      title: 'Governance & Operations',
-      dotColorClass: 'bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]',
+      title: 'Finance & Fees',
+      dotColorClass: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]',
       items: [
+        {
+          id: 'fees',
+          label: 'School Fees',
+          icon: CreditCard,
+          color: 'text-emerald-400',
+          activeGradient: 'from-emerald-600 to-teal-600',
+        },
+        {
+          id: 'feeding-fees',
+          label: 'Feeding Fees',
+          icon: UtensilsCrossed,
+          color: 'text-orange-400',
+          activeGradient: 'from-orange-600 to-amber-600',
+        },
+        {
+          id: 'payments',
+          label: 'Payments Register',
+          icon: Receipt,
+          color: 'text-cyan-400',
+          activeGradient: 'from-cyan-600 to-blue-600',
+        },
+        {
+          id: 'receipts',
+          label: 'Official Receipts',
+          icon: FileText,
+          color: 'text-blue-400',
+          activeGradient: 'from-blue-600 to-indigo-600',
+        },
+        {
+          id: 'financial-reports',
+          label: 'Financial Reports',
+          icon: WalletCards,
+          color: 'text-lime-400',
+          activeGradient: 'from-lime-600 to-emerald-600',
+        },
+      ],
+    },
+    {
+      title: 'Operations',
+      dotColorClass: 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]',
+      items: [
+        {
+          id: 'transport',
+          label: 'Transport & Fleet',
+          icon: Bus,
+          color: 'text-sky-400',
+          activeGradient: 'from-sky-600 to-blue-600',
+        },
         {
           id: 'admissions',
           label: 'Admissions Desk',
@@ -99,18 +171,33 @@ export const Sidebar: React.FC = () => {
           activeGradient: 'from-fuchsia-600 to-pink-600',
         },
         {
-          id: 'announcements',
-          label: 'School Circulars',
-          icon: Megaphone,
-          color: 'text-yellow-400',
-          activeGradient: 'from-amber-500 to-orange-600',
+          id: 'inventory',
+          label: 'School Inventory',
+          icon: Package,
+          color: 'text-amber-400',
+          activeGradient: 'from-amber-600 to-yellow-600',
         },
+      ],
+    },
+    {
+      title: 'Administration',
+      dotColorClass: 'bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]',
+      items: [
         {
           id: 'reports',
           label: 'Executive Reports',
           icon: FileText,
           color: 'text-purple-400',
-          activeGradient: 'from-purple-600 to-violet-600',
+          activeGradient: 'from-purple-600 to-indigo-600',
+        },
+        {
+          id: 'notifications',
+          label: 'Notifications',
+          icon: Bell,
+          badge: 3,
+          badgeColor: 'bg-rose-500',
+          color: 'text-rose-400',
+          activeGradient: 'from-rose-600 to-pink-600',
         },
         {
           id: 'settings',

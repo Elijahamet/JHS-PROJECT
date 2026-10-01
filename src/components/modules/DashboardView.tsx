@@ -13,6 +13,7 @@ import {
   Calendar,
   AlertCircle,
   FileCheck2,
+  Bus,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../common/StatCard';
@@ -29,6 +30,8 @@ export const DashboardView: React.FC = () => {
     announcements,
     attendance,
     setIsAddStudentOpen,
+    setIsAddTeacherOpen,
+    setIsAddTransportOpen,
     setIsRecordPaymentOpen,
     setIsCreateAnnouncementOpen,
     setCurrentNav,
@@ -98,6 +101,22 @@ export const DashboardView: React.FC = () => {
             onClick={() => setIsAddStudentOpen(true)}
           >
             Enroll Student
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Briefcase}
+            onClick={() => setIsAddTeacherOpen(true)}
+          >
+            Add Teacher
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Bus}
+            onClick={() => setIsAddTransportOpen(true)}
+          >
+            Fleet / Transport
           </Button>
           <Button
             size="sm"

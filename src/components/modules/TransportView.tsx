@@ -16,7 +16,7 @@ import { Button } from '../common/Button';
 import { TransportRoute } from '../../types';
 
 export const TransportView: React.FC = () => {
-  const { buses, routes, updateRouteStatus } = useApp();
+  const { buses, routes, updateRouteStatus, setIsAddTransportOpen } = useApp();
 
   const totalStudentsTransport = routes.reduce(
     (sum, r) => sum + r.studentCount,
@@ -32,7 +32,7 @@ export const TransportView: React.FC = () => {
             School Transport & Bus Fleet (SchoolRoute)
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Coordinate student pickup points, bus fleet logistics, drivers, and daily trip statuses.
+            Coordinate student pickup points, bus and utility truck fleet logistics, drivers, and daily trip statuses.
           </p>
         </div>
 
@@ -41,9 +41,9 @@ export const TransportView: React.FC = () => {
             size="sm"
             variant="primary"
             icon={Bus}
-            onClick={() => alert('New route setup modal')}
+            onClick={() => setIsAddTransportOpen(true)}
           >
-            Add Bus Route
+            Add Fleet / Route
           </Button>
         </div>
       </div>
@@ -164,6 +164,87 @@ export const TransportView: React.FC = () => {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Fleet Vehicles (Buses, Vans & Utility Trucks) */}
+      <div className="space-y-4 pt-4 border-t border-slate-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              Fleet Vehicles & Utility Trucks
+            </h3>
+            <p className="text-xs text-slate-500">
+              Registered school buses, shuttle vans, and logistics trucks
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Bus}
+            onClick={() => setIsAddTransportOpen(true)}
+          >
+            Register Vehicle
+          </Button>
+        </div>
+
+        <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 uppercase font-semibold text-[10px] tracking-wider">
+                <tr>
+                  <th className="px-4 py-3">Vehicle Identification</th>
+                  <th className="px-4 py-3">Plate Number</th>
+                  <th className="px-4 py-3">Capacity</th>
+                  <th className="px-4 py-3">Assigned Route</th>
+                  <th className="px-4 py-3">Driver & Contact</th>
+                  <th className="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {buses.map((bus) => (
+                  <tr key={bus.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-slate-900">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0">
+                          <Bus className="w-3.5 h-3.5" />
+                        </div>
+                        <span>{bus.busNumber}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono font-medium text-slate-700">
+                      {bus.registrationNumber}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">
+                      {bus.capacity} Passengers
+                    </td>
+                    <td className="px-4 py-3 text-slate-700 font-medium">
+                      {bus.routeName}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">
+                      <div>
+                        <span className="font-semibold text-slate-900 block">{bus.driverName}</span>
+                        <span className="text-[11px] text-slate-400 font-mono">{bus.driverPhone}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge
+                        variant={
+                          bus.status === 'Active'
+                            ? 'success'
+                            : bus.status === 'Standby'
+                            ? 'info'
+                            : 'danger'
+                        }
+                      >
+                        {bus.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
