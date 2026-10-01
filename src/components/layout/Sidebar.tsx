@@ -252,7 +252,7 @@ export const Sidebar: React.FC = () => {
         },
         {
           id: 'teacher-reports',
-          label: 'Terminal Report Remarks',
+          label: 'Report Card Generator',
           icon: BookOpenCheck,
           color: 'text-violet-400',
           activeGradient: 'from-purple-600 to-indigo-600',

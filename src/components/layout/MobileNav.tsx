@@ -75,7 +75,7 @@ export const MobileNav: React.FC = () => {
           { id: 'teacher-classes', label: 'My Classes & Rosters', icon: Layers, color: 'text-indigo-400', gradient: 'from-indigo-600 to-blue-600' },
           { id: 'teacher-attendance', label: 'Roll Call Attendance', icon: CalendarCheck, color: 'text-teal-400', gradient: 'from-teal-600 to-cyan-600' },
           { id: 'teacher-marks', label: 'Marks & Continuous Assessment', icon: FileSpreadsheet, color: 'text-rose-400', gradient: 'from-rose-600 to-pink-600' },
-          { id: 'teacher-reports', label: 'Terminal Report Remarks', icon: BookOpenCheck, color: 'text-violet-400', gradient: 'from-purple-600 to-indigo-600' },
+          { id: 'teacher-reports', label: 'Report Card Generator', icon: BookOpenCheck, color: 'text-violet-400', gradient: 'from-purple-600 to-indigo-600' },
           { id: 'teacher-announcements', label: 'Staff Room Notices', icon: Megaphone, color: 'text-yellow-400', gradient: 'from-amber-500 to-orange-600' },
         ];
       case 'accountant':

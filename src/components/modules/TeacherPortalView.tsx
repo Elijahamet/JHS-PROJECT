@@ -21,6 +21,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
+import { ReportCardSheet } from './ReportCardSheet';
 
 interface TeacherPortalProps {
   tab?: 'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements';
@@ -30,6 +31,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
   const { currentUser, setCurrentNav, setIsReportCardModalOpen, announcements } = useApp();
 
   const [activeTab, setActiveTab] = useState<'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements'>(tab);
+  const [remarksSubTab, setRemarksSubTab] = useState<'generator' | 'roster'>('generator');
 
   React.useEffect(() => {
     setActiveTab(tab);
@@ -166,7 +168,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Report Remarks</span>
+              <span>Report Card Generator</span>
             </button>
           </div>
         </div>
@@ -500,17 +502,35 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
       )}
 
       {/* ========================================================================= */}
-      {/* 5. TERMINAL REPORT CARD REMARKS */}
+      {/* 5. TERMINAL REPORT CARD & REMARKS WORKBENCH */}
       {/* ========================================================================= */}
       {activeTab === 'remarks' && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 block">
-                Class Teacher Terminal Evaluation
-              </span>
-              <h2 className="text-xl font-bold text-slate-900">Terminal Report Card Remarks</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Formulate qualitative evaluation, attitude, conduct, and remarks for official Ghanaian report cards.</p>
+        <div className="space-y-6">
+          {/* Sub Navigation Switcher */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-2xs no-print">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setRemarksSubTab('generator')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  remarksSubTab === 'generator'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                <span>Report Card Generator</span>
+              </button>
+              <button
+                onClick={() => setRemarksSubTab('roster')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  remarksSubTab === 'roster'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Roster Remarks Form</span>
+              </button>
             </div>
 
             <div className="flex items-center gap-2">
@@ -520,97 +540,126 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 icon={Eye}
                 onClick={() => setIsReportCardModalOpen(true)}
               >
-                Preview Official Report Card
-              </Button>
-              <Button size="sm" variant="primary" icon={Save} onClick={handleSaveRemarks}>
-                Save Remarks
+                Full Screen Modal
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Student Selector List */}
-            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50 space-y-1.5 max-h-96 overflow-y-auto">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">Select Student</span>
-              {jhsStudents.map((std) => (
-                <button
-                  key={std.id}
-                  onClick={() => {
-                    setSelectedStudentForRemark(std.id);
-                    setRemarkText(std.remark);
-                    setConductRating(std.conduct);
-                  }}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-between ${
-                    selectedStudentForRemark === std.id
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'hover:bg-slate-100 text-slate-800'
-                  }`}
-                >
-                  <span>{std.name}</span>
-                  <span className="text-[10px] opacity-75">{std.roll}</span>
-                </button>
-              ))}
-            </div>
+          {/* 5A. Interactive Report Card Generator (Matches provided design) */}
+          {remarksSubTab === 'generator' && (
+            <ReportCardSheet
+              initialStudentName={jhsStudents.find((s) => s.id === selectedStudentForRemark)?.name || jhsStudents[0].name}
+              initialLevel="Junior High School 2"
+              initialClassName="JHS 2A"
+              initialSchoolName="Salford High School"
+              isModal={false}
+            />
+          )}
 
-            {/* Remark Form & Suggestion Chips */}
-            <div className="md:col-span-2 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Conduct & Attitude in School
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {['Excellent', 'Very Good', 'Good', 'Needs Improvement'].map((cond) => (
+          {/* 5B. Roster Remarks Form */}
+          {remarksSubTab === 'roster' && (
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 block">
+                    Class Teacher Terminal Evaluation
+                  </span>
+                  <h2 className="text-xl font-bold text-slate-900">Class Roster Remarks & Conduct</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Formulate qualitative evaluation, attitude, conduct, and remarks for official Ghanaian report cards.</p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="primary" icon={Save} onClick={handleSaveRemarks}>
+                    Save Remarks
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Student Selector List */}
+                <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50 space-y-1.5 max-h-96 overflow-y-auto">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">Select Student</span>
+                  {jhsStudents.map((std) => (
                     <button
-                      key={cond}
-                      type="button"
-                      onClick={() => setConductRating(cond)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                        conductRating === cond
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      key={std.id}
+                      onClick={() => {
+                        setSelectedStudentForRemark(std.id);
+                        setRemarkText(std.remark);
+                        setConductRating(std.conduct);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-between ${
+                        selectedStudentForRemark === std.id
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'hover:bg-slate-100 text-slate-800'
                       }`}
                     >
-                      {cond}
+                      <span>{std.name}</span>
+                      <span className="text-[10px] opacity-75">{std.roll}</span>
                     </button>
                   ))}
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Class Teacher&apos;s Remarks
-                </label>
-                <textarea
-                  rows={4}
-                  value={remarkText}
-                  onChange={(e) => setRemarkText(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-medium text-slate-800 leading-relaxed"
-                  placeholder="Enter teacher comments on academic commitment and discipline..."
-                />
-              </div>
+                {/* Remark Form & Suggestion Chips */}
+                <div className="md:col-span-2 space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Conduct & Attitude in School
+                    </label>
+                    <div className="flex gap-2 flex-wrap">
+                      {['Excellent', 'Very Good', 'Good', 'Needs Improvement'].map((cond) => (
+                        <button
+                          key={cond}
+                          type="button"
+                          onClick={() => setConductRating(cond)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                            conductRating === cond
+                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                              : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          {cond}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Quick Preset Comment Chips */}
-              <div className="space-y-1.5">
-                <span className="text-[11px] font-semibold text-slate-400">Quick Comment Suggestions:</span>
-                <div className="space-y-1.5">
-                  {[
-                    "An exceptional and diligent pupil who demonstrates keen critical thinking and leadership.",
-                    "Good academic progress this term. Should practice more mathematics drills to solidify concepts.",
-                    "Active class participation and polite conduct. Encouraged to read more broadly.",
-                  ].map((phrase, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setRemarkText(phrase)}
-                      className="block w-full text-left text-xs p-2 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-900 border border-slate-200/80 transition-colors"
-                    >
-                      &ldquo;{phrase}&rdquo;
-                    </button>
-                  ))}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Class Teacher&apos;s Remarks
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={remarkText}
+                      onChange={(e) => setRemarkText(e.target.value)}
+                      className="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-medium text-slate-800 leading-relaxed"
+                      placeholder="Enter teacher comments on academic commitment and discipline..."
+                    />
+                  </div>
+
+                  {/* Quick Preset Comment Chips */}
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-semibold text-slate-400">Quick Comment Suggestions:</span>
+                    <div className="space-y-1.5">
+                      {[
+                        "An exceptional and diligent pupil who demonstrates keen critical thinking and leadership.",
+                        "Good academic progress this term. Should practice more mathematics drills to solidify concepts.",
+                        "Active class participation and polite conduct. Encouraged to read more broadly.",
+                      ].map((phrase, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setRemarkText(phrase)}
+                          className="block w-full text-left text-xs p-2 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-900 border border-slate-200/80 transition-colors"
+                        >
+                          &ldquo;{phrase}&rdquo;
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
