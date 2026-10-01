@@ -19,7 +19,6 @@ import {
   BookOpen,
   CreditCard,
   Users,
-  KeyRound,
   HelpCircle,
   FileCheck2,
   ShieldCheck,
@@ -98,12 +97,6 @@ export const AuthScreens: React.FC = () => {
     } else {
       setUserRole(selectedPortalRole);
     }
-    setAuthScreen('authenticated');
-  };
-
-  // Quick Demo One-Click Access
-  const handleQuickLogin = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
-    setUserRole(role);
     setAuthScreen('authenticated');
   };
 
@@ -463,51 +456,6 @@ export const AuthScreens: React.FC = () => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
-
-              {/* Discreet Demo Credentials Toolbar */}
-              <div className="pt-4 border-t border-slate-100 space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span className="font-semibold flex items-center gap-1.5 text-slate-700">
-                    <KeyRound className="w-3.5 h-3.5 text-slate-500" />
-                    Instant Demo Login:
-                  </span>
-                  <span className="text-[11px] text-slate-400">Click to test as:</span>
-                </div>
-                <div className="grid grid-cols-2 gap-1.5 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('school_admin')}
-                    className="p-2 rounded-lg bg-slate-50 hover:bg-blue-50 border border-slate-200 text-slate-700 hover:text-blue-900 transition-all text-left font-medium flex items-center justify-between"
-                  >
-                    <span className="truncate">Mrs. Cynthia Arthur</span>
-                    <span className="text-[10px] text-blue-600 font-bold shrink-0">Admin</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('teacher')}
-                    className="p-2 rounded-lg bg-slate-50 hover:bg-indigo-50 border border-slate-200 text-slate-700 hover:text-indigo-900 transition-all text-left font-medium flex items-center justify-between"
-                  >
-                    <span className="truncate">Mr. Emmanuel Darko</span>
-                    <span className="text-[10px] text-indigo-600 font-bold shrink-0">Teacher</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('accountant')}
-                    className="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-slate-700 hover:text-emerald-900 transition-all text-left font-medium flex items-center justify-between"
-                  >
-                    <span className="truncate">Mr. Samuel Boakye</span>
-                    <span className="text-[10px] text-emerald-600 font-bold shrink-0">Bursar</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('parent')}
-                    className="p-2 rounded-lg bg-slate-50 hover:bg-purple-50 border border-slate-200 text-slate-700 hover:text-purple-900 transition-all text-left font-medium flex items-center justify-between"
-                  >
-                    <span className="truncate">Mrs. Abena Osei</span>
-                    <span className="text-[10px] text-purple-600 font-bold shrink-0">Parent</span>
-                  </button>
-                </div>
-              </div>
             </div>
 
             {/* Bottom Support & Legal Links */}
