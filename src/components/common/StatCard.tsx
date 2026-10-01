@@ -26,10 +26,10 @@ export const StatCard: React.FC<StatCardProps> = ({
 }) => {
   return (
     <div
-      className={`p-5 rounded-xl border transition-all ${
+      className={`p-4 sm:p-5 rounded-xl border transition-all min-w-0 overflow-hidden ${
         highlight
           ? 'bg-slate-900 text-white border-slate-800 shadow-sm'
-          : 'bg-white text-slate-900 border-slate-200/80 shadow-sm'
+          : 'bg-white text-slate-900 border-slate-200/90 shadow-sm hover:shadow-md'
       } ${className}`}
     >
       <div className="flex items-center justify-between">

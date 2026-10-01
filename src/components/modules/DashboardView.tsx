@@ -93,7 +93,7 @@ export const DashboardView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
           <Button
             size="sm"
             variant="outline"
@@ -137,7 +137,7 @@ export const DashboardView: React.FC = () => {
       </div>
 
       {/* Top Key Metrics Row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-5">
         <StatCard
           title="Students"
           value={totalStudents.toLocaleString()}
@@ -215,7 +215,7 @@ export const DashboardView: React.FC = () => {
             </div>
 
             {/* Attendance Stat Chips */}
-            <div className="grid grid-cols-3 gap-2.5 pt-2 text-center text-xs">
+            <div className="grid grid-cols-3 gap-3.5 pt-2 text-center text-xs">
               <div className="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100">
                 <span className="text-[11px] text-emerald-800 font-medium">Present</span>
                 <p className="text-base font-bold text-emerald-900 mt-0.5">614</p>
@@ -269,7 +269,7 @@ export const DashboardView: React.FC = () => {
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             {/* School Fees Column */}
             <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-3">
               <div className="flex items-center justify-between">

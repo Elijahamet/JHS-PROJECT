@@ -92,9 +92,9 @@ export const Header: React.FC = () => {
       </div>
 
       {/* Right Controls: School Info, Term Pill, Notifications, User Profile & Log Out */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5 sm:gap-4">
         {/* Term & Academic Year Pill */}
-        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium border border-slate-200/60">
+        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100/90 text-slate-700 text-xs font-medium border border-slate-200">
           <Calendar className="w-3.5 h-3.5 text-slate-500" />
           <span>{currentSchool.academicYear}</span>
           <span className="text-slate-300">•</span>
@@ -105,7 +105,7 @@ export const Header: React.FC = () => {
         <div className="relative" ref={schoolRef}>
           <button
             onClick={() => setIsSchoolDropdownOpen(!isSchoolDropdownOpen)}
-            className="flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors shadow-2xs"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors shadow-sm"
           >
             <Building2 className="w-3.5 h-3.5 text-slate-500" />
             <span className="hidden sm:inline truncate max-w-[120px]">
