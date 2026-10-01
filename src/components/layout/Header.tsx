@@ -72,29 +72,29 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between z-20">
-      {/* Left: Global Search */}
-      <div className="flex items-center gap-4 flex-1 max-w-xl">
+    <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6 lg:gap-10 z-20">
+      {/* Left: Global Search (Bounded width with clear breathing room) */}
+      <div className="w-64 sm:w-80 md:w-96 flex-shrink-0">
         <button
           onClick={() => setIsGlobalSearchOpen(true)}
-          className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-slate-400 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
+          className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-400 bg-slate-50/90 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all shadow-xs group"
         >
-          <span className="flex items-center gap-2">
-            <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
-            <span className="text-slate-500 font-normal">
-              Search students, records, staff...
+          <span className="flex items-center gap-2 truncate">
+            <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 flex-shrink-0" />
+            <span className="text-slate-500 font-normal truncate">
+              Search students, staff, records...
             </span>
           </span>
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-medium text-slate-500 bg-white border border-slate-200 rounded shadow-2xs">
+          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-medium text-slate-500 bg-white border border-slate-200 rounded shadow-xs ml-2 flex-shrink-0">
             ⌘K
           </kbd>
         </button>
       </div>
 
       {/* Right Controls: School Info, Term Pill, Notifications, User Profile & Log Out */}
-      <div className="flex items-center gap-3.5 sm:gap-4">
-        {/* Term & Academic Year Pill */}
-        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100/90 text-slate-700 text-xs font-medium border border-slate-200">
+      <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+        {/* Term & Academic Year Pill (Hidden on narrow viewports to avoid crowding) */}
+        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/90 text-slate-700 text-xs font-medium border border-slate-200 shadow-xs">
           <Calendar className="w-3.5 h-3.5 text-slate-500" />
           <span>{currentSchool.academicYear}</span>
           <span className="text-slate-300">•</span>

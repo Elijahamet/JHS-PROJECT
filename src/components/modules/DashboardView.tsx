@@ -93,10 +93,10 @@ export const DashboardView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <Button
             size="sm"
-            variant="outline"
+            variant="primary"
             icon={UserPlus}
             onClick={() => setIsAddStudentOpen(true)}
           >
@@ -128,7 +128,7 @@ export const DashboardView: React.FC = () => {
           </Button>
           <Button
             size="sm"
-            variant="primary"
+            variant="secondary"
             onClick={() => setIsCreateAnnouncementOpen(true)}
           >
             New Announcement
