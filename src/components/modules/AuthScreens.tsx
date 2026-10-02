@@ -217,9 +217,9 @@ export const AuthScreens: React.FC = () => {
               className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
             />
 
-            {/* Subtle Directional Scrims: Center is open so pupils are clearly seen */}
-            <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 inset-x-0 h-80 bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
+            {/* Subtle Aesthetic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/85 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-950/30 via-transparent to-amber-950/15 pointer-events-none" />
 
             {/* Top Institutional Header */}
             <div className="relative z-10 flex items-center justify-between">
@@ -467,9 +467,9 @@ export const AuthScreens: React.FC = () => {
               className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
             />
 
-            {/* Subtle Directional Scrims: Center is open so pupils are clearly seen */}
-            <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 inset-x-0 h-80 bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
+            {/* Subtle Aesthetic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/85 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950/30 via-transparent to-teal-950/15 pointer-events-none" />
 
             {/* Top Brand Lockup */}
             <div className="relative z-10 flex items-center justify-between">
