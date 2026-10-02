@@ -137,7 +137,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentSchool, setCurrentSchool] = useState<School>(mockCurrentSchool);
   const [currentUser, setCurrentUser] = useState<User>(mockUsers[0]); // default: Cynthia Arthur (School Admin)
   const [currentNav, setCurrentNav] = useState<string>('dashboard');
-  const [authScreen, setAuthScreen] = useState<'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password'>('authenticated');
+  const [authScreen, setAuthScreen] = useState<'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password'>('login');
 
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedReceiptPayment, setSelectedReceiptPayment] = useState<PaymentRecord | null>(null);

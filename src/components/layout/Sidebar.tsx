@@ -19,7 +19,6 @@ import {
   BookOpenCheck,
   WalletCards,
   Building2,
-  LogOut,
   HeartHandshake,
   Bus,
   Package,
@@ -594,53 +593,35 @@ export const Sidebar: React.FC = () => {
         ))}
       </div>
 
-      {/* Footer Info / User Pill & Direct Log Out Button */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 space-y-2">
+      {/* Footer Info / User Pill */}
+      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60">
         {!isCollapsed ? (
-          <>
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-700/50">
-              <div className="relative flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-                  {currentUser.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join('')}
-                </div>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0F172A]" />
+          <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-700/50">
+            <div className="relative flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                {currentUser.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join('')}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-white truncate">
-                  {currentUser.name}
-                </p>
-                <p className="text-[10px] text-cyan-300 capitalize truncate font-medium">
-                  {currentUser.role.replace('_', ' ')}
-                </p>
-              </div>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0F172A]" />
             </div>
-
-            {/* Direct Log Out Button */}
-            <button
-              onClick={() => setAuthScreen('login')}
-              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 text-xs font-semibold transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Log Out</span>
-            </button>
-          </>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-white truncate">
+                {currentUser.name}
+              </p>
+              <p className="text-[10px] text-cyan-300 capitalize truncate font-medium">
+                {currentUser.role.replace('_', ' ')}
+              </p>
+            </div>
+          </div>
         ) : (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center">
             <div className="relative w-8 h-8 mx-auto rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
               {currentUser.name[0]}
               <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 rounded-full border border-[#0F172A]" />
             </div>
-            <button
-              onClick={() => setAuthScreen('login')}
-              title="Log Out"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
           </div>
         )}
       </div>

@@ -20,7 +20,6 @@ import {
   BookOpenCheck,
   WalletCards,
   FileText,
-  LogOut,
   Bus,
   Package,
   Bell,
@@ -235,20 +234,6 @@ export const MobileNav: React.FC = () => {
               </button>
             );
           })}
-        </div>
-
-        {/* Drawer Footer: Single Direct Log Out */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/80 space-y-2">
-          <button
-            onClick={() => {
-              setIsOpen(false);
-              setAuthScreen('login');
-            }}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-semibold transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Log Out</span>
-          </button>
         </div>
       </div>
 
