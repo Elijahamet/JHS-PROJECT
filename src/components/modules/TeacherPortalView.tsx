@@ -17,21 +17,23 @@ import {
   Filter,
   Eye,
   Megaphone,
+  ScanLine,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { ReportCardSheet } from './ReportCardSheet';
 import { PortalChatView } from './PortalChatView';
+import { StudentTestDiagnosticView } from './StudentTestDiagnosticView';
 
 interface TeacherPortalProps {
-  tab?: 'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat';
+  tab?: 'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat' | 'test-scanner';
 }
 
 export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit' }) => {
   const { currentUser, setCurrentNav, setIsReportCardModalOpen, announcements } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat'>(tab);
+  const [activeTab, setActiveTab] = useState<'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat' | 'test-scanner'>(tab);
   const [remarksSubTab, setRemarksSubTab] = useState<'generator' | 'roster'>('generator');
 
   React.useEffect(() => {
@@ -88,6 +90,14 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
 
   const handleSaveMarks = () => {
     setSaveToast(`Continuous assessment and examination marks for ${selectedSubject} saved to SchoolOS gradebook!`);
+    setTimeout(() => setSaveToast(null), 3500);
+  };
+
+  const handleSyncDiagnosticScore = (studentId: string, subject: string, classScore: number) => {
+    setJhsStudents((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, classScore } : s))
+    );
+    setSaveToast(`Diagnostic test score (${classScore}/30) for ${subject} synced directly to Gradebook!`);
     setTimeout(() => setSaveToast(null), 3500);
   };
 
@@ -159,6 +169,17 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
             >
               <FileSpreadsheet className="w-4 h-4" />
               <span>Marks Entry</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('test-scanner')}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'test-scanner'
+                  ? 'bg-amber-400 text-slate-950 font-bold shadow-md'
+                  : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40'
+              }`}
+            >
+              <ScanLine className="w-4 h-4 text-amber-300" />
+              <span>AI Test Scanner</span>
             </button>
             <button
               onClick={() => setActiveTab('remarks')}
@@ -255,6 +276,31 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* AI Diagnostic Scanner Quick Access Banner */}
+          <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-blue-500/10 border border-amber-500/30 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                <ScanLine className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-900">AI Student Test Shoot & Diagnostic Scanner</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">New Feature</span>
+                </div>
+                <p className="text-xs text-slate-600 max-w-xl">
+                  Upload phone snapshots or scans of handwritten student test papers. Automatically scan math and science calculations to uncover the student&apos;s exact weak points and what is really wrong with them in that subject.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('test-scanner')}
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 shadow-sm"
+            >
+              <span>Launch Test Scanner</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
           {/* Assigned Classes Cards */}
@@ -447,6 +493,16 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 <option value="Mathematics">Mathematics</option>
                 <option value="Integrated Science">Integrated Science</option>
               </select>
+
+              <Button
+                size="sm"
+                variant="outline"
+                icon={ScanLine}
+                onClick={() => setActiveTab('test-scanner')}
+                className="border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold"
+              >
+                Scan Test Shoot with AI
+              </Button>
 
               <Button size="sm" variant="primary" icon={Save} onClick={handleSaveMarks}>
                 Save Marks
@@ -721,6 +777,18 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
             partnerSubtitle="Direct executive line • Headteacher Desk"
           />
         </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 8. AI TEST DIAGNOSTIC SCANNER & STUDENT AUTOPSY                           */}
+      {/* ========================================================================= */}
+      {activeTab === 'test-scanner' && (
+        <StudentTestDiagnosticView
+          studentsList={jhsStudents}
+          defaultSubject={selectedSubject}
+          onSyncScore={handleSyncDiagnosticScore}
+          onBackToMarks={() => setActiveTab('marks')}
+        />
       )}
     </div>
   );

@@ -24,6 +24,7 @@ import {
   Package,
   Bell,
   MessageSquare,
+  ScanLine,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -258,6 +259,15 @@ export const Sidebar: React.FC = () => {
           icon: FileSpreadsheet,
           color: 'text-rose-400',
           activeGradient: 'from-rose-600 to-pink-600',
+        },
+        {
+          id: 'teacher-test-scanner',
+          label: 'AI Test Paper Scanner',
+          icon: ScanLine,
+          badge: 'AI Vision',
+          badgeColor: 'bg-amber-500',
+          color: 'text-amber-400',
+          activeGradient: 'from-amber-500 to-indigo-600',
         },
         {
           id: 'teacher-reports',

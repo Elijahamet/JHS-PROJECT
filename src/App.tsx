@@ -71,6 +71,8 @@ export const AppContent: React.FC = () => {
             return <TeacherPortalView tab="attendance" />;
           case 'teacher-marks':
             return <TeacherPortalView tab="marks" />;
+          case 'teacher-test-scanner':
+            return <TeacherPortalView tab="test-scanner" />;
           case 'teacher-reports':
             return <TeacherPortalView tab="remarks" />;
           case 'teacher-announcements':
