@@ -213,7 +213,7 @@ export const AuthScreens: React.FC = () => {
             {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
             <img
               src="/assets/login-hero.jpg"
-              alt="Joyful Ghanaian school pupils smiling and running together down hallway"
+              alt="Joyful Ghanaian school pupils smiling happily together in classroom"
               className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
             />
 
