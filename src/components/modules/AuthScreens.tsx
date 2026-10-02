@@ -208,23 +208,24 @@ export const AuthScreens: React.FC = () => {
       {/* ========================================================================= */}
       {authScreen === 'login' && (
         <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
-          {/* Left Hero Column: Authentic Editorial Brand Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-12 shrink-0 border-r border-slate-800">
-            {/* Background Image: Authentic Ghanaian Classroom */}
+          {/* Left Hero Column: Exclusive Institutional Showcase */}
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-12 shrink-0 border-r border-slate-800/80">
+            {/* Background Image: Deep Cinematic Atmosphere */}
             <img
               src="/assets/login-hero.jpg"
               alt="Ghanaian school pupils learning happily in classroom"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.72] contrast-[1.08]"
+              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.22] contrast-[1.08] saturate-[0.85] scale-105 pointer-events-none"
             />
 
-            {/* Cinematic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-950/30 to-slate-950/80" />
+            {/* Ambient Lighting & Luxury Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/95 via-slate-950/80 to-slate-950/98 backdrop-blur-[1px]" />
+            <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-1/2 right-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-[90px] pointer-events-none" />
 
-            {/* Top Institutional Seal & Logo */}
+            {/* Top Institutional Header */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-1 ring-white/20 shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-blue-600/20 ring-1 ring-white/20 shrink-0">
                   SOS
                 </div>
                 <div>
@@ -232,70 +233,102 @@ export const AuthScreens: React.FC = () => {
                     <span className="font-extrabold text-lg text-white tracking-tight leading-none">
                       SchoolOS
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-cyan-300 border border-white/20">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-cyan-300 border border-white/15">
                       Ghana
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300 font-medium mt-1">
-                    Basic & Junior High School Operating System
+                  <p className="text-[11px] text-slate-400 font-medium mt-1">
+                    Basic & Junior High Operating System
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] text-slate-300 font-medium">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[11px] text-slate-300 font-medium backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
                 <span>GES Compliant</span>
               </div>
             </div>
 
-            {/* Center Editorial Institutional Statement */}
-            <div className="relative z-10 space-y-6 my-auto max-w-lg">
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs font-semibold">
+            {/* Center Editorial Focus: Simple, Spacious, Exclusive */}
+            <div className="relative z-10 space-y-7 my-auto max-w-lg">
+              <div className="space-y-3.5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-400/20 text-xs font-medium backdrop-blur-md">
                   <GraduationCap className="w-3.5 h-3.5 text-cyan-300" />
                   <span>Republic of Ghana Education Standards</span>
                 </div>
-                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight">
+                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-[1.18]">
                   Modernizing Basic & JHS Education Across Ghana.
                 </h1>
-                <p className="text-sm text-slate-300 leading-relaxed font-normal">
-                  Standardized terminal report cards with 30/70 continuous assessment, BECE stanine evaluation, automated feeding fee registers, and instant Mobile Money reconciliations.
+                <p className="text-sm text-slate-300/90 leading-relaxed font-normal">
+                  Unified 30/70 continuous assessment, BECE stanine analytics, and automated Mobile Money reconciliations — built for the country’s leading schools.
                 </p>
               </div>
 
-              {/* Three Institutional Pillars */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="p-3 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-white/10">
-                  <BookOpen className="w-4 h-4 text-cyan-400 mb-1.5" />
-                  <h4 className="text-xs font-bold text-white">30% / 70% CA</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">GES Assessment Standard</p>
+              {/* Exclusive Institutional Glass Card */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-2xl relative space-y-3.5">
+                <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-400/20 flex items-center justify-center text-blue-400 shrink-0">
+                      <SchoolIcon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-white tracking-wide block">Bright Future Academy</span>
+                      <span className="text-[10px] text-slate-400">Greater Accra Region</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Active Institution
+                  </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-white/10">
-                  <CreditCard className="w-4 h-4 text-emerald-400 mb-1.5" />
-                  <h4 className="text-xs font-bold text-white">Instant MoMo</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">MTN & Telecel Receipts</p>
+                <p className="text-xs text-slate-200/95 italic leading-relaxed">
+                  “SchoolOS gave our administration complete clarity over terminal marks, instant fee receipts, and parent communication.”
+                </p>
+
+                <div className="flex items-center justify-between pt-1 text-[11px]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center">
+                      CA
+                    </div>
+                    <span className="font-semibold text-slate-200">Mrs. Cynthia Arthur</span>
+                  </div>
+                  <span className="text-slate-400 text-[10px]">Headmistress</span>
+                </div>
+              </div>
+
+              {/* 3 Clean Typographic Institutional Metrics (Uncongested, airy) */}
+              <div className="grid grid-cols-3 gap-3 pt-1">
+                <div className="space-y-0.5">
+                  <div className="text-lg xl:text-xl font-black text-white tracking-tight flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-cyan-400 inline" />
+                    <span>30 / 70</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-medium">GES Assessment</p>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-900/60 backdrop-blur-sm border border-white/10">
-                  <FileCheck2 className="w-4 h-4 text-purple-400 mb-1.5" />
-                  <h4 className="text-xs font-bold text-white">BECE Stanine</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Automatic Grading & Remarks</p>
+                <div className="space-y-0.5">
+                  <div className="text-lg xl:text-xl font-black text-white tracking-tight flex items-center gap-1.5">
+                    <FileCheck2 className="w-3.5 h-3.5 text-purple-400 inline" />
+                    <span>BECE</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-medium">Stanine Grading</p>
+                </div>
+
+                <div className="space-y-0.5">
+                  <div className="text-lg xl:text-xl font-black text-white tracking-tight flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-emerald-400 inline" />
+                    <span>Instant</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-medium">MoMo Receipts</p>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Testimonial & Security Notice */}
-            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-[10px]">
-                  CA
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-200 text-xs">Mrs. Cynthia Arthur</p>
-                  <p className="text-[10px] text-slate-400">Headmistress, Bright Future Academy</p>
-                </div>
-              </div>
+            {/* Bottom Institutional Seal & Encryption Notice */}
+            <div className="relative z-10 pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-400">
+              <span className="text-[11px] text-slate-400 font-medium">
+                Ghana Data Protection Act (Act 843)
+              </span>
 
               <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
                 <Lock className="w-3.5 h-3.5 text-slate-500" />
@@ -476,23 +509,24 @@ export const AuthScreens: React.FC = () => {
       {/* ========================================================================= */}
       {authScreen === 'signup' && (
         <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
-          {/* Left Column: Picture 2 With Joyful Ghanaian Pupils in Uniform */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-12 shrink-0 border-r border-slate-800">
-            {/* Background Image: Joyful Ghanaian pupils in blue school uniform */}
+          {/* Left Column: Exclusive Institutional Registration Showcase */}
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-12 shrink-0 border-r border-slate-800/80">
+            {/* Background Image: Deep Cinematic Atmosphere */}
             <img
               src="/assets/signup-hero.jpg"
               alt="Joyful Ghanaian pupils raising hands and singing in blue school uniforms"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.76] contrast-[1.08]"
+              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.22] contrast-[1.08] saturate-[0.85] scale-105 pointer-events-none"
             />
 
-            {/* Cinematic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-950/30 to-slate-950/80" />
+            {/* Ambient Lighting & Luxury Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/95 via-slate-950/80 to-slate-950/98 backdrop-blur-[1px]" />
+            <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-600/15 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-1/2 right-0 w-72 h-72 bg-blue-600/10 rounded-full blur-[90px] pointer-events-none" />
 
             {/* Top Brand Lockup */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-1 ring-white/20 shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-emerald-600/20 ring-1 ring-white/20 shrink-0">
                   SOS
                 </div>
                 <div>
@@ -500,72 +534,87 @@ export const AuthScreens: React.FC = () => {
                     <span className="font-extrabold text-lg text-white tracking-tight leading-none">
                       SchoolOS
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-cyan-300 border border-white/20">
-                      Registration
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-emerald-300 border border-white/15">
+                      Onboarding
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300 font-medium mt-1">
-                    Onboard Your Basic or Junior High School
+                  <p className="text-[11px] text-slate-400 font-medium mt-1">
+                    Basic & Junior High Operating System
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] text-slate-300 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Instant Onboarding</span>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[11px] text-slate-300 font-medium backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
+                <span>Instant Setup</span>
               </div>
             </div>
 
-            {/* Center Content: Ghanaian School Benefits */}
-            <div className="relative z-10 space-y-6 my-auto max-w-lg">
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 text-xs font-semibold">
+            {/* Center Content: Simple, Spacious, Exclusive */}
+            <div className="relative z-10 space-y-7 my-auto max-w-lg">
+              <div className="space-y-3.5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/20 text-xs font-medium backdrop-blur-md">
                   <Award className="w-3.5 h-3.5 text-emerald-300" />
                   <span>Trusted by Private & Public Basic Schools</span>
                 </div>
-                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight">
-                  Deploy Your Digital School Management System Today.
+                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-[1.18]">
+                  Empower Your School With Digital Precision.
                 </h1>
-                <p className="text-sm text-slate-300 leading-relaxed font-normal">
-                  Everything your school administration needs: student enrollment registries, continuous assessment marksheets, terminal report card generators, and fee collection reconciliation.
+                <p className="text-sm text-slate-300/90 leading-relaxed font-normal">
+                  Everything your administration needs: official terminal marksheets, automatic 30/70 weighting, and real-time fee reconciliations.
                 </p>
               </div>
 
-              {/* Feature Checklist */}
-              <div className="space-y-2.5 pt-2">
-                <div className="flex items-start gap-2.5 text-xs text-slate-200">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
-                  </div>
-                  <div>
-                    <strong className="text-white">Ghanaian Standard Terminal Reports:</strong> Automatic 30% class test + 70% exam weighting with headmistress and form teacher auto-remarks.
-                  </div>
+              {/* Exclusive Institutional Glass Card */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-2xl relative space-y-3.5">
+                <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+                  <span className="text-xs font-semibold text-white tracking-wide">Standard Compliance Suite</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-cyan-300 border border-blue-500/20">
+                    Ghana GES Standard
+                  </span>
                 </div>
 
-                <div className="flex items-start gap-2.5 text-xs text-slate-200">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
+                <div className="space-y-2.5 text-xs text-slate-300">
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Standardized Terminal Reports with Stanine Evaluation</span>
                   </div>
-                  <div>
-                    <strong className="text-white">Dedicated Feeding Fees Ledger:</strong> Separate billing and daily meal attendance tracking for nursery, primary, and JHS pupils.
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Automated School & Feeding Fees Ledger</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Instant Parent MoMo Payments & SMS Alerts</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-start gap-2.5 text-xs text-slate-200">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
-                  </div>
-                  <div>
-                    <strong className="text-white">Direct Parent SMS Alerts & MoMo:</strong> Keep parents informed on exam performance and receive payments with instant receipts.
-                  </div>
+              {/* 3 Clean Typographic Institutional Metrics */}
+              <div className="grid grid-cols-3 gap-3 pt-1">
+                <div className="space-y-0.5">
+                  <div className="text-lg xl:text-xl font-black text-white tracking-tight">100%</div>
+                  <p className="text-[11px] text-slate-400 font-medium">Audit Ready</p>
+                </div>
+
+                <div className="space-y-0.5">
+                  <div className="text-lg xl:text-xl font-black text-white tracking-tight">30 / 70</div>
+                  <p className="text-[11px] text-slate-400 font-medium">GES CA Engine</p>
+                </div>
+
+                <div className="space-y-0.5">
+                  <div className="text-lg xl:text-xl font-black text-white tracking-tight">Zero</div>
+                  <p className="text-[11px] text-slate-400 font-medium">Setup Friction</p>
                 </div>
               </div>
             </div>
 
             {/* Bottom Security Compliance Notice */}
-            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-              <span className="text-slate-300 font-medium">Compliance: Ghana Data Protection Act 2012 (Act 843)</span>
-              <span className="text-slate-400">Zero Setup Fees</span>
+            <div className="relative z-10 pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-400">
+              <span className="text-[11px] text-slate-400 font-medium">
+                Ghana Data Protection Act (Act 843)
+              </span>
+              <span className="text-[11px] text-slate-400">No Credit Card Required</span>
             </div>
           </div>
 
