@@ -138,6 +138,22 @@ export interface AssessmentRecord {
   teacherComment: string;
 }
 
+export type ReportCardStatus =
+  | 'draft'
+  | 'submitted_for_inspection'
+  | 'inspected_approved'
+  | 'sent_to_parent';
+
+export interface ReportCardSubject {
+  subjectName: string;
+  classwork: number;
+  homework: number;
+  exam: number;
+  total: number;
+  grade: string;
+  remarks: string;
+}
+
 export interface ReportCard {
   id: string;
   studentId: string;
@@ -148,15 +164,7 @@ export interface ReportCard {
   term: 'Term 1' | 'Term 2' | 'Term 3';
   attendanceDaysPresent: number;
   attendanceTotalDays: number;
-  subjects: {
-    subjectName: string;
-    classwork: number;
-    homework: number;
-    exam: number;
-    total: number;
-    grade: string;
-    remarks: string;
-  }[];
+  subjects: ReportCardSubject[];
   overallAverage: number;
   classPosition: number;
   classTotalStudents: number;
@@ -164,7 +172,38 @@ export interface ReportCard {
   headteacherRemarks: string;
   promotionStatus: 'Promoted' | 'Repeated' | 'Pending' | 'Advance with Support';
   nextTermBegins: string;
+  // Inspection & Dispatch workflow
+  status?: ReportCardStatus;
+  parentId?: string;
+  parentName?: string;
+  parentPhone?: string;
+  parentEmail?: string;
+  classTeacherName?: string;
+  inspectedBy?: string;
+  inspectedAt?: string;
+  inspectionNotes?: string;
+  sentByTeacher?: string;
+  sentAt?: string;
+  sentChannels?: ('portal' | 'sms' | 'whatsapp')[];
+  teacherNoteToParent?: string;
 }
+
+export interface StudentReportCardRecord extends ReportCard {
+  status: ReportCardStatus;
+  parentId: string;
+  parentName: string;
+  parentPhone?: string;
+  parentEmail?: string;
+  classTeacherName?: string;
+  inspectedBy?: string;
+  inspectedAt?: string;
+  inspectionNotes?: string;
+  sentByTeacher?: string;
+  sentAt?: string;
+  sentChannels?: ('portal' | 'sms' | 'whatsapp')[];
+  teacherNoteToParent?: string;
+}
+
 
 export type FeeCategory =
   | 'School Fees'

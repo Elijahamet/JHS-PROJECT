@@ -19,6 +19,8 @@ import {
   SchoolNotification,
   ChatMessage,
   ParentNotificationRecord,
+  StudentReportCardRecord,
+  ReportCardStatus,
 } from '../types';
 import {
   mockCurrentSchool,
@@ -40,6 +42,7 @@ import {
   mockNotifications,
   mockChatMessages,
   mockParentNotifications,
+  mockReportCards,
 } from '../data/mockData';
 
 interface AppContextType {
@@ -110,6 +113,16 @@ interface AppContextType {
   sendParentNotification: (notification: Omit<ParentNotificationRecord, 'id' | 'sentAt' | 'sentBy' | 'status' | 'deliveredCount' | 'recipientCount'>) => void;
   isSendParentNotificationOpen: boolean;
   setIsSendParentNotificationOpen: (open: boolean) => void;
+
+  // Terminal Report Cards Inspection & Parent Dispatch Workflow
+  reportCards: StudentReportCardRecord[];
+  submitReportForInspection: (reportId: string) => void;
+  inspectAndApproveReport: (reportId: string, headteacherRemarks: string, notes?: string) => void;
+  rejectReportInspection: (reportId: string, reason: string) => void;
+  sendReportToParent: (reportId: string, channels?: ('portal' | 'sms' | 'whatsapp')[], teacherNote?: string) => void;
+  bulkApproveReports: (classId: string, remarks?: string) => void;
+  bulkSendApprovedReports: (classId: string, channels?: ('portal' | 'sms' | 'whatsapp')[]) => void;
+  updateReportCardData: (reportId: string, updates: Partial<StudentReportCardRecord>) => void;
 
   // Modals
   isAddStudentOpen: boolean;
@@ -239,6 +252,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Parent Notifications
   const [parentNotifications, setParentNotifications] = useState<ParentNotificationRecord[]>(mockParentNotifications);
   const [isSendParentNotificationOpen, setIsSendParentNotificationOpen] = useState(false);
+
+  // Terminal Report Cards Inspection & Dispatch Workflow
+  const [reportCards, setReportCards] = useState<StudentReportCardRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_report_cards_v2');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached report cards', e);
+    }
+    return mockReportCards;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_report_cards_v2', JSON.stringify(reportCards));
+    } catch (e) {
+      console.warn('Failed to save report cards to storage', e);
+    }
+  }, [reportCards]);
 
   // Modals
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
@@ -654,6 +686,195 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setCurrentNav('communications');
   };
 
+  // Terminal Report Cards Inspection & Parent Dispatch Workflow
+  const submitReportForInspection = (reportId: string) => {
+    setReportCards((prev) =>
+      prev.map((r) => (r.id === reportId ? { ...r, status: 'submitted_for_inspection' as const } : r))
+    );
+    const target = reportCards.find((r) => r.id === reportId);
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: 'Report Submitted for Inspection',
+      message: `Form Teacher submitted terminal report card for ${target?.studentName || 'Student'} (${target?.className || 'JHS 2A'}) for administrative inspection.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'results',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const inspectAndApproveReport = (reportId: string, headteacherRemarks: string, notes?: string) => {
+    const timestamp = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    let approvedStudent = '';
+    let approvedClass = '';
+    let approvedParent = '';
+    setReportCards((prev) =>
+      prev.map((r) => {
+        if (r.id === reportId) {
+          approvedStudent = r.studentName;
+          approvedClass = r.className;
+          approvedParent = r.parentName;
+          return {
+            ...r,
+            status: 'inspected_approved' as const,
+            headteacherRemarks: headteacherRemarks || r.headteacherRemarks,
+            inspectedBy: currentUser.name || 'Mrs. Cynthia Arthur (Headmistress)',
+            inspectedAt: timestamp,
+            inspectionNotes: notes || 'Verified against continuous assessment marks and curriculum requirements. Endorsed by Headmistress.',
+          };
+        }
+        return r;
+      })
+    );
+
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: 'Report Card Inspected & Approved',
+      message: `Headmistress Mrs. Cynthia Arthur has inspected and approved the terminal report for ${approvedStudent} (${approvedClass}). The Form Teacher may now dispatch this report to ${approvedParent}.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'teacher-reports',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const rejectReportInspection = (reportId: string, reason: string) => {
+    setReportCards((prev) =>
+      prev.map((r) => (r.id === reportId ? { ...r, status: 'draft' as const, inspectionNotes: `Revision requested: ${reason}` } : r))
+    );
+  };
+
+  const sendReportToParent = (
+    reportId: string,
+    channels: ('portal' | 'sms' | 'whatsapp')[] = ['portal', 'sms'],
+    teacherNote?: string
+  ) => {
+    const target = reportCards.find((r) => r.id === reportId);
+    if (!target) return;
+
+    const timestamp = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    setReportCards((prev) =>
+      prev.map((r) => {
+        if (r.id === reportId) {
+          return {
+            ...r,
+            status: 'sent_to_parent' as const,
+            sentByTeacher: currentUser.name || 'Mr. Emmanuel Darko (Form Master)',
+            sentAt: timestamp,
+            sentChannels: channels,
+            teacherNoteToParent: teacherNote || `Official inspected terminal report card dispatched for ${r.studentName}.`,
+          };
+        }
+        return r;
+      })
+    );
+
+    const pNotif: ParentNotificationRecord = {
+      id: `pnotif_${Date.now()}`,
+      title: `Official Report Card Delivered: ${target.studentName}`,
+      message: `Dear ${target.parentName}, the official inspected terminal report card for ${target.studentName} (${target.className}) has been signed by the Headmistress and released. Overall average: ${target.overallAverage}%, Position: ${target.classPosition}th of ${target.classTotalStudents}. ${teacherNote || ''}`,
+      category: 'academic',
+      targetAudience: 'Individual',
+      targetDetail: target.parentName,
+      channels: ['in_app', 'sms'],
+      priority: 'Important',
+      sentAt: 'Just now',
+      sentBy: currentUser.name || 'Form Master',
+      recipientCount: 1,
+      deliveredCount: 1,
+      status: 'Delivered',
+    };
+    setParentNotifications((prev) => [pNotif, ...prev]);
+
+    const appNotif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Terminal Report Card Delivered: ${target.studentName}`,
+      message: `The official inspected Term 2 report card for your ward ${target.studentName} is now ready to view and download.`,
+      type: 'attendance',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'parent-reports',
+    };
+    setNotifications((prev) => [appNotif, ...prev]);
+  };
+
+  const bulkApproveReports = (classId: string, remarks?: string) => {
+    const timestamp = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    setReportCards((prev) =>
+      prev.map((r) => {
+        if (r.status === 'submitted_for_inspection' || r.status === 'draft') {
+          return {
+            ...r,
+            status: 'inspected_approved' as const,
+            headteacherRemarks: remarks || r.headteacherRemarks || 'Terminal marks and conduct inspected and approved by Headmistress.',
+            inspectedBy: currentUser.name || 'Mrs. Cynthia Arthur (Headmistress)',
+            inspectedAt: timestamp,
+            inspectionNotes: 'Bulk administrative inspection completed and signed.',
+          };
+        }
+        return r;
+      })
+    );
+
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: 'Class Reports Inspected & Endorsed',
+      message: `All terminal reports for ${classId || 'JHS 2A'} have been approved by the Headmistress. Teachers can now send them to parents.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'teacher-reports',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const bulkSendApprovedReports = (classId: string, channels: ('portal' | 'sms' | 'whatsapp')[] = ['portal', 'sms']) => {
+    const timestamp = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    let count = 0;
+    setReportCards((prev) =>
+      prev.map((r) => {
+        if (r.status === 'inspected_approved') {
+          count++;
+          return {
+            ...r,
+            status: 'sent_to_parent' as const,
+            sentByTeacher: currentUser.name || 'Mr. Emmanuel Darko (Form Master)',
+            sentAt: timestamp,
+            sentChannels: channels,
+            teacherNoteToParent: 'Official terminal report card dispatched to parent.',
+          };
+        }
+        return r;
+      })
+    );
+
+    const pNotif: ParentNotificationRecord = {
+      id: `pnotif_${Date.now()}`,
+      title: 'Class Terminal Reports Released to Parents',
+      message: `Official inspected report cards for ${classId || 'JHS 2A'} have been dispatched to parents by the class teacher.`,
+      category: 'academic',
+      targetAudience: 'Class',
+      targetDetail: `${classId || 'JHS 2A'} Parents`,
+      channels: ['in_app', 'sms'],
+      priority: 'Important',
+      sentAt: 'Just now',
+      sentBy: currentUser.name || 'Form Master',
+      recipientCount: count || 34,
+      deliveredCount: count || 34,
+      status: 'Delivered',
+    };
+    setParentNotifications((prev) => [pNotif, ...prev]);
+  };
+
+  const updateReportCardData = (reportId: string, updates: Partial<StudentReportCardRecord>) => {
+    setReportCards((prev) =>
+      prev.map((r) => (r.id === reportId ? { ...r, ...updates } : r))
+    );
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -709,6 +930,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         sendParentNotification,
         isSendParentNotificationOpen,
         setIsSendParentNotificationOpen,
+        reportCards,
+        submitReportForInspection,
+        inspectAndApproveReport,
+        rejectReportInspection,
+        sendReportToParent,
+        bulkApproveReports,
+        bulkSendApprovedReports,
+        updateReportCardData,
         isAddStudentOpen,
         setIsAddStudentOpen,
         isAddTeacherOpen,

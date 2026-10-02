@@ -11,6 +11,7 @@ import {
   Edit3,
   X,
   FileSpreadsheet,
+  ShieldCheck,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -53,7 +54,7 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
   isModal = false,
   onClose,
 }) => {
-  const { currentSchool, students } = useApp();
+  const { currentSchool, students, reportCards } = useApp();
 
   // Student and metadata state
   const [studentName, setStudentName] = useState(initialStudentName);
@@ -61,6 +62,12 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
   const [className, setClassName] = useState(initialClassName);
   const [schoolName, setSchoolName] = useState(
     initialSchoolName || currentSchool?.name || 'Salford High School'
+  );
+
+  const matchingReport = reportCards.find(
+    (r) =>
+      r.studentName.toLowerCase().includes(studentName.toLowerCase()) ||
+      studentName.toLowerCase().includes(r.studentName.toLowerCase())
   );
 
   // Subject table state (Add, Edit, Delete CRUD)
@@ -673,6 +680,36 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
               placeholder="Enter teacher comments and terminal academic remarks..."
             />
           </div>
+
+          {/* Official Administrative Endorsement Stamp (Displayed when inspected/sent) */}
+          {matchingReport && (matchingReport.status === 'inspected_approved' || matchingReport.status === 'sent_to_parent') && (
+            <div className="bg-white/95 border-2 border-[#134B70] rounded-sm p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-full border-2 border-emerald-600 flex items-center justify-center text-emerald-700 bg-emerald-50 shrink-0">
+                  <ShieldCheck className="w-7 h-7" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#134B70] block">
+                    Ghana Education Service • Official School Endorsement & Audit
+                  </span>
+                  <p className="text-xs font-bold text-slate-900 mt-0.5">
+                    Inspected & Endorsed by {matchingReport.inspectedBy || 'Mrs. Cynthia Arthur (Headmistress)'}
+                  </p>
+                  <p className="text-[11px] text-slate-600 italic mt-0.5">
+                    &ldquo;{matchingReport.headteacherRemarks}&rdquo;
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-right sm:border-l sm:border-slate-300 sm:pl-4 shrink-0">
+                <span className="text-[10px] text-slate-500 uppercase font-bold block">Terminal Clearance</span>
+                <span className="text-xs font-extrabold text-emerald-700 uppercase bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300 inline-block">
+                  {matchingReport.status === 'sent_to_parent' ? '✓ Dispatched to Parent' : '✓ Inspected & Approved'}
+                </span>
+                <span className="text-[10px] text-slate-400 block mt-0.5 font-mono">{matchingReport.inspectedAt || 'Oct 2026'}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

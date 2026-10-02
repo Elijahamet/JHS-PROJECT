@@ -10,6 +10,12 @@ import {
   Receipt,
   Download,
   MessageSquare,
+  Clock,
+  AlertCircle,
+  FileSpreadsheet,
+  Send,
+  Printer,
+  Eye,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -23,9 +29,12 @@ interface ParentPortalProps {
 
 export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview' }) => {
   const {
+    currentUser,
     students,
     routes,
     announcements,
+    reportCards,
+    setSelectedStudentId,
     setIsReportCardModalOpen,
     setSelectedReceiptPayment,
     addPayment,
@@ -46,18 +55,20 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
   const [paymentSuccessToast, setPaymentSuccessToast] = useState<string | null>(null);
 
   // Primary linked student for parent persona
-  const child = students[0] || {
+  const child = students.find((s) => s.id === currentUser?.linkedStudentId) || students[0] || {
     id: 'std_01',
     studentId: 'BFA-2024-001',
     firstName: 'Kofi',
-    lastName: 'Osei',
-    className: 'Basic 4A',
+    lastName: 'Mensah',
+    className: 'JHS 2A',
     photoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=256',
     schoolFeeBalance: 0,
     feedingFeeBalance: 250,
     attendanceRate: 96.5,
-    lastGradeAverage: 84.5,
+    lastGradeAverage: 88.4,
   };
+
+  const childReport = reportCards.find((r) => r.studentId === child.id) || reportCards[0];
 
   const busRoute = routes[0] || {
     id: 'route_01',
@@ -312,77 +323,286 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
       {/* 2. REPORT CARD TAB */}
       {/* ========================================================================= */}
       {activeTab === 'reports' && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 block">
-                Official Terminal Assessment
-              </span>
-              <h2 className="text-xl font-bold text-slate-900">Terminal Report Card • Term 2</h2>
-              <p className="text-xs text-slate-500 mt-0.5">GES Approved Continuous Assessment & Examination Terminal Marksheet.</p>
-            </div>
-
-            <Button
-              size="sm"
-              variant="primary"
-              icon={Download}
-              onClick={() => setIsReportCardModalOpen(true)}
-            >
-              Print / Download Official PDF
-            </Button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] tracking-wider">
-                  <th className="py-3 px-4 font-semibold">Subject</th>
-                  <th className="py-3 px-3 font-semibold text-center">Class Score (30%)</th>
-                  <th className="py-3 px-3 font-semibold text-center">Exam Score (70%)</th>
-                  <th className="py-3 px-3 font-bold text-center">Total (100%)</th>
-                  <th className="py-3 px-3 font-semibold text-center">Grade</th>
-                  <th className="py-3 px-4 font-semibold text-right">Teacher Remark</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {subjectScores.map((sub, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/70">
-                    <td className="py-3 px-4 font-bold text-slate-900">{sub.name}</td>
-                    <td className="py-3 px-3 text-center text-slate-700">{sub.classScore}</td>
-                    <td className="py-3 px-3 text-center text-slate-700">{sub.examScore}</td>
-                    <td className="py-3 px-3 text-center font-bold text-blue-700">{sub.total}</td>
-                    <td className="py-3 px-3 text-center">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Grade {sub.grade}
+        <div className="space-y-6">
+          {childReport?.status === 'sent_to_parent' ? (
+            /* A. OFFICIAL DISPATCHED REPORT CARD (RELEASED TO PARENT) */
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-6">
+              {/* Official Seal Banner */}
+              <div className="p-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 rounded-xl text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-emerald-500/40 shadow-sm">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center shrink-0 font-bold shadow-md">
+                    <ShieldCheck className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                        Official Terminal Report Delivered
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-600 font-medium">
-                      {sub.remark}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      <span className="text-xs text-slate-300">• Verified by Administration</span>
+                    </div>
+                    <h3 className="text-base font-bold text-white mt-0.5">
+                      Inspected & Approved by Headmistress {childReport.inspectedBy || 'Mrs. Cynthia Arthur'}
+                    </h3>
+                    <p className="text-[11px] text-emerald-200">
+                      Dispatched by {childReport.sentByTeacher || 'Mr. Emmanuel Darko (Form Master)'} on {childReport.sentAt || 'Recently'} via {childReport.sentChannels?.join(', ') || 'Portal & SMS'}.
+                    </p>
+                  </div>
+                </div>
 
-          {/* Teacher & Headteacher Evaluation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-100 text-xs">
-            <div className="p-4 bg-slate-50 rounded-xl space-y-1">
-              <span className="font-bold text-slate-900 uppercase text-[10px] tracking-wider">Class Teacher&apos;s Remarks</span>
-              <p className="text-slate-700 leading-relaxed">
-                &ldquo;An exceptional and diligent pupil who demonstrates leadership and analytical acumen. Keep up the high standard!&rdquo;
-              </p>
-              <p className="text-[11px] text-slate-500 font-medium pt-1">— Mr. Emmanuel Darko (Form Master)</p>
-            </div>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  icon={Download}
+                  onClick={() => {
+                    setSelectedStudentId(child.id);
+                    setIsReportCardModalOpen(true);
+                  }}
+                >
+                  Download Official Report PDF
+                </Button>
+              </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl space-y-1">
-              <span className="font-bold text-slate-900 uppercase text-[10px] tracking-wider">Headteacher&apos;s Recommendation</span>
-              <p className="text-slate-700 leading-relaxed">
-                &ldquo;Outstanding terminal performance. Promoted with credit standing.&rdquo;
-              </p>
-              <p className="text-[11px] text-slate-500 font-medium pt-1">— Mrs. Cynthia Arthur (Headteacher)</p>
+              {/* Teacher's Personal Message to Parent */}
+              {childReport.teacherNoteToParent && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl space-y-1 text-xs">
+                  <span className="font-bold text-blue-900 uppercase text-[10px] tracking-wider flex items-center gap-1.5">
+                    <Send className="w-3.5 h-3.5 text-blue-700" />
+                    Teacher&apos;s Dispatch Message to {child.parentName || 'Parent'}:
+                  </span>
+                  <p className="text-slate-800 leading-relaxed font-medium">
+                    &ldquo;{childReport.teacherNoteToParent}&rdquo;
+                  </p>
+                  <span className="text-[10px] text-slate-500 block pt-0.5">
+                    — {childReport.sentByTeacher || 'Mr. Emmanuel Darko (Form Master)'}
+                  </span>
+                </div>
+              )}
+
+              {/* Academic Highlights */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Terminal Average</span>
+                  <p className="text-lg font-black text-blue-700 mt-0.5">{childReport.overallAverage}%</p>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Class Position</span>
+                  <p className="text-lg font-black text-slate-900 mt-0.5">{childReport.classPosition}th of {childReport.classTotalStudents}</p>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Attendance</span>
+                  <p className="text-lg font-black text-emerald-700 mt-0.5">{childReport.attendanceDaysPresent} / {childReport.attendanceTotalDays} Days</p>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Promotion Status</span>
+                  <p className="text-sm font-bold text-purple-700 mt-1">{childReport.promotionStatus}</p>
+                </div>
+              </div>
+
+              {/* Subject Table */}
+              <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+                      <th className="py-2.5 px-3 font-semibold">Subject</th>
+                      <th className="py-2.5 px-2 font-semibold text-center">Class Score (30%)</th>
+                      <th className="py-2.5 px-2 font-semibold text-center">Exam Score (70%)</th>
+                      <th className="py-2.5 px-2 font-bold text-center">Total (100%)</th>
+                      <th className="py-2.5 px-2 font-semibold text-center">Grade</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Teacher Remark</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(childReport.subjects && childReport.subjects.length > 0 ? childReport.subjects : [
+                      { subjectName: 'Mathematics', classwork: 18, homework: 9, exam: 58, total: 85, grade: '1', remarks: 'Excellent' },
+                      { subjectName: 'English Language', classwork: 18, homework: 8, exam: 58, total: 84, grade: '1', remarks: 'Excellent' },
+                      { subjectName: 'Integrated Science', classwork: 18, homework: 9, exam: 61, total: 88, grade: '1', remarks: 'Excellent' },
+                      { subjectName: 'Social Studies', classwork: 17, homework: 8, exam: 57, total: 82, grade: '1', remarks: 'Very Good' },
+                      { subjectName: 'Computing / ICT', classwork: 19, homework: 9, exam: 65, total: 93, grade: '1', remarks: 'Highest' },
+                      { subjectName: 'French', classwork: 16, homework: 8, exam: 54, total: 78, grade: '2', remarks: 'Good' },
+                    ]).map((sub, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/70">
+                        <td className="py-2.5 px-3 font-bold text-slate-900">{sub.subjectName}</td>
+                        <td className="py-2.5 px-2 text-center text-slate-700">{sub.classwork + sub.homework}</td>
+                        <td className="py-2.5 px-2 text-center text-slate-700">{sub.exam}</td>
+                        <td className="py-2.5 px-2 text-center font-bold text-blue-700">{sub.total}</td>
+                        <td className="py-2.5 px-2 text-center">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Grade {sub.grade}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-right text-slate-600 font-medium">
+                          {sub.remarks}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Endorsements: Teacher & Headteacher Evaluation */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-100 text-xs">
+                <div className="p-4 bg-slate-50 rounded-xl space-y-1 border border-slate-200/80">
+                  <span className="font-bold text-slate-900 uppercase text-[10px] tracking-wider">
+                    Class Teacher&apos;s Qualitative Remarks
+                  </span>
+                  <p className="text-slate-700 leading-relaxed font-medium italic">
+                    &ldquo;{childReport.classTeacherRemarks}&rdquo;
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-medium pt-1">
+                    — {childReport.classTeacherName || 'Mr. Emmanuel Darko (Form Master)'}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-emerald-50/60 rounded-xl space-y-1 border border-emerald-200">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-emerald-950 uppercase text-[10px] tracking-wider flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      Official Headteacher Endorsement
+                    </span>
+                    <span className="px-1.5 py-0.5 bg-emerald-200 text-emerald-900 rounded text-[9px] font-bold uppercase">
+                      Audited
+                    </span>
+                  </div>
+                  <p className="text-slate-800 leading-relaxed font-medium">
+                    &ldquo;{childReport.headteacherRemarks}&rdquo;
+                  </p>
+                  <p className="text-[11px] text-emerald-800 font-bold pt-1">
+                    ✓ {childReport.inspectedBy || 'Mrs. Cynthia Arthur (Headmistress)'} • {childReport.inspectedAt || 'Endorsed'}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* B. REPORT CARD IN-PROGRESS TRACKER (PENDING INSPECTION OR DISPATCH) */
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 block">
+                      Official Terminal Assessment Pipeline
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                      Under Official Review
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-900 mt-0.5">
+                    Terminal Report Card • Term 2 (2024/2025)
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Official Ghanaian Basic & JHS Terminal Assessment for {child.firstName} {child.lastName}.
+                  </p>
+                </div>
+              </div>
+
+              {/* Progress Milestones */}
+              <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
+                  Official Report Card Release Milestones:
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                  {/* Step 1 */}
+                  <div className="p-3 bg-white rounded-lg border border-emerald-200 shadow-2xs space-y-1">
+                    <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>1. Marks Entry</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Classwork & Exams recorded by subject instructors.
+                    </p>
+                    <span className="text-[10px] font-bold text-emerald-700 block">✓ Completed</span>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className={`p-3 bg-white rounded-lg border shadow-2xs space-y-1 ${
+                    childReport?.status === 'inspected_approved'
+                      ? 'border-emerald-200 bg-emerald-50/20'
+                      : 'border-amber-200 bg-amber-50/20'
+                  }`}>
+                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                      {childReport?.status === 'inspected_approved' ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <Clock className="w-4 h-4 text-amber-600 animate-spin" />
+                      )}
+                      <span>2. Admin Inspection</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Headmistress audits marks and signs official remarks.
+                    </p>
+                    <span className="text-[10px] font-bold text-amber-800 block">
+                      {childReport?.status === 'inspected_approved' ? '✓ Approved by Admin' : '⏳ In Progress'}
+                    </span>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className={`p-3 bg-white rounded-lg border shadow-2xs space-y-1 ${
+                    childReport?.status === 'inspected_approved'
+                      ? 'border-blue-300 bg-blue-50/20'
+                      : 'border-slate-200 opacity-70'
+                  }`}>
+                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                      <Send className="w-4 h-4 text-blue-600" />
+                      <span>3. Teacher Dispatch</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Form Master sends report to {child.parentName || 'Parent'}.
+                    </p>
+                    <span className="text-[10px] font-bold text-blue-700 block">
+                      {childReport?.status === 'inspected_approved' ? '⚡ Ready for Send' : 'Pending Step 2'}
+                    </span>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-2xs space-y-1 opacity-70">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                      <ShieldCheck className="w-4 h-4 text-slate-400" />
+                      <span>4. Parent Download</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Official PDF unlocked on your dashboard.
+                    </p>
+                    <span className="text-[10px] font-bold text-slate-400 block">Pending Release</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Alert Banner */}
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3 text-amber-900 text-xs">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <h4 className="font-bold">
+                    Official Endorsement Protocol Active
+                  </h4>
+                  <p className="text-[11px] leading-relaxed">
+                    Under school governance, terminal report cards remain confidential until they have been officially inspected by the Headmistress (Mrs. Cynthia Arthur) and subsequently dispatched by the Form Teacher (Mr. Emmanuel Darko) directly to your parent account.
+                  </p>
+                  {childReport?.status === 'inspected_approved' && (
+                    <p className="text-[11px] font-semibold text-emerald-800 pt-1">
+                      Good news: Headmistress Mrs. Cynthia Arthur has already inspected and endorsed this report card! The form teacher can now release it to your portal and phone at any moment.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-[11px] text-slate-400">
+                  Registered Ward: <strong>{child.firstName} {child.lastName}</strong> ({child.className})
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon={Eye}
+                  onClick={() => {
+                    setSelectedStudentId(child.id);
+                    setIsReportCardModalOpen(true);
+                  }}
+                >
+                  Preview Working Draft Template
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

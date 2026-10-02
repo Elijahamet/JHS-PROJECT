@@ -18,6 +18,10 @@ import {
   Eye,
   Megaphone,
   ScanLine,
+  ShieldCheck,
+  Send,
+  Smartphone,
+  Mail,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -25,16 +29,33 @@ import { Button } from '../common/Button';
 import { ReportCardSheet } from './ReportCardSheet';
 import { PortalChatView } from './PortalChatView';
 import { StudentTestDiagnosticView } from './StudentTestDiagnosticView';
+import { StudentReportCardRecord } from '../../types';
 
 interface TeacherPortalProps {
   tab?: 'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat' | 'test-scanner';
 }
 
 export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit' }) => {
-  const { currentUser, setCurrentNav, setIsReportCardModalOpen, announcements } = useApp();
+  const {
+    currentUser,
+    setCurrentNav,
+    setIsReportCardModalOpen,
+    setSelectedStudentId,
+    announcements,
+    reportCards,
+    submitReportForInspection,
+    sendReportToParent,
+    bulkSendApprovedReports,
+  } = useApp();
 
   const [activeTab, setActiveTab] = useState<'cockpit' | 'classes' | 'attendance' | 'marks' | 'remarks' | 'announcements' | 'chat' | 'test-scanner'>(tab);
-  const [remarksSubTab, setRemarksSubTab] = useState<'generator' | 'roster'>('generator');
+  const [remarksSubTab, setRemarksSubTab] = useState<'dispatch' | 'generator' | 'roster'>('dispatch');
+  const [dispatchFilter, setDispatchFilter] = useState<'all' | 'ready' | 'sent' | 'pending'>('all');
+
+  // Dispatch to Parent Modal
+  const [dispatchModalReport, setDispatchModalReport] = useState<StudentReportCardRecord | null>(null);
+  const [selectedChannels, setSelectedChannels] = useState<('portal' | 'sms' | 'whatsapp')[]>(['portal', 'sms']);
+  const [teacherCustomNote, setTeacherCustomNote] = useState('');
 
   React.useEffect(() => {
     setActiveTab(tab);
@@ -576,7 +597,24 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
         <div className="space-y-6">
           {/* Sub Navigation Switcher */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-2xs no-print">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => setRemarksSubTab('dispatch')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  remarksSubTab === 'dispatch'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <Send className="w-4 h-4" />
+                <span>Parent Report Dispatch Desk</span>
+                {reportCards.filter((r) => r.status === 'inspected_approved').length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-400 text-slate-950 animate-pulse">
+                    {reportCards.filter((r) => r.status === 'inspected_approved').length} ready to send
+                  </span>
+                )}
+              </button>
+
               <button
                 onClick={() => setRemarksSubTab('generator')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
@@ -588,6 +626,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 <FileSpreadsheet className="w-4 h-4" />
                 <span>Report Card Generator</span>
               </button>
+
               <button
                 onClick={() => setRemarksSubTab('roster')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
@@ -613,7 +652,294 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
             </div>
           </div>
 
-          {/* 5A. Interactive Report Card Generator (Matches provided design) */}
+          {/* 5A. PARENT REPORT DISPATCH DESK (AFTER ADMIN INSPECTION) */}
+          {remarksSubTab === 'dispatch' && (
+            <div className="space-y-6">
+              {/* Executive Notice Banner */}
+              <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-5 text-white shadow-md border border-blue-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                      GES Inspection & Parent Release Policy
+                    </span>
+                    <span className="text-xs text-blue-200">• Form Master Desk</span>
+                  </div>
+                  <h3 className="text-lg font-black text-white">
+                    Send Inspected Reports to Specific Parents
+                  </h3>
+                  <p className="text-xs text-blue-200 max-w-2xl leading-relaxed">
+                    Once the School Administration / Headmistress has inspected and signed a student&apos;s terminal report, you can dispatch it to their specific parent via the Parent Portal and SMS text alerts.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      bulkSendApprovedReports('JHS 2A');
+                      setSaveToast('All approved report cards for JHS 2A have been dispatched to parents!');
+                      setTimeout(() => setSaveToast(null), 3500);
+                    }}
+                    disabled={reportCards.filter((r) => r.status === 'inspected_approved').length === 0}
+                    className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Dispatch All Approved Reports to Parents ({reportCards.filter((r) => r.status === 'inspected_approved').length})</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Status Overview Metric Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Class Total Pupils</span>
+                  <p className="text-xl font-black text-slate-900 mt-0.5">{reportCards.length}</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">Form: JHS 2A</p>
+                </div>
+
+                <div className="bg-white border border-amber-200 bg-amber-50/20 rounded-xl p-3.5 shadow-2xs">
+                  <span className="text-[10px] uppercase font-bold text-amber-700">Awaiting Admin Inspection</span>
+                  <p className="text-xl font-black text-amber-800 mt-0.5">
+                    {reportCards.filter((r) => r.status === 'submitted_for_inspection').length}
+                  </p>
+                  <p className="text-[10px] text-amber-600 mt-0.5">Under Headmistress Review</p>
+                </div>
+
+                <div className="bg-white border border-emerald-200 bg-emerald-50/20 rounded-xl p-3.5 shadow-2xs">
+                  <span className="text-[10px] uppercase font-bold text-emerald-700">Inspected & Ready to Send</span>
+                  <p className="text-xl font-black text-emerald-800 mt-0.5">
+                    {reportCards.filter((r) => r.status === 'inspected_approved').length}
+                  </p>
+                  <p className="text-[10px] text-emerald-600 mt-0.5">Admin approval granted</p>
+                </div>
+
+                <div className="bg-white border border-blue-200 bg-blue-50/20 rounded-xl p-3.5 shadow-2xs">
+                  <span className="text-[10px] uppercase font-bold text-blue-700">Delivered to Parents</span>
+                  <p className="text-xl font-black text-blue-800 mt-0.5">
+                    {reportCards.filter((r) => r.status === 'sent_to_parent').length}
+                  </p>
+                  <p className="text-[10px] text-blue-600 mt-0.5">Live on Parent Portals</p>
+                </div>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-2 flex-wrap text-xs">
+                {[
+                  { id: 'all', label: `All Reports (${reportCards.length})` },
+                  { id: 'ready', label: `Ready to Send (${reportCards.filter((r) => r.status === 'inspected_approved').length})` },
+                  { id: 'sent', label: `Dispatched to Parents (${reportCards.filter((r) => r.status === 'sent_to_parent').length})` },
+                  { id: 'pending', label: `Under Admin Inspection (${reportCards.filter((r) => r.status === 'submitted_for_inspection').length})` },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setDispatchFilter(tab.id as typeof dispatchFilter)}
+                    className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+                      dispatchFilter === tab.id
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Reports and Parents Roster */}
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs">
+                <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 text-xs">
+                  <div>
+                    <h3 className="font-bold text-slate-900 uppercase tracking-wider">
+                      Student Reports & Parent Delivery Channel Roster
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Deliver verified terminal report cards directly to each pupil&apos;s registered parent.
+                    </p>
+                  </div>
+                  <span className="text-slate-400 font-medium">JHS 2A Academic Term 2</span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+                        <th className="py-3 px-4 font-semibold">Student / Ward</th>
+                        <th className="py-3 px-3 font-semibold">Assigned Parent Contact</th>
+                        <th className="py-3 px-3 font-semibold text-center">Average / Pos.</th>
+                        <th className="py-3 px-4 font-semibold">Headmistress Inspection Status</th>
+                        <th className="py-3 px-4 font-semibold text-right">Parent Dispatch Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {reportCards
+                        .filter((r) => {
+                          if (dispatchFilter === 'ready') return r.status === 'inspected_approved';
+                          if (dispatchFilter === 'sent') return r.status === 'sent_to_parent';
+                          if (dispatchFilter === 'pending') return r.status === 'submitted_for_inspection';
+                          return true;
+                        })
+                        .map((report) => (
+                          <tr key={report.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-slate-900 block text-sm">
+                                {report.studentName}
+                              </span>
+                              <span className="text-[11px] font-mono text-slate-400">
+                                {report.studentIdCode} • {report.className}
+                              </span>
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <span className="font-semibold text-slate-800 block">
+                                {report.parentName}
+                              </span>
+                              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+                                <span>{report.parentPhone || '+233 24 000 0000'}</span>
+                                {report.parentEmail && <span className="text-slate-300">•</span>}
+                                <span className="truncate max-w-[120px]">{report.parentEmail}</span>
+                              </div>
+                            </td>
+
+                            <td className="py-3 px-3 text-center">
+                              <span className="font-bold text-slate-900 block text-sm">
+                                {report.overallAverage}%
+                              </span>
+                              <span className="text-[10px] font-semibold text-indigo-700 px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100">
+                                {report.classPosition}th in Class
+                              </span>
+                            </td>
+
+                            <td className="py-3 px-4 max-w-xs">
+                              {report.status === 'draft' && (
+                                <div className="space-y-1">
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                    Draft • Incomplete
+                                  </span>
+                                  <p className="text-[11px] text-slate-400">Not submitted to admin yet</p>
+                                </div>
+                              )}
+
+                              {report.status === 'submitted_for_inspection' && (
+                                <div className="space-y-1">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse flex items-center gap-1 w-max">
+                                    <Clock className="w-3 h-3" />
+                                    Awaiting Admin Inspection
+                                  </span>
+                                  <p className="text-[11px] text-amber-700 italic">
+                                    Under review by Headmistress Mrs. Cynthia Arthur
+                                  </p>
+                                </div>
+                              )}
+
+                              {report.status === 'inspected_approved' && (
+                                <div className="space-y-0.5">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1 w-max">
+                                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                                    Inspected & Endorsed by Admin
+                                  </span>
+                                  <p className="text-[11px] text-slate-600 line-clamp-1 italic">
+                                    &ldquo;{report.headteacherRemarks}&rdquo;
+                                  </p>
+                                  <span className="text-[10px] text-emerald-700 font-semibold block">
+                                    Approved by {report.inspectedBy || 'Mrs. Cynthia Arthur'} ({report.inspectedAt})
+                                  </span>
+                                </div>
+                              )}
+
+                              {report.status === 'sent_to_parent' && (
+                                <div className="space-y-0.5">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-900 border border-blue-300 flex items-center gap-1 w-max">
+                                    <CheckCircle2 className="w-3 h-3 text-blue-600" />
+                                    Delivered to Parent
+                                  </span>
+                                  <p className="text-[11px] text-slate-600">
+                                    Dispatched: {report.sentAt || 'Recently'} via {report.sentChannels?.join(', ') || 'Portal & SMS'}
+                                  </p>
+                                </div>
+                              )}
+                            </td>
+
+                            <td className="py-3 px-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                {report.status === 'draft' && (
+                                  <button
+                                    onClick={() => {
+                                      submitReportForInspection(report.id);
+                                      setSaveToast(`Report card for ${report.studentName} submitted to Admin for inspection.`);
+                                      setTimeout(() => setSaveToast(null), 3500);
+                                    }}
+                                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center gap-1 transition-colors"
+                                  >
+                                    <span>Submit for Inspection</span>
+                                  </button>
+                                )}
+
+                                {report.status === 'submitted_for_inspection' && (
+                                  <div className="text-right">
+                                    <span className="text-[11px] text-slate-400 italic block">
+                                      Locked (Awaiting Headmistress)
+                                    </span>
+                                    <button
+                                      disabled
+                                      className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed mt-1"
+                                      title="Admin inspection and signature required before sending to parents"
+                                    >
+                                      Send to Parent (Locked)
+                                    </button>
+                                  </div>
+                                )}
+
+                                {report.status === 'inspected_approved' && (
+                                  <button
+                                    onClick={() => {
+                                      setDispatchModalReport(report);
+                                      setTeacherCustomNote(
+                                        `Dear ${report.parentName}, please find the official inspected terminal report card for ${report.studentName} (${report.className}). Terminal Average: ${report.overallAverage}%, Position: ${report.classPosition}th of ${report.classTotalStudents}. Headmistress remarks have been officially endorsed.`
+                                      );
+                                    }}
+                                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all hover:scale-105"
+                                  >
+                                    <Send className="w-3.5 h-3.5" />
+                                    <span>Send to Parent</span>
+                                  </button>
+                                )}
+
+                                {report.status === 'sent_to_parent' && (
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    <button
+                                      onClick={() => {
+                                        setDispatchModalReport(report);
+                                        setTeacherCustomNote(
+                                          `Follow up: Updated terminal report card notice for ${report.studentName}.`
+                                        );
+                                      }}
+                                      className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
+                                    >
+                                      Re-send Alert
+                                    </button>
+                                  </div>
+                                )}
+
+                                <button
+                                  onClick={() => {
+                                    setSelectedStudentId(report.studentId);
+                                    setIsReportCardModalOpen(true);
+                                  }}
+                                  className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
+                                  title="Preview card"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5B. Interactive Report Card Generator (Matches provided design) */}
           {remarksSubTab === 'generator' && (
             <ReportCardSheet
               initialStudentName={jhsStudents.find((s) => s.id === selectedStudentForRemark)?.name || jhsStudents[0].name}
@@ -624,7 +950,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
             />
           )}
 
-          {/* 5B. Roster Remarks Form */}
+          {/* 5C. Roster Remarks Form */}
           {remarksSubTab === 'roster' && (
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
@@ -789,6 +1115,193 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
           onSyncScore={handleSyncDiagnosticScore}
           onBackToMarks={() => setActiveTab('marks')}
         />
+      )}
+
+      {/* ========================================================================= */}
+      {/* 9. DISPATCH TERMINAL REPORT CARD TO PARENT MODAL                          */}
+      {/* ========================================================================= */}
+      {dispatchModalReport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-xs">
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-fadeIn text-xs">
+            {/* Header */}
+            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-xs">
+                  <Send className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      Authorized Parent Dispatch
+                    </span>
+                    <span className="text-slate-400">• Form Master Release</span>
+                  </div>
+                  <h3 className="text-base font-bold text-white mt-0.5">
+                    Send Report Card: {dispatchModalReport.studentName}
+                  </h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setDispatchModalReport(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <CheckCircle2 className="w-5 h-5 hidden" />
+                <span className="text-sm font-bold">✕</span>
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Recipient Parent Card */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Designated Recipient Parent:
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">
+                    Registered Guardian
+                  </span>
+                </div>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm">{dispatchModalReport.parentName}</h4>
+                    <p className="text-slate-600 font-mono mt-0.5">
+                      Phone: <strong>{dispatchModalReport.parentPhone || '+233 24 456 7890'}</strong>
+                    </p>
+                    {dispatchModalReport.parentEmail && (
+                      <p className="text-slate-500 text-[11px] mt-0.5">
+                        Email: {dispatchModalReport.parentEmail}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Ward</span>
+                    <span className="font-bold text-slate-800">{dispatchModalReport.studentName}</span>
+                    <span className="text-[10px] text-slate-500 block">{dispatchModalReport.className}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Inspection Status Badge */}
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5 text-emerald-900">
+                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div>
+                  <span className="font-bold block text-xs">Official Administrative Clearance Verified</span>
+                  <p className="text-[11px] text-emerald-700 mt-0.5">
+                    Inspected & digitally endorsed by <strong>{dispatchModalReport.inspectedBy || 'Mrs. Cynthia Arthur (Headmistress)'}</strong> on {dispatchModalReport.inspectedAt || 'Recently'}.
+                  </p>
+                </div>
+              </div>
+
+              {/* Channel Selector */}
+              <div className="space-y-2">
+                <label className="block font-bold text-slate-800 uppercase tracking-wider text-[11px]">
+                  Select Delivery Channels for Parent:
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.includes('portal')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedChannels((prev) => [...prev, 'portal']);
+                        } else {
+                          setSelectedChannels((prev) => prev.filter((c) => c !== 'portal'));
+                        }
+                      }}
+                      className="rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <span className="font-bold text-slate-900 block">Parent Portal Instant Release</span>
+                      <span className="text-[11px] text-slate-500">Unlocks official PDF report card download on Mrs. Abena Osei&apos;s dashboard</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.includes('sms')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedChannels((prev) => [...prev, 'sms']);
+                        } else {
+                          setSelectedChannels((prev) => prev.filter((c) => c !== 'sms'));
+                        }
+                      }}
+                      className="rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <span className="font-bold text-slate-900 block">SMS Text Message Alert</span>
+                      <span className="text-[11px] text-slate-500">Sends instant SMS notification to {dispatchModalReport.parentPhone || '+233 24 456 7890'}</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.includes('whatsapp')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedChannels((prev) => [...prev, 'whatsapp']);
+                        } else {
+                          setSelectedChannels((prev) => prev.filter((c) => c !== 'whatsapp'));
+                        }
+                      }}
+                      className="rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <span className="font-bold text-slate-900 block">WhatsApp Summary Digest</span>
+                      <span className="text-[11px] text-slate-500">Sends terminal averages & grades directly to parent&apos;s WhatsApp</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Custom Teacher Note to Parent */}
+              <div>
+                <label className="block font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-1">
+                  Custom Teacher Note to Parent (Included in Notification):
+                </label>
+                <textarea
+                  rows={3}
+                  value={teacherCustomNote}
+                  onChange={(e) => setTeacherCustomNote(e.target.value)}
+                  className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 leading-relaxed font-medium"
+                  placeholder="Add a personalized message from the form master..."
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setDispatchModalReport(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sendReportToParent(dispatchModalReport.id, selectedChannels, teacherCustomNote);
+                  setSaveToast(
+                    `Official report card for ${dispatchModalReport.studentName} has been dispatched to ${dispatchModalReport.parentName}!`
+                  );
+                  setTimeout(() => setSaveToast(null), 4000);
+                  setDispatchModalReport(null);
+                }}
+                disabled={selectedChannels.length === 0}
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+                <span>Confirm & Send to Parent</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
