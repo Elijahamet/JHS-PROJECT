@@ -14,7 +14,7 @@ A comprehensive, modern school management platform tailored specifically for Gha
 - Complete student directory with stage filtering (Primary / JHS) and search.
 - Detailed student profile with photo, guardian details, and medical emergency notes.
 - Individual fee balance and transaction history.
-- Built-in Terminal Report Card generator and previewer.
+- Built-in Terminal Report Card generator and previewer
 
 ### 3. 💳 Ghanaian Fee & Payment Management
 - **School Fees**: Configurable fee structures per class/term, automated balance tracking.
