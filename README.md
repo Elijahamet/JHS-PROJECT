@@ -4,7 +4,6 @@
 A comprehensive, modern school management platform tailored specifically for Ghanaian Basic Schools and Junior High Schools (Primary 1–6 & JHS 1–3). Built with React 18, TypeScript, Tailwind CSS, and Vite.
 
 ---
-
 ## 🌟 Key Features
 
 ### 1. 📊 Executive Dashboard & KPIs
