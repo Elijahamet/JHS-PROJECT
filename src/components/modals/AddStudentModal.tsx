@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { useApp } from '../../context/AppContext';
+import { Users, Sparkles, Check, AlertCircle } from 'lucide-react';
 
 export const AddStudentModal: React.FC = () => {
-  const { isAddStudentOpen, setIsAddStudentOpen, addStudent, classes, routes } = useApp();
+  const { isAddStudentOpen, setIsAddStudentOpen, addStudent, classes, routes, parents } = useApp();
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -13,6 +14,7 @@ export const AddStudentModal: React.FC = () => {
     dateOfBirth: '2012-05-15',
     className: classes[0]?.name || '',
     classId: classes[0]?.id || '',
+    parentId: '',
     parentName: '',
     parentPhone: '',
     parentEmail: '',
@@ -49,6 +51,7 @@ export const AddStudentModal: React.FC = () => {
       dateOfBirth: '2012-05-15',
       className: classes[0]?.name || '',
       classId: classes[0]?.id || '',
+      parentId: '',
       parentName: '',
       parentPhone: '',
       parentEmail: '',
@@ -61,6 +64,14 @@ export const AddStudentModal: React.FC = () => {
       busRouteName: '',
     });
   };
+
+  // Live multi-ward / existing parent detection
+  const detectedExistingParent = parents.find((p) => {
+    if (formData.parentId && p.id === formData.parentId) return true;
+    if (formData.parentPhone && p.phone && p.phone.replace(/[\s\-()]/g, '') === formData.parentPhone.replace(/[\s\-()]/g, '')) return true;
+    if (formData.parentName && p.fullName.toLowerCase().trim() === formData.parentName.toLowerCase().trim()) return true;
+    return false;
+  });
 
   return (
     <Modal
@@ -185,9 +196,71 @@ export const AddStudentModal: React.FC = () => {
 
         {/* Section 2: Parent/Guardian Information */}
         <div>
-          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 pb-1 border-b border-slate-100">
-            2. Parent & Guardian Contact
+          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 pb-1 border-b border-slate-100 flex items-center justify-between">
+            <span>2. Parent & Guardian Contact</span>
+            {detectedExistingParent && (
+              <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-300">
+                Multi-Ward Family Link
+              </span>
+            )}
           </h4>
+
+          {/* Existing Parent Quick-Link Selector */}
+          {parents.length > 0 && (
+            <div className="mb-3.5 p-3 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+              <label className="block text-slate-700 font-semibold text-[11px] uppercase tracking-wider">
+                Select Existing Parent to Link Sibling (Optional)
+              </label>
+              <select
+                value={formData.parentId}
+                onChange={(e) => {
+                  const sel = parents.find((p) => p.id === e.target.value);
+                  if (sel) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      parentId: sel.id,
+                      parentName: sel.fullName,
+                      parentPhone: sel.phone,
+                      parentEmail: sel.email,
+                      parentRelationship: sel.relationship,
+                      residentialAddress: sel.residentialAddress,
+                    }));
+                  } else {
+                    setFormData((prev) => ({ ...prev, parentId: '' }));
+                  }
+                }}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 font-medium"
+              >
+                <option value="">-- Choose registered parent or enter details below --</option>
+                {parents.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.fullName} ({p.relationship}) — {p.childrenNames.length} ward{p.childrenNames.length > 1 ? 's' : ''} enrolled ({p.childrenNames.join(', ')})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Sibling / Multi-Ward Detection Indicator */}
+          {detectedExistingParent && (
+            <div className="mb-3.5 p-3.5 bg-amber-50 border border-amber-300 rounded-xl flex items-start gap-2.5 text-xs text-amber-950 animate-fadeIn">
+              <Users className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-bold flex items-center gap-1.5">
+                  <span>Parent Already Registered — Multi-Ward Family Linking</span>
+                  <span className="px-1.5 py-0.2 bg-amber-200 text-amber-900 rounded font-bold text-[10px]">
+                    Sibling Identified
+                  </span>
+                </p>
+                <p className="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
+                  <strong>{detectedExistingParent.fullName}</strong> is registered on the system with {detectedExistingParent.childrenNames.length} enrolled ward{detectedExistingParent.childrenNames.length > 1 ? 's' : ''}:{' '}
+                  <span className="font-semibold text-slate-900">{detectedExistingParent.childrenNames.join(', ')}</span>.
+                  Enrolling this student will automatically update their family account to {detectedExistingParent.childrenNames.length + 1} students in the directory.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-slate-700 font-medium mb-1">

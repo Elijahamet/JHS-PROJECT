@@ -179,8 +179,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   // Data collections
-  const [students, setStudents] = useState<Student[]>(mockStudents);
-  const [parents] = useState<Parent[]>(mockParents);
+  const [students, setStudents] = useState<Student[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_students_v6');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached students', e);
+    }
+    return mockStudents;
+  });
+
+  const [parents, setParents] = useState<Parent[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_parents_v6');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached parents', e);
+    }
+    return mockParents;
+  });
   const [teachers, setTeachers] = useState<Teacher[]>(() => {
     try {
       const saved = localStorage.getItem('schoolos_teachers_v6');
@@ -216,6 +233,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       console.warn('Failed to save classes to storage', e);
     }
   }, [classes]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_students_v6', JSON.stringify(students));
+    } catch (e) {
+      console.warn('Failed to save students to storage', e);
+    }
+  }, [students]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_parents_v6', JSON.stringify(parents));
+    } catch (e) {
+      console.warn('Failed to save parents to storage', e);
+    }
+  }, [parents]);
   const [feeStructures] = useState<FeeStructureItem[]>(mockFeeStructure);
   const [payments, setPayments] = useState<PaymentRecord[]>(mockPayments);
   const [assessments, setAssessments] = useState<AssessmentRecord[]>(mockAssessments);
@@ -366,6 +399,93 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addStudent = (studentData: Partial<Student>) => {
     const newId = `std_${Date.now()}`;
     const studentCode = `BFA-2025-${String(students.length + 1).padStart(4, '0')}`;
+    const studentFullName = `${studentData.firstName || 'New'} ${studentData.lastName || 'Student'}`.trim();
+    const rawParentName = (studentData.parentName || '').trim();
+    const rawParentPhone = (studentData.parentPhone || '').trim();
+    const rawParentEmail = (studentData.parentEmail || '').trim();
+    const rawParentAddress = (studentData.residentialAddress || 'Accra, Ghana').trim();
+    const rawParentRel = (studentData.parentRelationship as 'Father' | 'Mother' | 'Guardian') || 'Guardian';
+
+    let resolvedParentId = studentData.parentId || '';
+
+    // Search for existing parent by ID, exact phone, or case-insensitive full name
+    const existingParent = parents.find((p) => {
+      if (resolvedParentId && p.id === resolvedParentId) return true;
+      if (rawParentPhone && p.phone && p.phone.replace(/[\s\-()]/g, '') === rawParentPhone.replace(/[\s\-()]/g, '')) return true;
+      if (rawParentName && p.fullName.toLowerCase().trim() === rawParentName.toLowerCase().trim()) return true;
+      return false;
+    });
+
+    if (existingParent) {
+      resolvedParentId = existingParent.id;
+      setParents((prevParents) =>
+        prevParents.map((p) => {
+          if (p.id === existingParent.id) {
+            const updatedChildrenIds = p.childrenIds.includes(newId)
+              ? p.childrenIds
+              : [...p.childrenIds, newId];
+            const updatedChildrenNames = p.childrenNames.includes(studentFullName)
+              ? p.childrenNames
+              : [...p.childrenNames, studentFullName];
+            return {
+              ...p,
+              phone: rawParentPhone || p.phone,
+              email: rawParentEmail || p.email,
+              residentialAddress: rawParentAddress || p.residentialAddress,
+              childrenIds: updatedChildrenIds,
+              childrenNames: updatedChildrenNames,
+              totalBalanceDue: p.totalBalanceDue + 2600,
+            };
+          }
+          return p;
+        })
+      );
+
+      // System notification identifying multi-ward / sibling linking
+      setNotifications((prev) => [
+        {
+          id: `notif_${Date.now()}`,
+          title: `Family Account Linked: ${existingParent.fullName}`,
+          message: `${studentFullName} successfully linked as a sibling ward to ${existingParent.fullName} (${existingParent.childrenNames.length + 1} enrolled students on record).`,
+          type: 'system',
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          linkTo: 'parents',
+        },
+        ...prev,
+      ]);
+    } else if (rawParentName) {
+      resolvedParentId = `par_${Date.now()}`;
+      const newParentRecord: Parent = {
+        id: resolvedParentId,
+        fullName: rawParentName,
+        phone: rawParentPhone || '+233 24 000 0000',
+        email: rawParentEmail || `${rawParentName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@gmail.com`,
+        residentialAddress: rawParentAddress,
+        occupation: 'Parent / Guardian',
+        relationship: rawParentRel,
+        childrenIds: [newId],
+        childrenNames: [studentFullName],
+        totalBalanceDue: 2600,
+      };
+
+      setParents((prevParents) => [newParentRecord, ...prevParents]);
+
+      // System notification for newly registered parent
+      setNotifications((prev) => [
+        {
+          id: `notif_${Date.now()}`,
+          title: `New Parent Registered: ${rawParentName}`,
+          message: `${rawParentName} registered to Parents & Guardians Directory with ward ${studentFullName}.`,
+          type: 'admission',
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          linkTo: 'parents',
+        },
+        ...prev,
+      ]);
+    }
+
     const newStudent: Student = {
       id: newId,
       studentId: studentCode,
@@ -387,13 +507,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       admissionYear: '2025',
       status: 'Active',
       photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
-      parentId: studentData.parentId || 'par_01',
-      parentName: studentData.parentName || 'Parent Guardian',
-      parentPhone: studentData.parentPhone || '+233 24 000 0000',
-      parentEmail: studentData.parentEmail || 'parent@example.com',
-      parentRelationship: studentData.parentRelationship || 'Father',
-      residentialAddress: studentData.residentialAddress || 'Accra, Ghana',
-      emergencyContact: studentData.emergencyContact || '+233 20 000 0000',
+      parentId: resolvedParentId || (existingParent ? existingParent.id : 'par_01'),
+      parentName: existingParent ? existingParent.fullName : rawParentName || 'Parent Guardian',
+      parentPhone: rawParentPhone || (existingParent ? existingParent.phone : '+233 24 000 0000'),
+      parentEmail: rawParentEmail || (existingParent ? existingParent.email : 'parent@example.com'),
+      parentRelationship: rawParentRel,
+      residentialAddress: rawParentAddress,
+      emergencyContact: studentData.emergencyContact || rawParentPhone || '+233 20 000 0000',
       medicalNotes: studentData.medicalNotes || 'None',
       participatesInFeeding: studentData.participatesInFeeding ?? true,
       busRouteId: studentData.busRouteId,
@@ -405,6 +525,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     setStudents([newStudent, ...students]);
+
+    // Update class studentCount
+    if (newStudent.classId || newStudent.className) {
+      setClasses((prevClasses) =>
+        prevClasses.map((cls) =>
+          cls.id === newStudent.classId || cls.name === newStudent.className
+            ? { ...cls, studentCount: cls.studentCount + 1 }
+            : cls
+        )
+      );
+    }
   };
 
   const addTeacher = (teacherData: Partial<Teacher>) => {

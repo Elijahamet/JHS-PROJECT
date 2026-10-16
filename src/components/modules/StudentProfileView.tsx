@@ -11,8 +11,10 @@ import {
   Receipt,
   FileSpreadsheet,
   FileText,
-  Clock,
   CheckCircle2,
+  Users,
+  MessageSquare,
+  ShieldCheck,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -31,8 +33,11 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
 }) => {
   const {
     students,
+    parents,
     assessments,
     payments,
+    setSelectedStudentId,
+    openChatWith,
     setIsRecordPaymentOpen,
     setIsReportCardModalOpen,
   } = useApp();
@@ -49,6 +54,29 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
   >('overview');
 
   const student = students.find((s) => s.id === studentId);
+
+  // Identify linked parent and enrolled sibling network
+  const linkedParent = student
+    ? parents.find(
+        (p) =>
+          (student.parentId && p.id === student.parentId) ||
+          p.childrenIds?.includes(student.id) ||
+          (p.phone && student.parentPhone && p.phone === student.parentPhone) ||
+          (p.fullName && student.parentName && p.fullName.toLowerCase() === student.parentName.toLowerCase())
+      )
+    : undefined;
+
+  const enrolledSiblings = student
+    ? students.filter(
+        (s) =>
+          s.id !== student.id &&
+          (
+            (linkedParent && (linkedParent.childrenIds?.includes(s.id) || s.parentId === linkedParent.id)) ||
+            (student.parentPhone && s.parentPhone && s.parentPhone === student.parentPhone) ||
+            (student.parentName && s.parentName && s.parentName.toLowerCase() === student.parentName.toLowerCase())
+          )
+      )
+    : [];
 
   if (!student) {
     return (
@@ -112,6 +140,12 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 >
                   {student.status}
                 </Badge>
+                {enrolledSiblings.length > 0 && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                    <Users className="w-3 h-3 text-amber-700" />
+                    Multi-Ward Family ({enrolledSiblings.length + 1} Siblings)
+                  </span>
+                )}
               </div>
               <div className="mt-1 flex items-center gap-4 text-xs text-slate-500 flex-wrap">
                 <span className="font-mono font-medium text-slate-700">
@@ -282,19 +316,46 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
         {/* TAB 2: PARENTS */}
         {activeTab === 'parents' && (
           <div className="space-y-6">
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-              <div className="flex items-start justify-between">
+            <div className="p-5 bg-slate-50 rounded-xl border border-slate-200/80">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">
-                    {student.parentName}
-                  </h4>
-                  <Badge variant="navy" className="mt-1">
-                    Primary Guardian ({student.parentRelationship})
-                  </Badge>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-sm font-bold text-slate-900">
+                      {student.parentName}
+                    </h4>
+                    <Badge variant="navy">
+                      Primary Guardian ({student.parentRelationship})
+                    </Badge>
+                    {enrolledSiblings.length > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                        <Users className="w-3 h-3 text-amber-700" />
+                        Multi-Ward Account
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Registered guardian contact for official school communications & fee notifications.
+                  </p>
                 </div>
-                <Button size="sm" variant="outline" icon={Phone}>
-                  Call Guardian
-                </Button>
+                <div className="flex items-center gap-2">
+                  {linkedParent && (
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      icon={MessageSquare}
+                      onClick={() => openChatWith(linkedParent.id)}
+                    >
+                      Chat
+                    </Button>
+                  )}
+                  <a
+                    href={`tel:${student.parentPhone}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-medium text-xs transition-colors"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Call Guardian</span>
+                  </a>
+                </div>
               </div>
 
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-200">
@@ -312,6 +373,61 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Sibling Network Display */}
+            {enrolledSiblings.length > 0 && (
+              <div className="p-5 bg-amber-50/60 rounded-xl border border-amber-200/90 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-amber-700" />
+                      <h4 className="text-xs font-bold text-amber-950 uppercase tracking-wider">
+                        Enrolled Siblings Network ({enrolledSiblings.length} other ward{enrolledSiblings.length > 1 ? 's' : ''})
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-amber-800 mt-0.5">
+                      The system identified that <strong>{student.parentName}</strong> has {enrolledSiblings.length + 1} students registered. Click any sibling to navigate directly to their profile:
+                    </p>
+                  </div>
+                  <span className="self-start sm:self-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/80 text-amber-900 border border-amber-300">
+                    Sibling Network Active
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {enrolledSiblings.map((sibling) => (
+                    <div
+                      key={sibling.id}
+                      className="p-3 bg-white border border-amber-200 rounded-lg shadow-2xs hover:border-amber-300 transition-colors flex items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <img
+                          src={sibling.photoUrl}
+                          alt={sibling.firstName}
+                          className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-900 text-xs truncate">
+                            {sibling.firstName} {sibling.lastName}
+                          </p>
+                          <p className="text-[11px] text-slate-500 truncate">
+                            {sibling.className} • ID: {sibling.studentId}
+                          </p>
+                        </div>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedStudentId(sibling.id)}
+                      >
+                        Switch
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
