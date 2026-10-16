@@ -567,16 +567,133 @@ export const mockParentNotifications: ParentNotificationRecord[] = [
   },
 ];
 
-export const mockFeeStructure: FeeStructureItem[] = [];
-export const mockPayments: PaymentRecord[] = [];
-export const mockAssessments: AssessmentRecord[] = [];
-export const mockAttendanceToday: AttendanceRecord[] = [];
-export const mockBuses: TransportBus[] = [];
-export const mockRoutes: TransportRoute[] = [];
-export const mockApplications: AdmissionApplication[] = [];
-export const mockInventory: InventoryItem[] = [];
-export const mockAnnouncements: AnnouncementItem[] = [];
-export const mockNotifications: SchoolNotification[] = [];
+export const mockFeeStructure: FeeStructureItem[] = [
+  { id: 'fee_01', name: 'Primary Tuition Fee', category: 'School Fees', amount: 1500, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'Primary', dueDate: '2025-02-15', status: 'Active' },
+  { id: 'fee_02', name: 'JHS Tuition Fee', category: 'School Fees', amount: 2000, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'JHS', dueDate: '2025-02-15', status: 'Active' },
+  { id: 'fee_03', name: 'Primary Hot Canteen Feeding Fee', category: 'Feeding Fees', amount: 500, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'Primary', dueDate: '2025-02-15', status: 'Active' },
+  { id: 'fee_04', name: 'JHS Hot Canteen Feeding Fee', category: 'Feeding Fees', amount: 600, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'JHS', dueDate: '2025-02-15', status: 'Active' },
+  { id: 'fee_05', name: 'ICT & Science Lab Practical Levy', category: 'Examination', amount: 250, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'JHS', dueDate: '2025-02-15', status: 'Active' },
+  { id: 'fee_06', name: 'PTA School Development Levy', category: 'Other', amount: 150, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'All', dueDate: '2025-02-15', status: 'Active' },
+];
+
+export const mockPayments: PaymentRecord[] = [
+  {
+    id: 'pay_01',
+    receiptNumber: 'BFA-RCP-2025-1048',
+    studentId: 'std_01',
+    studentName: 'Kofi Mensah',
+    studentCode: 'BFA-2024-001',
+    className: 'JHS 2A',
+    parentName: 'Mrs. Abena Osei',
+    category: 'School Fees',
+    amount: 1500,
+    date: '2025-01-20',
+    paymentMethod: 'Mobile Money (MoMo)',
+    reference: 'MTN-MM-8921829',
+    notes: 'Term 2 School Tuition Partial Payment',
+    authorizedStaff: 'Mrs. Cynthia Arthur',
+    balanceAfterPayment: 0,
+    status: 'Completed',
+  },
+  {
+    id: 'pay_02',
+    receiptNumber: 'BFA-RCP-2025-1049',
+    studentId: 'std_02',
+    studentName: 'Ama Boateng',
+    studentCode: 'BFA-2024-002',
+    className: 'JHS 2A',
+    parentName: 'Mr. Kwabena Boateng',
+    category: 'School Fees',
+    amount: 1820,
+    date: '2025-01-22',
+    paymentMethod: 'Bank Transfer',
+    reference: 'GCB-TRF-00192',
+    notes: 'Tuition + ICT Levy settlement',
+    authorizedStaff: 'Mrs. Cynthia Arthur',
+    balanceAfterPayment: 180,
+    status: 'Completed',
+  },
+  {
+    id: 'pay_03',
+    receiptNumber: 'BFA-RCP-2025-1050',
+    studentId: 'std_04',
+    studentName: 'Akua Serwaa',
+    studentCode: 'BFA-2024-004',
+    className: 'JHS 2A',
+    parentName: 'Madam Joyce Serwaa',
+    category: 'Feeding Fees',
+    amount: 600,
+    date: '2025-01-25',
+    paymentMethod: 'Cash',
+    reference: 'CSH-REC-482',
+    notes: 'Term 2 Hot Canteen Feeding Plan',
+    authorizedStaff: 'Mrs. Cynthia Arthur',
+    balanceAfterPayment: 0,
+    status: 'Completed',
+  },
+];
+
+export const mockAssessments: AssessmentRecord[] = [
+  // Mathematics
+  { id: 'asm_01', studentId: 'std_01', studentName: 'Kofi Mensah', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Mathematics', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 19, homeworkScore: 9, examScore: 62, totalScore: 90, grade: '1', position: 1, teacherComment: 'Exceptional mastery of geometric proofs and algebra.' },
+  { id: 'asm_02', studentId: 'std_02', studentName: 'Ama Boateng', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Mathematics', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 19, homeworkScore: 9, examScore: 64, totalScore: 92, grade: '1', position: 2, teacherComment: 'Brilliant logical problem solver. Highest exam score.' },
+  { id: 'asm_03', studentId: 'std_03', studentName: 'Kwame Osei', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Mathematics', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 14, homeworkScore: 7, examScore: 45, totalScore: 66, grade: '3', position: 4, teacherComment: 'Demonstrates good effort; practice quadratic graphs.' },
+  { id: 'asm_04', studentId: 'std_04', studentName: 'Akua Serwaa', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Mathematics', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 16, homeworkScore: 8, examScore: 52, totalScore: 76, grade: '2', position: 3, teacherComment: 'Commendable progress in fractions and statistics.' },
+
+  // Integrated Science
+  { id: 'asm_05', studentId: 'std_01', studentName: 'Kofi Mensah', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Integrated Science', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 18, homeworkScore: 9, examScore: 61, totalScore: 88, grade: '1', position: 2, teacherComment: 'Outstanding understanding of scientific concepts.' },
+  { id: 'asm_06', studentId: 'std_02', studentName: 'Ama Boateng', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Integrated Science', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 18, homeworkScore: 9, examScore: 62, totalScore: 89, grade: '1', position: 1, teacherComment: 'Exemplary scientific method in laboratory experiments.' },
+  { id: 'asm_07', studentId: 'std_03', studentName: 'Kwame Osei', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Integrated Science', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 15, homeworkScore: 8, examScore: 50, totalScore: 73, grade: '2', position: 4, teacherComment: 'Active during practicals; revise chemical equations.' },
+  { id: 'asm_08', studentId: 'std_04', studentName: 'Akua Serwaa', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'Integrated Science', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 19, homeworkScore: 9, examScore: 60, totalScore: 88, grade: '1', position: 3, teacherComment: 'Excellent analysis of ecosystems and energy.' },
+
+  // English Language
+  { id: 'asm_09', studentId: 'std_01', studentName: 'Kofi Mensah', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'English Language', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 18, homeworkScore: 8, examScore: 58, totalScore: 84, grade: '1', position: 3, teacherComment: 'Compelling essay writing and rich vocabulary.' },
+  { id: 'asm_10', studentId: 'std_02', studentName: 'Ama Boateng', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'English Language', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 19, homeworkScore: 9, examScore: 63, totalScore: 91, grade: '1', position: 1, teacherComment: 'Superb grammar, debate eloquence, and comprehension.' },
+  { id: 'asm_11', studentId: 'std_03', studentName: 'Kwame Osei', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'English Language', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 16, homeworkScore: 8, examScore: 52, totalScore: 76, grade: '2', position: 4, teacherComment: 'Solid performance in grammar and speech.' },
+  { id: 'asm_12', studentId: 'std_04', studentName: 'Akua Serwaa', classId: 'cls_jhs2a', className: 'JHS 2A', subjectName: 'English Language', academicYear: '2024 / 2025', term: 'Term 2', classworkScore: 18, homeworkScore: 9, examScore: 58, totalScore: 85, grade: '1', position: 2, teacherComment: 'Creative narrative expression and clear punctuation.' },
+];
+
+export const mockAttendanceToday: AttendanceRecord[] = [
+  { id: 'att_std_01', studentId: 'std_01', studentName: 'Kofi Mensah', classId: 'cls_jhs2a', className: 'JHS 2A', date: '2025-02-04', status: 'Present' },
+  { id: 'att_std_02', studentId: 'std_02', studentName: 'Ama Boateng', classId: 'cls_jhs2a', className: 'JHS 2A', date: '2025-02-04', status: 'Present' },
+  { id: 'att_std_03', studentId: 'std_03', studentName: 'Kwame Osei', classId: 'cls_jhs2a', className: 'JHS 2A', date: '2025-02-04', status: 'Late', remarks: 'Transport delay' },
+  { id: 'att_std_04', studentId: 'std_04', studentName: 'Akua Serwaa', classId: 'cls_jhs2a', className: 'JHS 2A', date: '2025-02-04', status: 'Present' },
+  { id: 'att_std_05', studentId: 'std_05', studentName: 'Yaw Adjei', classId: 'cls_jhs2a', className: 'JHS 2A', date: '2025-02-04', status: 'Excused', remarks: 'Hospital clinic visit' },
+];
+
+export const mockBuses: TransportBus[] = [
+  { id: 'bus_01', busNumber: 'School Bus 01', registrationNumber: 'GE-2940-23', capacity: 35, driverName: 'Mr. Kofi Asare', driverPhone: '+233 24 555 0101', routeId: 'rt_01', routeName: 'Madina - Adenta Shuttle Corridor', status: 'Active' },
+  { id: 'bus_02', busNumber: 'School Bus 02', registrationNumber: 'GN-8831-24', capacity: 30, driverName: 'Mr. Daniel Tetteh', driverPhone: '+233 24 330 1199', routeId: 'rt_02', routeName: 'East Legon - Haatso Express', status: 'Active' },
+];
+
+export const mockRoutes: TransportRoute[] = [
+  { id: 'rt_01', name: 'Madina - Adenta Shuttle Corridor', busNumber: 'School Bus 01', driverName: 'Mr. Kofi Asare', driverPhone: '+233 24 555 0101', stops: ['Madina Zongo Junction', 'Adenta Barrier', 'SSNIT Flats', 'Campus Gate'], studentCount: 24, status: 'On Route', morningDeparture: '06:30 AM', afternoonDeparture: '03:45 PM' },
+  { id: 'rt_02', name: 'East Legon - Haatso Express', busNumber: 'School Bus 02', driverName: 'Mr. Daniel Tetteh', driverPhone: '+233 24 330 1199', stops: ['American House', 'Haatso Supermarket', 'Atomic Junction', 'Campus Gate'], studentCount: 18, status: 'Completed', morningDeparture: '06:45 AM', afternoonDeparture: '04:00 PM' },
+];
+
+export const mockApplications: AdmissionApplication[] = [
+  { id: 'app_01', applicationId: 'ADM-2025-001', applicantFirstName: 'Prince Kelvin', applicantLastName: 'Mensah', dateOfBirth: '2012-04-10', gender: 'Male', applyingForClass: 'JHS 1', parentName: 'Mrs. Victoria Mensah', parentPhone: '+233 24 778 9900', parentEmail: 'v.mensah@gmail.com', applicationDate: '2025-01-14', status: 'Under Review', documentsSubmitted: ['Birth Certificate', 'Previous Terminal Report'] },
+  { id: 'app_02', applicationId: 'ADM-2025-002', applicantFirstName: 'Sena', applicantLastName: 'Akoto', dateOfBirth: '2015-08-22', gender: 'Female', applyingForClass: 'Basic 4', parentName: 'Mr. Samuel Akoto', parentPhone: '+233 20 445 6677', parentEmail: 'samuel.akoto@finbank.com', applicationDate: '2025-01-18', status: 'Accepted', documentsSubmitted: ['Birth Certificate', 'Immunization Card'] },
+  { id: 'app_03', applicationId: 'ADM-2025-003', applicantFirstName: 'Blessing', applicantLastName: 'Asante', dateOfBirth: '2011-12-05', gender: 'Female', applyingForClass: 'JHS 2', parentName: 'Dr. Evelyn Asante', parentPhone: '+233 27 889 0011', parentEmail: 'evelyn.asante@ug.edu.gh', applicationDate: '2025-01-20', status: 'Pending', documentsSubmitted: ['Transfer Certificate'] },
+];
+
+export const mockInventory: InventoryItem[] = [
+  { id: 'inv_01', itemCode: 'INV-TXT-001', name: 'NaCCA Approved Mathematics Textbooks (JHS 1–3)', category: 'Textbooks', quantity: 180, unit: 'Copies', location: 'Library Store Room B', condition: 'Good', responsiblePerson: 'Mr. Darko', lastUpdated: '2025-01-15' },
+  { id: 'inv_02', itemCode: 'INV-ICT-002', name: 'Desktop Computers (HP Core i5 - ICT Lab)', category: 'ICT Equipment', quantity: 32, unit: 'Units', location: 'ICT Lab Block C', condition: 'Good', responsiblePerson: 'ICT Instructor', lastUpdated: '2025-01-20' },
+  { id: 'inv_03', itemCode: 'INV-SCI-003', name: 'Science Laboratory Microscopes & Beakers', category: 'Science Lab', quantity: 24, unit: 'Sets', location: 'Science Lab Block B', condition: 'Good', responsiblePerson: 'Lab Technician', lastUpdated: '2025-01-18' },
+  { id: 'inv_04', itemCode: 'INV-OFC-004', name: 'Heavy-Duty Administrative Printing Paper', category: 'General Office', quantity: 50, unit: 'Reams', location: 'Admin Stores', condition: 'Good', responsiblePerson: 'Admin Secretary', lastUpdated: '2025-01-22' },
+];
+
+export const mockAnnouncements: AnnouncementItem[] = [
+  { id: 'ann_01', title: 'Mid-Term Break & Academic Progress Review', message: 'School will observe mid-term break from Thursday 27th February to Monday 3rd March. Teachers are requested to complete all continuous assessment entries.', publishDate: '2025-02-01', authorName: 'Mrs. Cynthia Arthur', authorRole: 'Headmistress', audience: 'Whole School', priority: 'Important', status: 'Published' },
+  { id: 'ann_02', title: 'Inter-Schools Science & Maths Quiz Regional Finals', message: 'Our JHS 2 and JHS 3 quiz team qualified for the regional semi-finals. Congratulations to Mr. Emmanuel Darko and the academic debate society.', publishDate: '2025-01-28', authorName: 'Mr. Emmanuel Darko', authorRole: 'Science Lead', audience: 'Whole School', priority: 'Normal', status: 'Published' },
+];
+
+export const mockNotifications: SchoolNotification[] = [
+  { id: 'notif_01', title: 'Report Cards Ready for Administrative Audit', message: 'Form teacher Mr. Darko submitted JHS 2A terminal marksheets for inspection.', type: 'system', timestamp: '10 mins ago', isRead: false, linkTo: 'results' },
+  { id: 'notif_02', title: 'Tuition Fee Arrears Cleared', message: 'Parent Mrs. Abena Osei recorded payment of GHS 1,500 via MTN MoMo.', type: 'payment', timestamp: '1 hour ago', isRead: false, linkTo: 'fees' },
+  { id: 'notif_03', title: 'Fleet Route 01 Shuttle Active', message: 'School Bus 01 completed morning dropoff at campus gate with 24 students.', type: 'system', timestamp: '3 hours ago', isRead: true, linkTo: 'transport' },
+];
 
 export const mockReportCards: StudentReportCardRecord[] = [
   {

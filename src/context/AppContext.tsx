@@ -62,6 +62,8 @@ interface AppContextType {
   setSelectedStudentId: (id: string | null) => void;
   selectedReceiptPayment: PaymentRecord | null;
   setSelectedReceiptPayment: (payment: PaymentRecord | null) => void;
+  selectedClassFilter: string;
+  setSelectedClassFilter: (cls: string) => void;
 
   // Collections & CRUD
   students: Student[];
@@ -71,6 +73,8 @@ interface AppContextType {
   addTeacher: (teacherData: Partial<Teacher>) => void;
   classes: ClassRoom[];
   addClass: (classData: Partial<ClassRoom>, assignTeacherId?: string) => void;
+  updateClass: (classId: string, updates: Partial<ClassRoom>) => void;
+  deleteClass: (classId: string) => void;
   assignTeacherToClass: (classId: string, teacherId: string) => void;
   feeStructures: FeeStructureItem[];
   payments: PaymentRecord[];
@@ -158,6 +162,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedReceiptPayment, setSelectedReceiptPayment] = useState<PaymentRecord | null>(null);
+  const [selectedClassFilter, setSelectedClassFilter] = useState<string>('ALL');
 
   // Data collections
   const [students, setStudents] = useState<Student[]>(mockStudents);
@@ -516,6 +521,45 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setNotifications((prev) => [newNotif, ...prev]);
   };
 
+  const updateClass = (classId: string, updates: Partial<ClassRoom>) => {
+    setClasses((prevClasses) =>
+      prevClasses.map((c) => (c.id === classId ? { ...c, ...updates } : c))
+    );
+  };
+
+  const deleteClass = (classId: string) => {
+    const targetClass = classes.find((c) => c.id === classId);
+    if (!targetClass) return;
+
+    setClasses((prevClasses) => prevClasses.filter((c) => c.id !== classId));
+
+    if (targetClass.classTeacherId) {
+      setTeachers((prevTeachers) =>
+        prevTeachers.map((t) => {
+          if (t.id === targetClass.classTeacherId) {
+            return {
+              ...t,
+              isClassTeacherOf: t.isClassTeacherOf === targetClass.name ? undefined : t.isClassTeacherOf,
+              classesAssigned: (t.classesAssigned || []).filter((cls) => cls !== targetClass.name),
+            };
+          }
+          return t;
+        })
+      );
+    }
+
+    const newNotif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Class Stream Decommissioned — ${targetClass.name}`,
+      message: `Stream ${targetClass.name} has been removed from the academic register.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'classes',
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+  };
+
   const addTransportBus = (busData: Partial<TransportBus>) => {
     const newId = `bus_${Date.now()}`;
     const newBus: TransportBus = {
@@ -631,26 +675,54 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const updateAssessment = (assessmentId: string, updates: Partial<AssessmentRecord>) => {
-    setAssessments(
-      assessments.map((a) => {
-        if (a.id === assessmentId) {
-          const updated = { ...a, ...updates };
-          const total = (updated.classworkScore || 0) + (updated.homeworkScore || 0) + (updated.examScore || 0);
-          let grade = 'Grade 9';
-          if (total >= 85) grade = 'Grade 1 (Excellent)';
-          else if (total >= 75) grade = 'Grade 2 (Very Good)';
-          else if (total >= 65) grade = 'Grade 3 (Good)';
-          else if (total >= 55) grade = 'Grade 4 (Credit)';
-          else if (total >= 50) grade = 'Grade 5 (Pass)';
-          return {
-            ...updated,
-            totalScore: total,
-            grade,
-          };
-        }
-        return a;
-      })
-    );
+    setAssessments((prev) => {
+      const exists = prev.some((a) => a.id === assessmentId);
+      if (exists) {
+        return prev.map((a) => {
+          if (a.id === assessmentId) {
+            const updated = { ...a, ...updates };
+            const total = (updated.classworkScore || 0) + (updated.homeworkScore || 0) + (updated.examScore || 0);
+            let grade = 'Grade 9';
+            if (total >= 85) grade = 'Grade 1 (Excellent)';
+            else if (total >= 75) grade = 'Grade 2 (Very Good)';
+            else if (total >= 65) grade = 'Grade 3 (Good)';
+            else if (total >= 55) grade = 'Grade 4 (Credit)';
+            else if (total >= 50) grade = 'Grade 5 (Pass)';
+            return {
+              ...updated,
+              totalScore: total,
+              grade,
+            };
+          }
+          return a;
+        });
+      } else {
+        const total = (updates.classworkScore || 0) + (updates.homeworkScore || 0) + (updates.examScore || 0);
+        let grade = 'Grade 9';
+        if (total >= 85) grade = 'Grade 1 (Excellent)';
+        else if (total >= 75) grade = 'Grade 2 (Very Good)';
+        else if (total >= 65) grade = 'Grade 3 (Good)';
+        else if (total >= 55) grade = 'Grade 4 (Credit)';
+        else if (total >= 50) grade = 'Grade 5 (Pass)';
+        const newRecord: AssessmentRecord = {
+          id: assessmentId,
+          studentId: updates.studentId || '',
+          studentName: updates.studentName || '',
+          classId: updates.classId || 'cls_jhs2a',
+          className: updates.className || 'JHS 2A',
+          subjectName: updates.subjectName || 'Mathematics',
+          academicYear: updates.academicYear || '2024 / 2025',
+          term: updates.term || 'Term 2',
+          classworkScore: updates.classworkScore || 0,
+          homeworkScore: updates.homeworkScore || 0,
+          examScore: updates.examScore || 0,
+          totalScore: total,
+          grade,
+          teacherComment: updates.teacherComment || 'Satisfactory work.',
+        };
+        return [...prev, newRecord];
+      }
+    });
   };
 
   const saveClassAttendance = (_classId: string, updatedRecords: AttendanceRecord[]) => {
@@ -1035,6 +1107,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setSelectedStudentId,
         selectedReceiptPayment,
         setSelectedReceiptPayment,
+        selectedClassFilter,
+        setSelectedClassFilter,
         students,
         addStudent,
         parents,
@@ -1042,6 +1116,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addTeacher,
         classes,
         addClass,
+        updateClass,
+        deleteClass,
         assignTeacherToClass,
         feeStructures,
         payments,

@@ -25,6 +25,7 @@ import { StudentReportCardRecord } from '../../types';
 export const ResultsView: React.FC = () => {
   const {
     classes,
+    students,
     assessments,
     updateAssessment,
     setIsReportCardModalOpen,
@@ -57,8 +58,46 @@ export const ResultsView: React.FC = () => {
     classes.find((c) => c.id === selectedClassId) || classes[0];
 
   const currentAssessments = assessments.filter(
-    (a) => a.subjectName === selectedSubject
+    (a) =>
+      a.subjectName === selectedSubject &&
+      (a.classId === selectedClass.id || a.className === selectedClass.name)
   );
+
+  const handleInitializeAssessments = () => {
+    const classStudents = students.filter(
+      (s) => s.className === selectedClass.name || s.classId === selectedClass.id
+    );
+    if (classStudents.length === 0) {
+      showToast(`No students enrolled in ${selectedClass.name} yet.`);
+      return;
+    }
+    classStudents.forEach((s) => {
+      const exists = assessments.some(
+        (a) =>
+          a.studentId === s.id &&
+          a.subjectName === selectedSubject &&
+          (a.classId === selectedClass.id || a.className === selectedClass.name)
+      );
+      if (!exists) {
+        updateAssessment(`asm_${s.id}_${selectedSubject.replace(/\s+/g, '')}`, {
+          studentId: s.id,
+          studentName: `${s.firstName} ${s.lastName}`,
+          classId: selectedClass.id,
+          className: selectedClass.name,
+          subjectName: selectedSubject,
+          academicYear: '2024 / 2025',
+          term: selectedTerm as any,
+          classworkScore: 16,
+          homeworkScore: 8,
+          examScore: 54,
+          totalScore: 78,
+          grade: 'Grade 2 (Very Good)',
+          teacherComment: 'Good comprehension and active class participation.',
+        });
+      }
+    });
+    showToast(`Continuous assessment mark sheet initialized for ${selectedClass.name} — ${selectedSubject}`);
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -610,8 +649,15 @@ export const ResultsView: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {currentAssessments.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-8 text-center text-slate-400">
-                        No assessment records entered yet for {selectedSubject}.
+                      <td colSpan={8} className="py-8 text-center text-slate-500">
+                        <p className="mb-2">No continuous assessment records entered yet for {selectedClass.name} in {selectedSubject}.</p>
+                        <button
+                          type="button"
+                          onClick={handleInitializeAssessments}
+                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                        >
+                          Initialize Mark Sheet for {selectedClass.name}
+                        </button>
                       </td>
                     </tr>
                   ) : (

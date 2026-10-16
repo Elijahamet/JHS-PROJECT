@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CalendarCheck,
   CheckCircle2,
@@ -7,6 +7,10 @@ import {
   AlertCircle,
   Save,
   CheckCheck,
+  Download,
+  Calendar,
+  UserCheck,
+  RotateCcw,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -14,29 +18,43 @@ import { Button } from '../common/Button';
 import { AttendanceRecord } from '../../types';
 
 export const AttendanceView: React.FC = () => {
-  const { classes, students, attendance, saveClassAttendance } = useApp();
+  const { classes, students, attendance, saveClassAttendance, selectedClassFilter } = useApp();
 
   const [selectedClassId, setSelectedClassId] = useState('cls_jhs2a');
-  const [selectedDate, setSelectedDate] = useState('2025-02-04');
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [isSavedNotice, setIsSavedNotice] = useState(false);
+
+  // Sync with global class filter if navigated from classes view
+  useEffect(() => {
+    if (selectedClassFilter && selectedClassFilter !== 'ALL') {
+      const match = classes.find((c) => c.name === selectedClassFilter);
+      if (match) {
+        setSelectedClassId(match.id);
+      }
+    }
+  }, [selectedClassFilter, classes]);
 
   const selectedClass =
     classes.find((c) => c.id === selectedClassId) || classes[0];
   const classStudents = students.filter(
-    (s) => s.className === selectedClass.name
+    (s) => s.className === selectedClass?.name
   );
 
-  // Local state for taking attendance
+  // Local state for taking attendance - synced whenever class or date changes
   const [rosterStatus, setRosterStatus] = useState<
     Record<string, AttendanceRecord['status']>
-  >(() => {
-    const initial: Record<string, AttendanceRecord['status']> = {};
+  >({});
+
+  useEffect(() => {
+    const updated: Record<string, AttendanceRecord['status']> = {};
     classStudents.forEach((s) => {
-      const existing = attendance.find((a) => a.studentId === s.id);
-      initial[s.id] = existing ? existing.status : 'Present';
+      const existing = attendance.find(
+        (a) => a.studentId === s.id && a.date === selectedDate
+      );
+      updated[s.id] = existing ? existing.status : 'Present';
     });
-    return initial;
-  });
+    setRosterStatus(updated);
+  }, [selectedClassId, selectedDate, classStudents.length]);
 
   const handleStatusChange = (
     studentId: string,
@@ -49,10 +67,10 @@ export const AttendanceView: React.FC = () => {
     setIsSavedNotice(false);
   };
 
-  const handleMarkAllPresent = () => {
+  const handleMarkAll = (status: AttendanceRecord['status']) => {
     const updated: Record<string, AttendanceRecord['status']> = {};
     classStudents.forEach((s) => {
-      updated[s.id] = 'Present';
+      updated[s.id] = status;
     });
     setRosterStatus(updated);
     setIsSavedNotice(false);
@@ -72,6 +90,48 @@ export const AttendanceView: React.FC = () => {
     saveClassAttendance(selectedClass.id, records);
     setIsSavedNotice(true);
     setTimeout(() => setIsSavedNotice(false), 4000);
+  };
+
+  const handleSetToday = () => {
+    setSelectedDate(new Date().toISOString().split('T')[0]);
+  };
+
+  // Export Attendance CSV
+  const handleExportCSV = () => {
+    const headers = [
+      'Student ID',
+      'Student Name',
+      'Class Stream',
+      'Date',
+      'Attendance Status',
+      'Class Teacher',
+      'Room Number',
+    ];
+
+    const rows = classStudents.map((s) => [
+      `"${s.studentId}"`,
+      `"${s.firstName} ${s.lastName}"`,
+      `"${selectedClass.name}"`,
+      `"${selectedDate}"`,
+      `"${rosterStatus[s.id] || 'Present'}"`,
+      `"${selectedClass.classTeacherName}"`,
+      `"${selectedClass.roomNumber}"`,
+    ]);
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,\uFEFF' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `SchoolOS_Attendance_${selectedClass.name.replace(/\s+/g, '_')}_${selectedDate}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Calculate live statistics
@@ -104,12 +164,21 @@ export const AttendanceView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Download}
+            onClick={handleExportCSV}
+            title="Export attendance register as CSV"
+          >
+            Export Register
+          </Button>
           <Button
             size="sm"
             variant="outline"
             icon={CheckCheck}
-            onClick={handleMarkAllPresent}
+            onClick={() => handleMarkAll('Present')}
           >
             Mark All Present
           </Button>
@@ -130,11 +199,11 @@ export const AttendanceView: React.FC = () => {
           <div className="flex items-center gap-2 font-medium">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>
-              Attendance records for <strong>{selectedClass.name}</strong> on{' '}
+              Attendance records for <strong>{selectedClass?.name}</strong> on{' '}
               {selectedDate} successfully saved to central database!
             </span>
           </div>
-          <span className="text-[11px] text-emerald-600">Rate: {rate}%</span>
+          <span className="text-[11px] text-emerald-600 font-bold">Attendance Rate: {rate}%</span>
         </div>
       )}
 
@@ -144,7 +213,7 @@ export const AttendanceView: React.FC = () => {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <label className="block text-slate-700 font-medium mb-1">
-                Select Class
+                Select Class Stream
               </label>
               <select
                 value={selectedClassId}
@@ -163,9 +232,18 @@ export const AttendanceView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-medium mb-1">
-                Attendance Date
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-slate-700 font-medium">
+                  Date
+                </label>
+                <button
+                  type="button"
+                  onClick={handleSetToday}
+                  className="text-[10px] text-indigo-600 hover:underline font-semibold"
+                >
+                  Set Today
+                </button>
+              </div>
               <input
                 type="date"
                 value={selectedDate}
@@ -173,16 +251,18 @@ export const AttendanceView: React.FC = () => {
                   setSelectedDate(e.target.value);
                   setIsSavedNotice(false);
                 }}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
               />
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>
-              Class Teacher: <strong>{selectedClass.classTeacherName}</strong>
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+            <span className="flex items-center gap-1">
+              <UserCheck className="w-3.5 h-3.5 text-slate-400" />
+              Class Teacher:{' '}
+              <strong className="text-slate-900">{selectedClass?.classTeacherName || 'Unassigned'}</strong>
             </span>
-            <span>Room: {selectedClass.roomNumber}</span>
+            <span className="font-mono text-slate-500">{selectedClass?.roomNumber}</span>
           </div>
         </div>
 
@@ -208,7 +288,7 @@ export const AttendanceView: React.FC = () => {
               </span>
             </div>
             <div className="p-2.5 bg-blue-50 rounded-lg border border-blue-100">
-              <span className="text-[11px] text-blue-800 block">Attendance Rate</span>
+              <span className="text-[11px] text-blue-800 block">Turnout Rate</span>
               <span className="text-base font-bold text-blue-900">
                 {rate}%
               </span>
@@ -219,18 +299,34 @@ export const AttendanceView: React.FC = () => {
 
       {/* Roll Call Table */}
       <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs">
-        <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="px-5 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/50">
           <div>
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-              {selectedClass.name} Student Roster ({classStudents.length} Students)
+              {selectedClass?.name} Student Roster ({classStudents.length} Students)
             </h3>
             <p className="text-[11px] text-slate-500">
               Click status chip to mark individual student attendance
             </p>
           </div>
-          <span className="text-xs text-slate-500 font-medium">
-            Date: {selectedDate}
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleMarkAll('Absent')}
+              className="text-[11px] text-rose-600 hover:underline font-medium"
+            >
+              Mark All Absent
+            </button>
+            <span className="text-slate-300">|</span>
+            <button
+              onClick={() => handleMarkAll('Late')}
+              className="text-[11px] text-amber-600 hover:underline font-medium"
+            >
+              Mark All Late
+            </button>
+            <span className="text-slate-300">|</span>
+            <span className="text-xs text-slate-500 font-medium font-mono">
+              {selectedDate}
+            </span>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -248,7 +344,7 @@ export const AttendanceView: React.FC = () => {
               {classStudents.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-400">
-                    No students currently enrolled in {selectedClass.name}. Enroll students in this class to record their daily attendance.
+                    No students currently enrolled in {selectedClass?.name}. Enroll students in this class to record their daily attendance.
                   </td>
                 </tr>
               ) : (
@@ -259,75 +355,80 @@ export const AttendanceView: React.FC = () => {
                       <td className="py-3 px-4 font-mono font-medium text-slate-700">
                         {s.studentId}
                       </td>
-                    <td className="py-3 px-4 font-semibold text-slate-900">
-                      <div className="flex items-center gap-2.5">
-                        <img
-                          src={s.photoUrl}
-                          alt={s.firstName}
-                          className="w-7 h-7 rounded-full object-cover border border-slate-200"
-                        />
-                        <span>
-                          {s.firstName} {s.lastName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">{s.gender}</td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {(['Present', 'Absent', 'Late', 'Excused'] as const).map(
-                          (status) => {
-                            const isSelected = currentStatus === status;
-                            let style = 'bg-slate-100 text-slate-600 hover:bg-slate-200';
-                            if (isSelected) {
-                              if (status === 'Present')
-                                style = 'bg-emerald-600 text-white font-bold shadow-xs';
-                              else if (status === 'Absent')
-                                style = 'bg-rose-600 text-white font-bold shadow-xs';
-                              else if (status === 'Late')
-                                style = 'bg-amber-600 text-white font-bold shadow-xs';
-                              else if (status === 'Excused')
-                                style = 'bg-blue-600 text-white font-bold shadow-xs';
-                            }
+                      <td className="py-3 px-4 font-semibold text-slate-900">
+                        <div className="flex items-center gap-2.5">
+                          <img
+                            src={s.photoUrl}
+                            alt={s.firstName}
+                            className="w-7 h-7 rounded-full object-cover border border-slate-200"
+                          />
+                          <span>
+                            {s.firstName} {s.lastName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 text-slate-600">{s.gender}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {(['Present', 'Absent', 'Late', 'Excused'] as const).map(
+                            (status) => {
+                              const isSelected = currentStatus === status;
+                              let style =
+                                'bg-slate-100 text-slate-600 hover:bg-slate-200';
+                              if (isSelected) {
+                                if (status === 'Present')
+                                  style =
+                                    'bg-emerald-600 text-white font-bold shadow-xs';
+                                else if (status === 'Absent')
+                                  style =
+                                    'bg-rose-600 text-white font-bold shadow-xs';
+                                else if (status === 'Late')
+                                  style =
+                                    'bg-amber-600 text-white font-bold shadow-xs';
+                                else if (status === 'Excused')
+                                  style =
+                                    'bg-blue-600 text-white font-bold shadow-xs';
+                              }
 
-                            return (
-                              <button
-                                key={status}
-                                type="button"
-                                onClick={() => handleStatusChange(s.id, status)}
-                                className={`px-2.5 py-1 rounded text-[11px] font-medium transition-all ${style}`}
-                              >
-                                {status}
-                              </button>
-                            );
-                          }
+                              return (
+                                <button
+                                  key={status}
+                                  type="button"
+                                  onClick={() => handleStatusChange(s.id, status)}
+                                  className={`px-2.5 py-1 rounded text-[11px] font-medium transition-all ${style}`}
+                                >
+                                  {status}
+                                </button>
+                              );
+                            }
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-slate-500">
+                        {currentStatus === 'Late' && (
+                          <span className="text-amber-700 font-medium">
+                            Late arrival recorded
+                          </span>
                         )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-slate-500">
-                      {currentStatus === 'Late' && (
-                        <span className="text-amber-700 font-medium">
-                          Late arrival noted
-                        </span>
-                      )}
-                      {currentStatus === 'Absent' && (
-                        <span className="text-rose-700 font-medium">
-                          Unexcused absence
-                        </span>
-                      )}
-                      {currentStatus === 'Excused' && (
-                        <span className="text-blue-700 font-medium">
-                          Parent communicated permission
-                        </span>
-                      )}
-                      {currentStatus === 'Present' && (
-                        <span className="text-slate-400">Regular</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
+                        {currentStatus === 'Absent' && (
+                          <span className="text-rose-700 font-medium">
+                            Unexcused absence
+                          </span>
+                        )}
+                        {currentStatus === 'Excused' && (
+                          <span className="text-blue-700 font-medium">
+                            Parent communicated permission
+                          </span>
+                        )}
+                        {currentStatus === 'Present' && (
+                          <span className="text-slate-400">Regular</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
           </table>
         </div>
       </div>
