@@ -21,6 +21,7 @@ import {
   ParentNotificationRecord,
   StudentReportCardRecord,
   ReportCardStatus,
+  AcademicStage,
 } from '../types';
 import {
   mockCurrentSchool,
@@ -374,7 +375,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       dateOfBirth: studentData.dateOfBirth || '2012-01-01',
       classId: studentData.classId || classes[0]?.id || '',
       className: studentData.className || classes[0]?.name || '',
-      stage: studentData.className?.startsWith('JHS') ? 'JHS' : 'Primary',
+      stage: studentData.stage || (
+        classes.find((c) => c.id === studentData.classId || c.name === studentData.className)?.stage ||
+        (studentData.className?.toUpperCase().startsWith('KG') || studentData.className?.toUpperCase().startsWith('NUR') || studentData.className?.toUpperCase().startsWith('CR')
+          ? 'Kindergarten'
+          : studentData.className?.startsWith('JHS')
+          ? 'JHS'
+          : 'Primary')
+      ),
       admissionDate: new Date().toISOString().split('T')[0],
       admissionYear: '2025',
       status: 'Active',
@@ -431,12 +439,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addClass = (classData: Partial<ClassRoom>, assignTeacherId?: string) => {
     const newId = `cls_${Date.now()}`;
-    const stage = classData.stage || (classData.name?.startsWith('JHS') ? 'JHS' : 'Primary');
+    const stage: AcademicStage = classData.stage || (
+      classData.name?.toUpperCase().startsWith('KG') || classData.name?.toUpperCase().startsWith('NUR') || classData.name?.toUpperCase().startsWith('CR')
+        ? 'Kindergarten'
+        : classData.name?.startsWith('JHS')
+        ? 'JHS'
+        : 'Primary'
+    );
 
     const targetTeacherId = assignTeacherId || classData.classTeacherId;
     const assignedTeacher = targetTeacherId ? teachers.find((t) => t.id === targetTeacherId) : undefined;
 
-    const defaultSubjects = stage === 'JHS'
+    const defaultSubjects = stage === 'Kindergarten'
+      ? [
+          'Language and Literacy',
+          'Early Numeracy & Mathematics',
+          'Our World Our People',
+          'Creative Arts & Colouring',
+          'Ghanaian Language & Culture',
+          'Physical Development & Health',
+          'Rhymes, Songs & Storytelling',
+          'Moral & Social Development',
+        ]
+      : stage === 'JHS'
       ? ['English Language', 'Mathematics', 'Integrated Science', 'Social Studies', 'Religious and Moral Education', 'Ghanaian Language', 'Career Technology', 'Creative Arts & Design', 'Computing', 'French']
       : ['English Language', 'Mathematics', 'Natural Science', 'Our World Our People', 'Religious and Moral Education', 'Ghanaian Language (Twi/Ga)', 'Creative Arts & Design', 'Computing'];
 
@@ -448,8 +473,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       classTeacherId: assignedTeacher ? assignedTeacher.id : '',
       classTeacherName: assignedTeacher ? assignedTeacher.fullName : 'Unassigned',
       studentCount: classData.studentCount || 0,
-      capacity: classData.capacity || (stage === 'JHS' ? 40 : 35),
-      roomNumber: classData.roomNumber || 'Block B - Room 101',
+      capacity: classData.capacity || (stage === 'Kindergarten' ? 25 : stage === 'JHS' ? 40 : 35),
+      roomNumber: classData.roomNumber || (stage === 'Kindergarten' ? 'KG Department - Room 1' : 'Block B - Room 101'),
       averageAttendance: 100,
       subjects: classData.subjects && classData.subjects.length > 0 ? classData.subjects : defaultSubjects,
     };

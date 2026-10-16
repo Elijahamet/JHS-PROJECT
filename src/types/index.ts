@@ -36,6 +36,8 @@ export interface School {
   plan: 'Standard' | 'Premium Enterprise';
 }
 
+export type AcademicStage = 'Kindergarten' | 'Primary' | 'JHS';
+
 export interface Student {
   id: string;
   studentId: string; // e.g. BFA-2024-001
@@ -45,8 +47,8 @@ export interface Student {
   gender: 'Male' | 'Female';
   dateOfBirth: string;
   classId: string;
-  className: string; // e.g. "Basic 4A", "JHS 2B"
-  stage: 'Primary' | 'JHS';
+  className: string; // e.g. "KG 1A", "Basic 4A", "JHS 2B"
+  stage: AcademicStage;
   admissionDate: string;
   admissionYear: string;
   status: 'Active' | 'Inactive' | 'Graduated' | 'Transferred';
@@ -97,9 +99,9 @@ export interface Teacher {
 
 export interface ClassRoom {
   id: string;
-  name: string; // e.g. "Basic 1", "JHS 2A"
+  name: string; // e.g. "KG 1A", "Basic 1", "JHS 2A"
   code: string;
-  stage: 'Primary' | 'JHS';
+  stage: AcademicStage;
   classTeacherId: string;
   classTeacherName: string;
   studentCount: number;

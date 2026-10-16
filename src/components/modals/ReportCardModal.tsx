@@ -22,7 +22,7 @@ export const ReportCardModal: React.FC = () => {
       <div className="relative w-full max-w-4xl my-auto animate-fadeIn">
         <ReportCardSheet
           initialStudentName={student ? `${student.firstName} ${student.lastName}` : ''}
-          initialLevel={student ? (student.stage === 'JHS' ? 'Junior High School' : 'Primary') : ''}
+          initialLevel={student ? (student.stage === 'JHS' ? 'Junior High School' : student.stage === 'Kindergarten' ? 'Kindergarten' : 'Primary') : ''}
           initialClassName={student ? student.className : ''}
           initialSchoolName={currentSchool?.name || ''}
           isModal={true}

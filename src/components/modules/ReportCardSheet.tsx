@@ -138,7 +138,7 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
     const std = students.find((s) => s.id === stdId);
     if (std) {
       setStudentName(`${std.firstName} ${std.lastName}`);
-      setLevel(std.stage === 'JHS' ? 'Junior High School 2' : 'Primary');
+      setLevel(std.stage === 'JHS' ? 'Junior High School' : std.stage === 'Kindergarten' ? 'Kindergarten' : 'Primary');
       setClassName(std.className);
       showNotification(`Loaded student records for ${std.firstName} ${std.lastName}`);
     }

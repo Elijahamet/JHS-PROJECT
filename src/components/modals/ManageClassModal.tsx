@@ -21,6 +21,17 @@ interface ManageClassModalProps {
   classRoom: ClassRoom | null;
 }
 
+const KINDERGARTEN_SUBJECTS = [
+  'Language and Literacy',
+  'Early Numeracy & Mathematics',
+  'Our World Our People',
+  'Creative Arts & Colouring',
+  'Ghanaian Language & Culture',
+  'Physical Development & Health',
+  'Rhymes, Songs & Storytelling',
+  'Moral & Social Development',
+];
+
 const PRIMARY_SUBJECTS = [
   'English Language',
   'Mathematics',
@@ -116,7 +127,11 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
 
   const selectedTeacher = teachers.find((t) => t.id === selectedTeacherId);
   const allCurriculumSubjects =
-    classRoom.stage === 'Primary' ? PRIMARY_SUBJECTS : JHS_SUBJECTS;
+    classRoom.stage === 'Kindergarten'
+      ? KINDERGARTEN_SUBJECTS
+      : classRoom.stage === 'Primary'
+      ? PRIMARY_SUBJECTS
+      : JHS_SUBJECTS;
 
   return (
     <Modal
@@ -177,7 +192,7 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-slate-900 text-sm">{classRoom.name}</span>
-              <Badge variant={classRoom.stage === 'JHS' ? 'navy' : 'info'}>
+              <Badge variant={classRoom.stage === 'JHS' ? 'navy' : classRoom.stage === 'Kindergarten' ? 'warning' : 'info'}>
                 {classRoom.stage} Stage
               </Badge>
               <span className="font-mono text-slate-500 font-medium text-[11px]">

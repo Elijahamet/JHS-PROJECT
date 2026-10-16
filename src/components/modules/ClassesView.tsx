@@ -17,7 +17,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
-import { ClassRoom } from '../../types';
+import { ClassRoom, AcademicStage } from '../../types';
 import { ManageClassModal } from '../modals/ManageClassModal';
 
 export const ClassesView: React.FC = () => {
@@ -30,7 +30,7 @@ export const ClassesView: React.FC = () => {
     setSelectedClassFilter,
   } = useApp();
 
-  const [selectedStage, setSelectedStage] = useState<'ALL' | 'Primary' | 'JHS'>('ALL');
+  const [selectedStage, setSelectedStage] = useState<'ALL' | AcademicStage>('ALL');
   const [teacherFilter, setTeacherFilter] = useState<'ALL' | 'ASSIGNED' | 'UNASSIGNED'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingTeacherClassId, setEditingTeacherClassId] = useState<string | null>(null);
@@ -57,6 +57,7 @@ export const ClassesView: React.FC = () => {
 
   // Calculate live stream statistics
   const totalStreams = classes.length;
+  const kgStreams = classes.filter((c) => c.stage === 'Kindergarten').length;
   const primaryStreams = classes.filter((c) => c.stage === 'Primary').length;
   const jhsStreams = classes.filter((c) => c.stage === 'JHS').length;
   const assignedStreams = classes.filter(
@@ -92,7 +93,7 @@ export const ClassesView: React.FC = () => {
             Classes & Academic Streams
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Organized academic streams from Primary (Basic 1–6) to Junior High School (JHS 1–3) with dedicated Class Teachers.
+            Organized academic streams across Kindergarten (KG 1–2 / Early Childhood), Primary (Basic 1–6), and Junior High School (JHS 1–3) with dedicated Class Teachers.
           </p>
         </div>
 
@@ -109,13 +110,21 @@ export const ClassesView: React.FC = () => {
       </div>
 
       {/* Quick Stream KPI Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
         <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
           <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">
             Total Streams
           </span>
           <span className="text-lg font-bold text-slate-900">{totalStreams}</span>
           <span className="text-[10px] text-slate-500 block">Classrooms</span>
+        </div>
+
+        <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span className="text-[10px] uppercase font-bold text-amber-500 block mb-0.5">
+            Kindergarten
+          </span>
+          <span className="text-lg font-bold text-amber-600">{kgStreams}</span>
+          <span className="text-[10px] text-slate-500 block">KG 1 & KG 2</span>
         </div>
 
         <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
@@ -142,12 +151,12 @@ export const ClassesView: React.FC = () => {
           <span className="text-[10px] text-emerald-600 font-medium block">Fully Staffed</span>
         </div>
 
-        <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs col-span-2 sm:col-span-1">
-          <span className="text-[10px] uppercase font-bold text-amber-500 block mb-0.5">
+        <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span className="text-[10px] uppercase font-bold text-rose-500 block mb-0.5">
             Teacher Needed
           </span>
-          <span className="text-lg font-bold text-amber-600">{unassignedStreams}</span>
-          <span className="text-[10px] text-amber-600 font-medium block">
+          <span className="text-lg font-bold text-rose-600">{unassignedStreams}</span>
+          <span className="text-[10px] text-rose-600 font-medium block">
             {unassignedStreams > 0 ? 'Requires Appointment' : 'All Assigned'}
           </span>
         </div>
@@ -167,6 +176,16 @@ export const ClassesView: React.FC = () => {
               }`}
             >
               All Stages ({classes.length})
+            </button>
+            <button
+              onClick={() => setSelectedStage('Kindergarten')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                selectedStage === 'Kindergarten'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              Kindergarten (KG 1 - 2)
             </button>
             <button
               onClick={() => setSelectedStage('Primary')}
@@ -269,7 +288,7 @@ export const ClassesView: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Badge variant={cls.stage === 'JHS' ? 'navy' : 'info'}>
+                    <Badge variant={cls.stage === 'JHS' ? 'navy' : cls.stage === 'Kindergarten' ? 'warning' : 'info'}>
                       {cls.stage}
                     </Badge>
                     <button

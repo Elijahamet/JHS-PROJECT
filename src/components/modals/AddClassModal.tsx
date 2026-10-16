@@ -3,7 +3,19 @@ import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { useApp } from '../../context/AppContext';
+import { AcademicStage } from '../../types';
 import { School, UserCheck, BookOpen, Layers, Check, Sparkles, AlertCircle } from 'lucide-react';
+
+const KINDERGARTEN_SUBJECTS = [
+  'Language and Literacy',
+  'Early Numeracy & Mathematics',
+  'Our World Our People',
+  'Creative Arts & Colouring',
+  'Ghanaian Language & Culture',
+  'Physical Development & Health',
+  'Rhymes, Songs & Storytelling',
+  'Moral & Social Development',
+];
 
 const PRIMARY_SUBJECTS = [
   'English Language',
@@ -34,30 +46,35 @@ const JHS_SUBJECTS = [
 export const AddClassModal: React.FC = () => {
   const { isAddClassOpen, setIsAddClassOpen, addClass, teachers } = useApp();
 
-  const [stage, setStage] = useState<'Primary' | 'JHS'>('JHS');
+  const [stage, setStage] = useState<AcademicStage>('Kindergarten');
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
-  const [capacity, setCapacity] = useState<number>(40);
+  const [capacity, setCapacity] = useState<number>(25);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(JHS_SUBJECTS);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(KINDERGARTEN_SUBJECTS);
   const [error, setError] = useState('');
 
   // Handle stage change
-  const handleStageChange = (newStage: 'Primary' | 'JHS') => {
+  const handleStageChange = (newStage: AcademicStage) => {
     setStage(newStage);
-    if (newStage === 'Primary') {
+    if (newStage === 'Kindergarten') {
+      setSelectedSubjects(KINDERGARTEN_SUBJECTS);
+      setCapacity(25);
+    } else if (newStage === 'Primary') {
       setSelectedSubjects(PRIMARY_SUBJECTS);
-      if (capacity === 40) setCapacity(35);
+      setCapacity(35);
     } else {
       setSelectedSubjects(JHS_SUBJECTS);
-      if (capacity === 35) setCapacity(40);
+      setCapacity(40);
     }
   };
 
   // Quick name preset suggestions
   const quickPresets =
-    stage === 'Primary'
+    stage === 'Kindergarten'
+      ? ['KG 1A', 'KG 1B', 'KG 2A', 'KG 2B', 'Nursery 1', 'Nursery 2', 'Crèche']
+      : stage === 'Primary'
       ? ['Basic 1B', 'Basic 2B', 'Basic 3B', 'Basic 4B', 'Basic 5B', 'Basic 6B']
       : ['JHS 1B', 'JHS 2B', 'JHS 3B', 'JHS 1 Gold', 'JHS 2 Gold', 'JHS 3 Gold'];
 
@@ -82,7 +99,13 @@ export const AddClassModal: React.FC = () => {
   };
 
   const handleSelectAllSubjects = () => {
-    setSelectedSubjects(stage === 'Primary' ? [...PRIMARY_SUBJECTS] : [...JHS_SUBJECTS]);
+    setSelectedSubjects(
+      stage === 'Kindergarten'
+        ? [...KINDERGARTEN_SUBJECTS]
+        : stage === 'Primary'
+        ? [...PRIMARY_SUBJECTS]
+        : [...JHS_SUBJECTS]
+    );
   };
 
   const handleDeselectAllSubjects = () => {
@@ -94,7 +117,7 @@ export const AddClassModal: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setError('Please provide a class stream name (e.g. JHS 1B or Basic 3B).');
+      setError('Please provide a class stream name (e.g. KG 1A, Basic 3B, or JHS 1A).');
       return;
     }
 
@@ -103,9 +126,16 @@ export const AddClassModal: React.FC = () => {
         name: name.trim(),
         code: code.trim() || name.replace(/\s+/g, '').toUpperCase(),
         stage,
-        roomNumber: roomNumber.trim() || 'Main Academic Block',
-        capacity: Number(capacity) || 40,
-        subjects: selectedSubjects.length > 0 ? selectedSubjects : (stage === 'JHS' ? JHS_SUBJECTS : PRIMARY_SUBJECTS),
+        roomNumber: roomNumber.trim() || (stage === 'Kindergarten' ? 'KG Department - Room 1' : 'Main Academic Block'),
+        capacity: Number(capacity) || (stage === 'Kindergarten' ? 25 : 40),
+        subjects:
+          selectedSubjects.length > 0
+            ? selectedSubjects
+            : stage === 'Kindergarten'
+            ? KINDERGARTEN_SUBJECTS
+            : stage === 'JHS'
+            ? JHS_SUBJECTS
+            : PRIMARY_SUBJECTS,
       },
       selectedTeacherId || undefined
     );
@@ -160,7 +190,23 @@ export const AddClassModal: React.FC = () => {
           <label className="block text-slate-700 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
             1. Academic Stage
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              type="button"
+              onClick={() => handleStageChange('Kindergarten')}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                stage === 'Kindergarten'
+                  ? 'border-amber-500 bg-amber-50/70 text-amber-950 ring-2 ring-amber-500/20'
+                  : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-sm">Kindergarten (KG)</span>
+                {stage === 'Kindergarten' && <Check className="w-4 h-4 text-amber-600" />}
+              </div>
+              <p className="text-[11px] text-slate-500">KG 1 & KG 2 / Nursery (Early Childhood)</p>
+            </button>
+
             <button
               type="button"
               onClick={() => handleStageChange('Primary')}
@@ -187,7 +233,7 @@ export const AddClassModal: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-sm">Junior High School (JHS)</span>
+                <span className="font-bold text-sm">Junior High (JHS)</span>
                 {stage === 'JHS' && <Check className="w-4 h-4 text-indigo-600" />}
               </div>
               <p className="text-[11px] text-slate-500">JHS 1 to JHS 3 (BECE preparation tracks)</p>
@@ -231,7 +277,7 @@ export const AddClassModal: React.FC = () => {
                 type="text"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder={stage === 'JHS' ? 'e.g. JHS 1B, JHS 2 Gold' : 'e.g. Basic 1B, Basic 3 Red'}
+                placeholder={stage === 'Kindergarten' ? 'e.g. KG 1A, KG 2 Blue, Nursery 1' : stage === 'JHS' ? 'e.g. JHS 1B, JHS 2 Gold' : 'e.g. Basic 1B, Basic 3 Red'}
                 className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
                 required
               />
@@ -365,7 +411,12 @@ export const AddClassModal: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1 border border-slate-200 rounded-lg bg-slate-50/40">
-            {(stage === 'Primary' ? PRIMARY_SUBJECTS : JHS_SUBJECTS).map((subj) => {
+            {(stage === 'Kindergarten'
+              ? KINDERGARTEN_SUBJECTS
+              : stage === 'Primary'
+              ? PRIMARY_SUBJECTS
+              : JHS_SUBJECTS
+            ).map((subj) => {
               const isChecked = selectedSubjects.includes(subj);
               return (
                 <label

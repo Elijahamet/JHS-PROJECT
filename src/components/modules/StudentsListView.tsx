@@ -347,7 +347,7 @@ export const StudentsListView: React.FC<StudentsListViewProps> = ({
                       </div>
                     </td>
                     <td className="py-3 px-3">
-                      <Badge variant={student.stage === 'JHS' ? 'navy' : 'info'}>
+                      <Badge variant={student.stage === 'JHS' ? 'navy' : student.stage === 'Kindergarten' ? 'warning' : 'info'}>
                         {student.className}
                       </Badge>
                     </td>
