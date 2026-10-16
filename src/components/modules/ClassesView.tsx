@@ -216,9 +216,34 @@ export const ClassesView: React.FC = () => {
         </div>
       </div>
 
-      {/* Classes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredClasses.map((cls) => {
+      {/* Classes Grid or Empty State */}
+      {filteredClasses.length === 0 ? (
+        <div className="bg-white border border-slate-200/80 rounded-xl p-12 text-center shadow-2xs">
+          <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto mb-4 text-indigo-600">
+            <Layers className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-900 mb-1">
+            {searchTerm || selectedStage !== 'ALL' || teacherFilter !== 'ALL'
+              ? 'No matching classes found'
+              : 'No Classes or Academic Streams Configured'}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto mb-6 leading-relaxed">
+            {searchTerm || selectedStage !== 'ALL' || teacherFilter !== 'ALL'
+              ? 'Try adjusting your search criteria or filter options to locate class streams.'
+              : 'No mock or default classes exist. Click below to create your first academic stream, assign a class teacher, and configure curriculum subjects.'}
+          </p>
+          <Button
+            size="sm"
+            variant="primary"
+            icon={Plus}
+            onClick={() => setIsAddClassOpen(true)}
+          >
+            Create First Class Stream
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredClasses.map((cls) => {
           const isEditingTeacher = editingTeacherClassId === cls.id;
           const isUnassigned =
             !cls.classTeacherName || cls.classTeacherName === 'Unassigned';
@@ -422,7 +447,8 @@ export const ClassesView: React.FC = () => {
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Stream Management Modal */}
       <ManageClassModal

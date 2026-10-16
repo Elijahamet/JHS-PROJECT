@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { useApp } from '../../context/AppContext';
@@ -11,8 +11,8 @@ export const AddStudentModal: React.FC = () => {
     lastName: '',
     gender: 'Male' as 'Male' | 'Female',
     dateOfBirth: '2012-05-15',
-    className: 'JHS 1A',
-    classId: 'cls_jhs1a',
+    className: classes[0]?.name || '',
+    classId: classes[0]?.id || '',
     parentName: '',
     parentPhone: '',
     parentEmail: '',
@@ -24,6 +24,16 @@ export const AddStudentModal: React.FC = () => {
     busRouteId: '',
     busRouteName: '',
   });
+
+  useEffect(() => {
+    if (classes.length > 0 && !formData.classId) {
+      setFormData((prev) => ({
+        ...prev,
+        className: classes[0].name,
+        classId: classes[0].id,
+      }));
+    }
+  }, [classes, isAddStudentOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,8 +47,8 @@ export const AddStudentModal: React.FC = () => {
       lastName: '',
       gender: 'Male',
       dateOfBirth: '2012-05-15',
-      className: 'JHS 1A',
-      classId: 'cls_jhs1a',
+      className: classes[0]?.name || '',
+      classId: classes[0]?.id || '',
       parentName: '',
       parentPhone: '',
       parentEmail: '',
@@ -154,16 +164,20 @@ export const AddStudentModal: React.FC = () => {
                   setFormData({
                     ...formData,
                     classId: e.target.value,
-                    className: sel ? sel.name : 'JHS 1A',
+                    className: sel ? sel.name : '',
                   });
                 }}
                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
               >
-                {classes.map((cls) => (
-                  <option key={cls.id} value={cls.id}>
-                    {cls.name} ({cls.stage}) — Room {cls.roomNumber}
-                  </option>
-                ))}
+                {classes.length === 0 ? (
+                  <option value="">No classes configured — Create a class stream first</option>
+                ) : (
+                  classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.name} ({cls.stage}) — Room {cls.roomNumber}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
           </div>

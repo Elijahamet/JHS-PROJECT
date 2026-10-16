@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileSpreadsheet,
   Save,
@@ -41,8 +41,8 @@ export const ResultsView: React.FC = () => {
   const [viewMode, setViewMode] = useState<'assessment_marks' | 'inspection_desk'>('inspection_desk');
 
   // Assessment Marks state
-  const [selectedClassId, setSelectedClassId] = useState('cls_jhs2a');
-  const [selectedSubject, setSelectedSubject] = useState('Mathematics');
+  const [selectedClassId, setSelectedClassId] = useState(() => classes[0]?.id || '');
+  const [selectedSubject, setSelectedSubject] = useState(() => classes[0]?.subjects[0] || '');
   const [selectedTerm, setSelectedTerm] = useState('Term 2');
   const [isSaved, setIsSaved] = useState(false);
 
@@ -55,15 +55,39 @@ export const ResultsView: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const selectedClass =
-    classes.find((c) => c.id === selectedClassId) || classes[0];
+    classes.find((c) => c.id === selectedClassId) || classes[0] || null;
+
+  useEffect(() => {
+    if (classes.length > 0 && (!selectedClassId || !classes.some((c) => c.id === selectedClassId))) {
+      setSelectedClassId(classes[0].id);
+    }
+  }, [classes, selectedClassId]);
+
+  useEffect(() => {
+    if (selectedClass?.subjects && selectedClass.subjects.length > 0) {
+      if (!selectedSubject || !selectedClass.subjects.includes(selectedSubject)) {
+        setSelectedSubject(selectedClass.subjects[0]);
+      }
+    } else {
+      setSelectedSubject('');
+    }
+  }, [selectedClass, selectedSubject]);
 
   const currentAssessments = assessments.filter(
     (a) =>
       a.subjectName === selectedSubject &&
-      (a.classId === selectedClass.id || a.className === selectedClass.name)
+      (selectedClass ? (a.classId === selectedClass.id || a.className === selectedClass.name) : false)
   );
 
   const handleInitializeAssessments = () => {
+    if (!selectedClass) {
+      showToast('Please create a class stream first.');
+      return;
+    }
+    if (!selectedSubject) {
+      showToast('Please configure a curriculum subject first.');
+      return;
+    }
     const classStudents = students.filter(
       (s) => s.className === selectedClass.name || s.classId === selectedClass.id
     );
@@ -179,6 +203,10 @@ export const ResultsView: React.FC = () => {
   };
 
   const handleBulkApprove = () => {
+    if (!selectedClass) {
+      showToast('No class stream selected for bulk approval.');
+      return;
+    }
     bulkApproveReports(
       selectedClass.name,
       'Terminal examination marks and continuous assessment audited and approved by the Headmistress.'
@@ -528,7 +556,7 @@ export const ResultsView: React.FC = () => {
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between text-xs text-emerald-800">
               <span className="flex items-center gap-2 font-medium">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Marks and calculated grades for {selectedSubject} ({selectedClass.name}) successfully saved.
+                Marks and calculated grades for {selectedSubject || 'Subject'} ({selectedClass?.name || 'Class'}) successfully saved.
               </span>
               <span className="text-[11px] text-emerald-600">Sync complete</span>
             </div>
@@ -546,11 +574,15 @@ export const ResultsView: React.FC = () => {
                   onChange={(e) => setSelectedClassId(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
                 >
-                  {classes.map((cls) => (
-                    <option key={cls.id} value={cls.id}>
-                      {cls.name} ({cls.stage})
-                    </option>
-                  ))}
+                  {classes.length === 0 ? (
+                    <option value="">No classes configured</option>
+                  ) : (
+                    classes.map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.name} ({cls.stage})
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 
@@ -563,11 +595,15 @@ export const ResultsView: React.FC = () => {
                   onChange={(e) => setSelectedSubject(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white font-medium"
                 >
-                  {selectedClass.subjects.map((sub, idx) => (
-                    <option key={idx} value={sub}>
-                      {sub}
-                    </option>
-                  ))}
+                  {selectedClass && selectedClass.subjects && selectedClass.subjects.length > 0 ? (
+                    selectedClass.subjects.map((sub, idx) => (
+                      <option key={idx} value={sub}>
+                        {sub}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No subjects available</option>
+                  )}
                 </select>
               </div>
 
@@ -650,14 +686,20 @@ export const ResultsView: React.FC = () => {
                   {currentAssessments.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="py-8 text-center text-slate-500">
-                        <p className="mb-2">No continuous assessment records entered yet for {selectedClass.name} in {selectedSubject}.</p>
-                        <button
-                          type="button"
-                          onClick={handleInitializeAssessments}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs"
-                        >
-                          Initialize Mark Sheet for {selectedClass.name}
-                        </button>
+                        <p className="mb-2">
+                          {selectedClass
+                            ? `No continuous assessment records entered yet for ${selectedClass.name} in ${selectedSubject || 'selected subject'}.`
+                            : 'No classes or academic streams configured yet.'}
+                        </p>
+                        {selectedClass && selectedSubject && (
+                          <button
+                            type="button"
+                            onClick={handleInitializeAssessments}
+                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                          >
+                            Initialize Mark Sheet for {selectedClass.name}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ) : (

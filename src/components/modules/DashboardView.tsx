@@ -160,7 +160,7 @@ export const DashboardView: React.FC = () => {
         <StatCard
           title="Classes"
           value={totalClasses}
-          subtitle="Basic 1 to JHS 3"
+          subtitle={totalClasses > 0 ? `${totalClasses} active streams` : 'No streams configured'}
           icon={Layers}
         />
         <StatCard

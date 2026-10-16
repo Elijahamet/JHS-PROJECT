@@ -20,7 +20,7 @@ import { AttendanceRecord } from '../../types';
 export const AttendanceView: React.FC = () => {
   const { classes, students, attendance, saveClassAttendance, selectedClassFilter } = useApp();
 
-  const [selectedClassId, setSelectedClassId] = useState('cls_jhs2a');
+  const [selectedClassId, setSelectedClassId] = useState(() => classes[0]?.id || '');
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [isSavedNotice, setIsSavedNotice] = useState(false);
 
@@ -34,8 +34,14 @@ export const AttendanceView: React.FC = () => {
     }
   }, [selectedClassFilter, classes]);
 
+  useEffect(() => {
+    if (classes.length > 0 && (!selectedClassId || !classes.some((c) => c.id === selectedClassId))) {
+      setSelectedClassId(classes[0].id);
+    }
+  }, [classes, selectedClassId]);
+
   const selectedClass =
-    classes.find((c) => c.id === selectedClassId) || classes[0];
+    classes.find((c) => c.id === selectedClassId) || classes[0] || null;
   const classStudents = students.filter(
     (s) => s.className === selectedClass?.name
   );
@@ -77,6 +83,7 @@ export const AttendanceView: React.FC = () => {
   };
 
   const handleSave = () => {
+    if (!selectedClass) return;
     const records: AttendanceRecord[] = classStudents.map((s) => ({
       id: `att_${s.id}_${selectedDate}`,
       studentId: s.id,
@@ -98,6 +105,7 @@ export const AttendanceView: React.FC = () => {
 
   // Export Attendance CSV
   const handleExportCSV = () => {
+    if (!selectedClass) return;
     const headers = [
       'Student ID',
       'Student Name',
@@ -114,8 +122,8 @@ export const AttendanceView: React.FC = () => {
       `"${selectedClass.name}"`,
       `"${selectedDate}"`,
       `"${rosterStatus[s.id] || 'Present'}"`,
-      `"${selectedClass.classTeacherName}"`,
-      `"${selectedClass.roomNumber}"`,
+      `"${selectedClass.classTeacherName || 'Unassigned'}"`,
+      `"${selectedClass.roomNumber || ''}"`,
     ]);
 
     const csvContent =
@@ -223,11 +231,15 @@ export const AttendanceView: React.FC = () => {
                 }}
                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white font-medium"
               >
-                {classes.map((cls) => (
-                  <option key={cls.id} value={cls.id}>
-                    {cls.name} ({cls.stage})
-                  </option>
-                ))}
+                {classes.length === 0 ? (
+                  <option value="">No classes configured</option>
+                ) : (
+                  classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.name} ({cls.stage})
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 
@@ -302,7 +314,7 @@ export const AttendanceView: React.FC = () => {
         <div className="px-5 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/50">
           <div>
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-              {selectedClass?.name} Student Roster ({classStudents.length} Students)
+              {selectedClass ? `${selectedClass.name} Student Roster` : 'Class Roster'} ({classStudents.length} Students)
             </h3>
             <p className="text-[11px] text-slate-500">
               Click status chip to mark individual student attendance

@@ -14,7 +14,7 @@ export const AddTeacherModal: React.FC = () => {
     qualification: 'B.Ed. Basic Education',
     isClassTeacherOf: '',
     status: 'Active' as 'Active' | 'On Leave',
-    subjectsAssigned: ['General Science', 'Mathematics'],
+    subjectsAssigned: [] as string[],
   });
 
   const availableSubjects = [
@@ -55,7 +55,7 @@ export const AddTeacherModal: React.FC = () => {
       phone: formData.phone.trim() || '+233 24 000 0000',
       qualification: formData.qualification,
       isClassTeacherOf: formData.isClassTeacherOf || undefined,
-      subjectsAssigned: formData.subjectsAssigned.length > 0 ? formData.subjectsAssigned : ['General Studies'],
+      subjectsAssigned: formData.subjectsAssigned,
       status: formData.status,
     });
 
@@ -69,7 +69,7 @@ export const AddTeacherModal: React.FC = () => {
       qualification: 'B.Ed. Basic Education',
       isClassTeacherOf: '',
       status: 'Active',
-      subjectsAssigned: ['General Science', 'Mathematics'],
+      subjectsAssigned: [],
     });
   };
 

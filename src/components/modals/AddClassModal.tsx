@@ -37,7 +37,7 @@ export const AddClassModal: React.FC = () => {
   const [stage, setStage] = useState<'Primary' | 'JHS'>('JHS');
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
-  const [roomNumber, setRoomNumber] = useState('Block C - Room 301');
+  const [roomNumber, setRoomNumber] = useState('');
   const [capacity, setCapacity] = useState<number>(40);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(JHS_SUBJECTS);
@@ -49,11 +49,9 @@ export const AddClassModal: React.FC = () => {
     if (newStage === 'Primary') {
       setSelectedSubjects(PRIMARY_SUBJECTS);
       if (capacity === 40) setCapacity(35);
-      if (roomNumber.includes('Block C')) setRoomNumber('Block A - Room 104');
     } else {
       setSelectedSubjects(JHS_SUBJECTS);
       if (capacity === 35) setCapacity(40);
-      if (roomNumber.includes('Block A')) setRoomNumber('Block C - Room 304');
     }
   };
 
@@ -115,6 +113,7 @@ export const AddClassModal: React.FC = () => {
     // Reset and close
     setName('');
     setCode('');
+    setRoomNumber('');
     setSelectedTeacherId('');
     setError('');
     setIsAddClassOpen(false);
