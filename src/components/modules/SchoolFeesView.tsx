@@ -16,6 +16,7 @@ export const SchoolFeesView: React.FC = () => {
   const {
     students,
     feeStructures,
+    payments,
     setIsRecordPaymentOpen,
     setSelectedStudentId,
     setCurrentNav,
@@ -24,10 +25,16 @@ export const SchoolFeesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBalance, setFilterBalance] = useState<'ALL' | 'OWING' | 'CLEARED'>('ALL');
 
-  const totalBilled = 2000 * 642;
-  const totalCollected = 185600;
-  const totalOutstanding = 42500;
-  const collectionRate = ((totalCollected / (totalCollected + totalOutstanding)) * 100).toFixed(1);
+  const totalCollected = payments
+    .filter((p) => p.category === 'School Fees')
+    .reduce((sum, p) => sum + p.amount, 0);
+  const totalOutstanding = students.reduce(
+    (sum, s) => sum + (s.schoolFeeBalance || 0),
+    0
+  );
+  const totalBilled = totalCollected + totalOutstanding;
+  const collectionRate =
+    totalBilled > 0 ? ((totalCollected / totalBilled) * 100).toFixed(1) : '0.0';
 
   const filteredStudents = students.filter((s) => {
     const matchSearch =
@@ -208,53 +215,61 @@ export const SchoolFeesView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredStudents.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50/60">
-                  <td className="py-3 px-4">
-                    <p className="font-semibold text-slate-900">
-                      {s.firstName} {s.lastName}
-                    </p>
-                    <p className="text-[11px] text-slate-400 font-mono">
-                      {s.studentId}
-                    </p>
-                  </td>
-                  <td className="py-3 px-3 font-medium text-slate-700">
-                    {s.className}
-                  </td>
-                  <td className="py-3 px-4">
-                    <p className="text-slate-800">{s.parentName}</p>
-                    <p className="text-[11px] text-slate-500">{s.parentPhone}</p>
-                  </td>
-                  <td className="py-3 px-3 text-slate-700">
-                    {formatCurrency(2000)}
-                  </td>
-                  <td className="py-3 px-3 font-semibold text-emerald-700">
-                    {formatCurrency(2000 - s.schoolFeeBalance)}
-                  </td>
-                  <td className="py-3 px-3">
-                    {s.schoolFeeBalance === 0 ? (
-                      <span className="font-bold text-emerald-700">
-                        GH₵ 0.00 (PAID)
-                      </span>
-                    ) : (
-                      <span className="font-bold text-rose-600">
-                        {formatCurrency(s.schoolFeeBalance)}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => {
-                        setSelectedStudentId(s.id);
-                        setCurrentNav('students');
-                      }}
-                      className="text-xs text-blue-600 font-semibold hover:underline"
-                    >
-                      View Ledger
-                    </button>
+              {filteredStudents.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                    No student tuition accounts enrolled yet.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredStudents.map((s) => (
+                  <tr key={s.id} className="hover:bg-slate-50/60">
+                    <td className="py-3 px-4">
+                      <p className="font-semibold text-slate-900">
+                        {s.firstName} {s.lastName}
+                      </p>
+                      <p className="text-[11px] text-slate-400 font-mono">
+                        {s.studentId}
+                      </p>
+                    </td>
+                    <td className="py-3 px-3 font-medium text-slate-700">
+                      {s.className}
+                    </td>
+                    <td className="py-3 px-4">
+                      <p className="text-slate-800">{s.parentName}</p>
+                      <p className="text-[11px] text-slate-500">{s.parentPhone}</p>
+                    </td>
+                    <td className="py-3 px-3 text-slate-700">
+                      {formatCurrency(2000)}
+                    </td>
+                    <td className="py-3 px-3 font-semibold text-emerald-700">
+                      {formatCurrency(Math.max(0, 2000 - s.schoolFeeBalance))}
+                    </td>
+                    <td className="py-3 px-3">
+                      {s.schoolFeeBalance === 0 ? (
+                        <span className="font-bold text-emerald-700">
+                          GH₵ 0.00 (PAID)
+                        </span>
+                      ) : (
+                        <span className="font-bold text-rose-600">
+                          {formatCurrency(s.schoolFeeBalance)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <button
+                        onClick={() => {
+                          setSelectedStudentId(s.id);
+                          setCurrentNav('students');
+                        }}
+                        className="text-xs text-blue-600 font-semibold hover:underline"
+                      >
+                        View Ledger
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

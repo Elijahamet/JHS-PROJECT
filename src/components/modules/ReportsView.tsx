@@ -13,11 +13,41 @@ import { Button } from '../common/Button';
 import { formatCurrency } from '../../utils/formatters';
 
 export const ReportsView: React.FC = () => {
-  const { classes } = useApp();
+  const { classes, students, payments, attendance, routes, assessments, currentSchool } = useApp();
 
   const [reportType, setReportType] = useState<'attendance' | 'academic' | 'finance' | 'feeding' | 'transport'>('finance');
   const [selectedClass, setSelectedClass] = useState('ALL');
   const [term, setTerm] = useState('Term 2');
+
+  // Finance metrics
+  const tuitionPayments = payments.filter((p) => p.category === 'School Fees');
+  const totalTuitionCollected = tuitionPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalTuitionArrears = students.reduce((sum, s) => sum + (s.schoolFeeBalance || 0), 0);
+  const totalTuitionBilled = totalTuitionCollected + totalTuitionArrears;
+
+  // Feeding metrics
+  const feedingSubscribers = students.filter((s) => s.participatesInFeeding);
+  const feedingPayments = payments.filter((p) => p.category === 'Feeding Fees');
+  const feedingCollected = feedingPayments.reduce((sum, p) => sum + p.amount, 0);
+  const feedingArrears = feedingSubscribers.reduce((sum, s) => sum + (s.feedingFeeBalance || 0), 0);
+  const feedingMealsServed = attendance.filter((a) => a.status === 'Present').length;
+
+  // Attendance metrics
+  const totalAttLogs = attendance.length;
+  const presentCount = attendance.filter((a) => a.status === 'Present').length;
+  const absentCount = attendance.filter((a) => a.status === 'Absent').length;
+  const lateCount = attendance.filter((a) => a.status === 'Late').length;
+  const avgPresent = totalAttLogs > 0 ? `${((presentCount / totalAttLogs) * 100).toFixed(1)}%` : '0.0%';
+  const avgAbsent = totalAttLogs > 0 ? `${((absentCount / totalAttLogs) * 100).toFixed(1)}%` : '0.0%';
+  const avgLate = totalAttLogs > 0 ? `${((lateCount / totalAttLogs) * 100).toFixed(1)}%` : '0.0%';
+
+  // Academic metrics
+  const totalAsm = assessments.length;
+  const passedAsm = assessments.filter((a) => a.totalScore >= 50).length;
+  const academicPassRate = totalAsm > 0 ? `${((passedAsm / totalAsm) * 100).toFixed(1)}%` : '0.0%';
+
+  // Transport metrics
+  const totalRiders = routes.reduce((sum, r) => sum + r.studentCount, 0);
 
   const handleExport = () => {
     alert(`Exporting ${reportType.toUpperCase()} Report for ${term} to CSV...`);
@@ -138,7 +168,7 @@ export const ReportsView: React.FC = () => {
         <div className="border-b pb-4 flex items-start justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-900 uppercase tracking-tight">
-              Bright Future Academy — Official Report Summary
+              {currentSchool?.name || 'Bright Future Academy'} — Official Report Summary
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Type: {reportType.toUpperCase()} • Generated for: {term} (2024/2025)
@@ -156,19 +186,19 @@ export const ReportsView: React.FC = () => {
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <span className="text-[11px] text-slate-500">Total Billed Tuition</span>
                 <p className="text-base font-bold text-slate-900 mt-0.5">
-                  {formatCurrency(1284000)}
+                  {formatCurrency(totalTuitionBilled)}
                 </p>
               </div>
               <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100">
                 <span className="text-[11px] text-emerald-800">Total Cleared</span>
                 <p className="text-base font-bold text-emerald-900 mt-0.5">
-                  {formatCurrency(185600)}
+                  {formatCurrency(totalTuitionCollected)}
                 </p>
               </div>
               <div className="p-3 bg-rose-50 rounded-lg border border-rose-100">
                 <span className="text-[11px] text-rose-800">Total Arrears Outstanding</span>
                 <p className="text-base font-bold text-rose-900 mt-0.5">
-                  {formatCurrency(42500)}
+                  {formatCurrency(totalTuitionArrears)}
                 </p>
               </div>
             </div>
@@ -185,16 +215,31 @@ export const ReportsView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {classes.slice(0, 6).map((c, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/60">
-                    <td className="py-2.5 px-3 font-semibold text-slate-900">{c.name}</td>
-                    <td className="py-2.5 px-3">{c.studentCount}</td>
-                    <td className="py-2.5 px-3 font-mono">{formatCurrency(c.studentCount * 2000)}</td>
-                    <td className="py-2.5 px-3 font-mono text-emerald-700">{formatCurrency(c.studentCount * 1700)}</td>
-                    <td className="py-2.5 px-3 font-mono text-rose-600">{formatCurrency(c.studentCount * 300)}</td>
-                    <td className="py-2.5 px-3 font-bold text-right">85.0%</td>
+                {classes.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-6 text-center text-slate-400">
+                      No classes configured yet.
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  classes.slice(0, 8).map((c, idx) => {
+                    const classPupils = students.filter((s) => s.className === c.name || s.classId === c.id);
+                    const classArrears = classPupils.reduce((sum, s) => sum + (s.schoolFeeBalance || 0), 0);
+                    const classBilled = classPupils.length * 2000;
+                    const classCollected = Math.max(0, classBilled - classArrears);
+                    const recPct = classBilled > 0 ? `${Math.round((classCollected / classBilled) * 100)}%` : '0%';
+                    return (
+                      <tr key={idx} className="hover:bg-slate-50/60">
+                        <td className="py-2.5 px-3 font-semibold text-slate-900">{c.name}</td>
+                        <td className="py-2.5 px-3">{classPupils.length}</td>
+                        <td className="py-2.5 px-3 font-mono">{formatCurrency(classBilled)}</td>
+                        <td className="py-2.5 px-3 font-mono text-emerald-700">{formatCurrency(classCollected)}</td>
+                        <td className="py-2.5 px-3 font-mono text-rose-600">{formatCurrency(classArrears)}</td>
+                        <td className="py-2.5 px-3 font-bold text-right">{recPct}</td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -207,21 +252,21 @@ export const ReportsView: React.FC = () => {
                 School Feeding Kitchen & Vendor Ledger
               </p>
               <p className="text-slate-600 text-xs">
-                Term 2 Feeding Rate: GH₵ 600.00 per term. 410 Active subscribers.
+                Term 2 Feeding Rate: GH₵ 600.00 per term. {feedingSubscribers.length} Active subscribers.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="p-3 bg-slate-50 rounded-lg">
                 <span className="text-slate-500">Collected</span>
-                <p className="text-base font-bold text-slate-900">{formatCurrency(42600)}</p>
+                <p className="text-base font-bold text-slate-900">{formatCurrency(feedingCollected)}</p>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg">
                 <span className="text-slate-500">Arrears</span>
-                <p className="text-base font-bold text-rose-600">{formatCurrency(8400)}</p>
+                <p className="text-base font-bold text-rose-600">{formatCurrency(feedingArrears)}</p>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg">
                 <span className="text-slate-500">Meals Served</span>
-                <p className="text-base font-bold text-blue-700">24,600 Plates</p>
+                <p className="text-base font-bold text-blue-700">{feedingMealsServed} Plates</p>
               </div>
             </div>
           </div>
@@ -232,34 +277,38 @@ export const ReportsView: React.FC = () => {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="p-3 bg-emerald-50 rounded-lg">
                 <span className="text-emerald-800">Average Present</span>
-                <p className="text-base font-bold text-emerald-900">94.2%</p>
+                <p className="text-base font-bold text-emerald-900">{avgPresent}</p>
               </div>
               <div className="p-3 bg-rose-50 rounded-lg">
                 <span className="text-rose-800">Average Absent</span>
-                <p className="text-base font-bold text-rose-900">3.8%</p>
+                <p className="text-base font-bold text-rose-900">{avgAbsent}</p>
               </div>
               <div className="p-3 bg-amber-50 rounded-lg">
                 <span className="text-amber-800">Average Late</span>
-                <p className="text-base font-bold text-amber-900">2.0%</p>
+                <p className="text-base font-bold text-amber-900">{avgLate}</p>
               </div>
             </div>
           </div>
         )}
 
         {reportType === 'academic' && (
-          <div className="p-4 bg-slate-50 rounded-lg text-slate-700">
+          <div className="p-4 bg-slate-50 rounded-lg text-slate-700 space-y-2">
             <p className="font-semibold text-slate-900">Academic Standard Indicators</p>
-            <p className="mt-1">
-              School-wide pass rate for Term 2 tests is 91.8%. Highest achieving subjects: ICT (94.2%) and Mathematics (88.5%).
+            <p className="text-xs">
+              {totalAsm > 0
+                ? `School-wide pass rate for Term 2 assessments is ${academicPassRate} across ${totalAsm} recorded marks.`
+                : 'No terminal continuous assessment marks recorded yet.'}
             </p>
           </div>
         )}
 
         {reportType === 'transport' && (
-          <div className="p-4 bg-slate-50 rounded-lg text-slate-700">
+          <div className="p-4 bg-slate-50 rounded-lg text-slate-700 space-y-2">
             <p className="font-semibold text-slate-900">Fleet Operations Report</p>
-            <p className="mt-1">
-              84 total daily passengers across 3 operational routes (Madina-Adenta, Dome-Achimota, Spintex-Legon). On-time arrival rate: 98.4%.
+            <p className="text-xs">
+              {routes.length > 0
+                ? `${totalRiders} total daily passengers across ${routes.length} operational routes.`
+                : 'No fleet routes configured yet.'}
             </p>
           </div>
         )}

@@ -52,34 +52,32 @@ export const DashboardView: React.FC = () => {
 
   const totalAttendanceRecords = attendance.length;
   const presentCount = attendance.filter((a) => a.status === 'Present').length;
+  const absentCount = attendance.filter((a) => a.status === 'Absent').length;
+  const lateCount = attendance.filter((a) => a.status === 'Late').length;
   const attendanceRate = totalAttendanceRecords > 0 ? ((presentCount / totalAttendanceRecords) * 100).toFixed(1) : '0.0';
+  const absentRate = totalAttendanceRecords > 0 ? ((absentCount / totalAttendanceRecords) * 100).toFixed(1) : '0.0';
+  const lateRate = totalAttendanceRecords > 0 ? ((lateCount / totalAttendanceRecords) * 100).toFixed(1) : '0.0';
 
   const recentPayments = payments.slice(0, 5);
   const recentAnnouncements = announcements.slice(0, 3);
 
-  const upcomingEvents = [
-    {
-      title: 'Term 2 Mid-Term PTA General Meeting',
-      date: '28 Feb 2025',
-      time: '03:00 PM',
-      audience: 'All Parents & Teachers',
-      location: 'Assembly Hall',
-    },
-    {
-      title: 'Mid-Term Examinations Commence',
-      date: '17 Feb 2025',
-      time: '08:00 AM',
-      audience: 'Primary & JHS Students',
-      location: 'All Classrooms',
-    },
-    {
-      title: 'Inter-School Athletics Competition',
-      date: '06 Mar 2025',
-      time: '09:00 AM',
-      audience: 'Sports Team & Staff',
-      location: 'Legon Sports Stadium',
-    },
-  ];
+  const feedingBalanceClearedTuitionCount = students.filter(
+    (s) => (s.schoolFeeBalance === 0 || !s.schoolFeeBalance) && (s.feedingFeeBalance || 0) > 0
+  ).length;
+
+  const upcomingEvents = announcements.map((ann) => {
+    const d = new Date(ann.publishDate);
+    const day = !isNaN(d.getDate()) ? String(d.getDate()).padStart(2, '0') : '01';
+    const month = !isNaN(d.getMonth()) ? d.toLocaleString('en-US', { month: 'short' }) : 'Term';
+    return {
+      title: ann.title,
+      day,
+      month,
+      time: '08:30 AM',
+      audience: ann.audience,
+      location: 'School Campus',
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -212,14 +210,14 @@ export const DashboardView: React.FC = () => {
                 title={`Present: ${attendanceRate}%`}
               />
               <div
-                style={{ width: '3.8%' }}
-                className="bg-rose-500 h-full"
-                title="Absent: 3.8%"
+                style={{ width: `${absentRate}%` }}
+                className="bg-rose-500 h-full transition-all duration-500"
+                title={`Absent: ${absentRate}%`}
               />
               <div
-                style={{ width: '2.0%' }}
-                className="bg-amber-500 h-full"
-                title="Late: 2.0%"
+                style={{ width: `${lateRate}%` }}
+                className="bg-amber-500 h-full transition-all duration-500"
+                title={`Late: ${lateRate}%`}
               />
             </div>
 
@@ -227,25 +225,27 @@ export const DashboardView: React.FC = () => {
             <div className="grid grid-cols-3 gap-3.5 pt-2 text-center text-xs">
               <div className="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100">
                 <span className="text-[11px] text-emerald-800 font-medium">Present</span>
-                <p className="text-base font-bold text-emerald-900 mt-0.5">614</p>
-                <span className="text-[10px] text-emerald-700">94.2%</span>
+                <p className="text-base font-bold text-emerald-900 mt-0.5">{presentCount}</p>
+                <span className="text-[10px] text-emerald-700">{attendanceRate}%</span>
               </div>
               <div className="p-3 bg-rose-50/60 rounded-lg border border-rose-100">
                 <span className="text-[11px] text-rose-800 font-medium">Absent</span>
-                <p className="text-base font-bold text-rose-900 mt-0.5">20</p>
-                <span className="text-[10px] text-rose-700">3.8%</span>
+                <p className="text-base font-bold text-rose-900 mt-0.5">{absentCount}</p>
+                <span className="text-[10px] text-rose-700">{absentRate}%</span>
               </div>
               <div className="p-3 bg-amber-50/60 rounded-lg border border-amber-100">
                 <span className="text-[11px] text-amber-800 font-medium">Late</span>
-                <p className="text-base font-bold text-amber-900 mt-0.5">8</p>
-                <span className="text-[10px] text-amber-700">2.0%</span>
+                <p className="text-base font-bold text-amber-900 mt-0.5">{lateCount}</p>
+                <span className="text-[10px] text-amber-700">{lateRate}%</span>
               </div>
             </div>
 
             <div className="pt-2 text-xs text-slate-500 flex items-center justify-between border-t border-slate-100">
               <span className="flex items-center gap-1.5">
-                <FileCheck2 className="w-4 h-4 text-emerald-600" />
-                All 12 classes submitted attendance on time
+                <FileCheck2 className={`w-4 h-4 ${totalAttendanceRecords > 0 ? 'text-emerald-600' : 'text-slate-400'}`} />
+                {totalAttendanceRecords > 0
+                  ? `${totalAttendanceRecords} attendance record${totalAttendanceRecords > 1 ? 's' : ''} logged today`
+                  : 'No attendance recorded for today'}
               </span>
               <button
                 onClick={() => setCurrentNav('attendance')}
@@ -394,8 +394,10 @@ export const DashboardView: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span className="flex items-center gap-1.5">
-              <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
-              14 students have feeding balances despite cleared tuition fees.
+              <AlertCircle className={`w-3.5 h-3.5 ${feedingBalanceClearedTuitionCount > 0 ? 'text-amber-500' : 'text-emerald-500'}`} />
+              {feedingBalanceClearedTuitionCount > 0
+                ? `${feedingBalanceClearedTuitionCount} student${feedingBalanceClearedTuitionCount > 1 ? 's have' : ' has'} feeding balances despite cleared tuition fees.`
+                : 'All student feeding accounts are current or settled in alignment with tuition.'}
             </span>
             <button
               onClick={() => setCurrentNav('feeding-fees')}
@@ -545,32 +547,40 @@ export const DashboardView: React.FC = () => {
             </div>
 
             <div className="mt-3 space-y-3">
-              {upcomingEvents.map((evt, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/70 border border-slate-100"
-                >
-                  <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 flex flex-col items-center justify-center flex-shrink-0 text-center">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      {evt.date.split(' ')[1]}
-                    </span>
-                    <span className="text-base font-bold text-slate-900 leading-none">
-                      {evt.date.split(' ')[0]}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1 text-xs">
-                    <p className="font-semibold text-slate-900 truncate">
-                      {evt.title}
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {evt.time} • {evt.location}
-                    </p>
-                    <p className="text-[10px] text-blue-600 font-medium mt-0.5">
-                      Audience: {evt.audience}
-                    </p>
-                  </div>
+              {upcomingEvents.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400">
+                  <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="font-semibold text-slate-600">No upcoming events scheduled</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Post an announcement to schedule academic calendar events.</p>
                 </div>
-              ))}
+              ) : (
+                upcomingEvents.map((evt, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/70 border border-slate-100"
+                  >
+                    <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 flex flex-col items-center justify-center flex-shrink-0 text-center">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        {evt.month}
+                      </span>
+                      <span className="text-base font-bold text-slate-900 leading-none">
+                        {evt.day}
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1 text-xs">
+                      <p className="font-semibold text-slate-900 truncate">
+                        {evt.title}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {evt.time} • {evt.location}
+                      </p>
+                      <p className="text-[10px] text-blue-600 font-medium mt-0.5">
+                        Audience: {evt.audience}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

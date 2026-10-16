@@ -133,55 +133,63 @@ export const AdmissionsView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((app) => {
-                let badgeVariant: 'warning' | 'info' | 'success' | 'danger' | 'neutral' = 'neutral';
-                if (app.status === 'Pending') badgeVariant = 'warning';
-                if (app.status === 'Under Review' || app.status === 'Interview')
-                  badgeVariant = 'info';
-                if (app.status === 'Accepted') badgeVariant = 'success';
-                if (app.status === 'Rejected') badgeVariant = 'danger';
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                    No admission applications found. Click &quot;New Application&quot; to register a prospective student.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((app) => {
+                  let badgeVariant: 'warning' | 'info' | 'success' | 'danger' | 'neutral' = 'neutral';
+                  if (app.status === 'Pending') badgeVariant = 'warning';
+                  if (app.status === 'Under Review' || app.status === 'Interview')
+                    badgeVariant = 'info';
+                  if (app.status === 'Accepted') badgeVariant = 'success';
+                  if (app.status === 'Rejected') badgeVariant = 'danger';
 
-                return (
-                  <tr
-                    key={app.id}
-                    className="hover:bg-slate-50/60 transition-colors cursor-pointer group"
-                    onClick={() => setReviewApp(app)}
-                  >
-                    <td className="py-3 px-4 font-mono font-medium text-slate-700">
-                      {app.applicationId}
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="font-semibold text-slate-900 group-hover:text-blue-600">
-                        {app.applicantFirstName} {app.applicantLastName}
-                      </p>
-                      <p className="text-[11px] text-slate-400">
-                        DOB: {formatDate(app.dateOfBirth)} ({app.gender})
-                      </p>
-                    </td>
-                    <td className="py-3 px-3 font-bold text-slate-800">
-                      {app.applyingForClass}
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="text-slate-800 font-medium">{app.parentName}</p>
-                      <p className="text-[11px] text-slate-500">{app.parentPhone}</p>
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">
-                      {formatDate(app.applicationDate)}
-                    </td>
-                    <td className="py-3 px-3">
-                      <Badge variant={badgeVariant}>{app.status}</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => setReviewApp(app)}
-                        className="text-xs text-blue-600 font-semibold hover:underline"
-                      >
-                        Review
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                  return (
+                    <tr
+                      key={app.id}
+                      className="hover:bg-slate-50/60 transition-colors cursor-pointer group"
+                      onClick={() => setReviewApp(app)}
+                    >
+                      <td className="py-3 px-4 font-mono font-medium text-slate-700">
+                        {app.applicationId}
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="font-semibold text-slate-900 group-hover:text-blue-600">
+                          {app.applicantFirstName} {app.applicantLastName}
+                        </p>
+                        <p className="text-[11px] text-slate-400">
+                          DOB: {formatDate(app.dateOfBirth)} ({app.gender})
+                        </p>
+                      </td>
+                      <td className="py-3 px-3 font-bold text-slate-800">
+                        {app.applyingForClass}
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="text-slate-800 font-medium">{app.parentName}</p>
+                        <p className="text-[11px] text-slate-500">{app.parentPhone}</p>
+                      </td>
+                      <td className="py-3 px-3 text-slate-600">
+                        {formatDate(app.applicationDate)}
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge variant={badgeVariant}>{app.status}</Badge>
+                      </td>
+                      <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => setReviewApp(app)}
+                          className="text-xs text-blue-600 font-semibold hover:underline"
+                        >
+                          Review
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

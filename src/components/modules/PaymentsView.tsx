@@ -150,62 +150,70 @@ export const PaymentsView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredPayments.map((pmt) => (
-                <tr
-                  key={pmt.id}
-                  className="hover:bg-slate-50/60 transition-colors cursor-pointer group"
-                  onClick={() => {
-                    setSelectedReceiptPayment(pmt);
-                    setIsReceiptModalOpen(true);
-                  }}
-                >
-                  <td className="py-3 px-4 font-mono font-bold text-slate-900 group-hover:text-blue-600">
-                    {pmt.receiptNumber}
-                  </td>
-                  <td className="py-3 px-4">
-                    <p className="font-semibold text-slate-900">{pmt.studentName}</p>
-                    <p className="text-[11px] text-slate-400">{pmt.className}</p>
-                  </td>
-                  <td className="py-3 px-3">
-                    <Badge variant={pmt.category === 'Feeding Fees' ? 'warning' : 'navy'}>
-                      {pmt.category}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-3">
-                    <p className="text-slate-800 font-medium">{pmt.paymentMethod}</p>
-                    <p className="text-[11px] text-slate-400 font-mono">
-                      {pmt.reference}
-                    </p>
-                  </td>
-                  <td className="py-3 px-3 text-slate-600">
-                    {formatDate(pmt.date)}
-                  </td>
-                  <td className="py-3 px-3 font-bold text-slate-900 text-right">
-                    {formatCurrency(pmt.amount)}
-                  </td>
-                  <td className="py-3 px-3 text-right">
-                    {pmt.balanceAfterPayment === 0 ? (
-                      <span className="text-emerald-700 font-semibold">GH₵ 0.00</span>
-                    ) : (
-                      <span className="text-rose-600 font-medium">
-                        {formatCurrency(pmt.balanceAfterPayment)}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={() => {
-                        setSelectedReceiptPayment(pmt);
-                        setIsReceiptModalOpen(true);
-                      }}
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Receipt</span>
-                    </button>
+              {filteredPayments.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-slate-400">
+                    No financial payment transactions recorded yet. Click &quot;Record Payment&quot; to issue a receipt.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredPayments.map((pmt) => (
+                  <tr
+                    key={pmt.id}
+                    className="hover:bg-slate-50/60 transition-colors cursor-pointer group"
+                    onClick={() => {
+                      setSelectedReceiptPayment(pmt);
+                      setIsReceiptModalOpen(true);
+                    }}
+                  >
+                    <td className="py-3 px-4 font-mono font-bold text-slate-900 group-hover:text-blue-600">
+                      {pmt.receiptNumber}
+                    </td>
+                    <td className="py-3 px-4">
+                      <p className="font-semibold text-slate-900">{pmt.studentName}</p>
+                      <p className="text-[11px] text-slate-400">{pmt.className}</p>
+                    </td>
+                    <td className="py-3 px-3">
+                      <Badge variant={pmt.category === 'Feeding Fees' ? 'warning' : 'navy'}>
+                        {pmt.category}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-3">
+                      <p className="text-slate-800 font-medium">{pmt.paymentMethod}</p>
+                      <p className="text-[11px] text-slate-400 font-mono">
+                        {pmt.reference}
+                      </p>
+                    </td>
+                    <td className="py-3 px-3 text-slate-600">
+                      {formatDate(pmt.date)}
+                    </td>
+                    <td className="py-3 px-3 font-bold text-slate-900 text-right">
+                      {formatCurrency(pmt.amount)}
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      {pmt.balanceAfterPayment === 0 ? (
+                        <span className="text-emerald-700 font-semibold">GH₵ 0.00</span>
+                      ) : (
+                        <span className="text-rose-600 font-medium">
+                          {formatCurrency(pmt.balanceAfterPayment)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => {
+                          setSelectedReceiptPayment(pmt);
+                          setIsReceiptModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Receipt</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

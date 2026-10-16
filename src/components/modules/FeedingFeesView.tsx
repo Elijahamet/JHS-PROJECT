@@ -16,6 +16,7 @@ import { formatCurrency } from '../../utils/formatters';
 export const FeedingFeesView: React.FC = () => {
   const {
     students,
+    payments,
     setIsRecordPaymentOpen,
     setSelectedStudentId,
     setCurrentNav,
@@ -26,9 +27,18 @@ export const FeedingFeesView: React.FC = () => {
 
   const feedingStudents = students.filter((s) => s.participatesInFeeding);
 
-  const totalFeedingBilled = 600 * 410;
-  const totalFeedingCollected = 42600;
-  const totalFeedingOutstanding = 8400;
+  const totalFeedingCollected = payments
+    .filter((p) => p.category === 'Feeding Fees')
+    .reduce((sum, p) => sum + p.amount, 0);
+  const totalFeedingOutstanding = feedingStudents.reduce(
+    (sum, s) => sum + (s.feedingFeeBalance || 0),
+    0
+  );
+  const totalFeedingBilled = totalFeedingCollected + totalFeedingOutstanding;
+  const clearedFeedingCount = feedingStudents.filter((s) => s.feedingFeeBalance === 0).length;
+  const cateringCoverage = feedingStudents.length > 0
+    ? `${Math.round((clearedFeedingCount / feedingStudents.length) * 100)}%`
+    : '0%';
 
   const filtered = feedingStudents.filter((s) => {
     const matchSearch =
@@ -83,7 +93,7 @@ export const FeedingFeesView: React.FC = () => {
             Financial Isolation Rule: School Fees vs Feeding Fees
           </p>
           <p className="mt-0.5 text-slate-600 leading-relaxed">
-            Feeding fees are non-statutory optional meal plans. Payments made for school fees CANNOT automatically offset feeding arrears unless explicitly directed. For example, <strong>Kwame Mensah</strong> has <span className="font-bold text-emerald-700">GH₵ 0.00 school fee balance</span> but <span className="font-bold text-amber-700">GH₵ 250.00 feeding fee balance</span>.
+            Feeding fees are non-statutory optional meal plans. Payments made for school fees CANNOT automatically offset feeding arrears unless explicitly directed. For example, a student can have <span className="font-bold text-emerald-700">GH₵ 0.00 school fee balance</span> but <span className="font-bold text-amber-700">GH₵ 250.00 feeding fee balance</span>.
           </p>
         </div>
       </div>
@@ -93,7 +103,7 @@ export const FeedingFeesView: React.FC = () => {
         <StatCard
           title="Feeding Billed"
           value={formatCurrency(totalFeedingBilled)}
-          subtitle="410 Subscribed Students"
+          subtitle={`${feedingStudents.length} Subscribed Students`}
           icon={UtensilsCrossed}
         />
         <StatCard
@@ -110,7 +120,7 @@ export const FeedingFeesView: React.FC = () => {
         />
         <StatCard
           title="Catering Coverage"
-          value="83.5%"
+          value={cateringCoverage}
           subtitle="Cleared for cafeteria entry"
           highlight
         />
@@ -167,58 +177,66 @@ export const FeedingFeesView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50/60">
-                  <td className="py-3 px-4">
-                    <p className="font-semibold text-slate-900">
-                      {s.firstName} {s.lastName}
-                    </p>
-                    <p className="text-[11px] text-slate-400 font-mono">
-                      {s.studentId}
-                    </p>
-                  </td>
-                  <td className="py-3 px-3 font-medium text-slate-700">
-                    {s.className}
-                  </td>
-                  <td className="py-3 px-3">
-                    {s.schoolFeeBalance === 0 ? (
-                      <Badge variant="success">Tuition Cleared</Badge>
-                    ) : (
-                      <Badge variant="danger">
-                        {formatCurrency(s.schoolFeeBalance)} Due
-                      </Badge>
-                    )}
-                  </td>
-                  <td className="py-3 px-3 text-slate-700">
-                    {formatCurrency(600)}
-                  </td>
-                  <td className="py-3 px-3 font-semibold text-emerald-700">
-                    {formatCurrency(600 - s.feedingFeeBalance)}
-                  </td>
-                  <td className="py-3 px-3">
-                    {s.feedingFeeBalance === 0 ? (
-                      <span className="font-bold text-emerald-700">
-                        GH₵ 0.00 (PAID)
-                      </span>
-                    ) : (
-                      <span className="font-bold text-amber-800">
-                        {formatCurrency(s.feedingFeeBalance)}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => {
-                        setSelectedStudentId(s.id);
-                        setCurrentNav('students');
-                      }}
-                      className="text-xs text-blue-600 font-semibold hover:underline"
-                    >
-                      Feeding History
-                    </button>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                    No feeding subscribers enrolled yet.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((s) => (
+                  <tr key={s.id} className="hover:bg-slate-50/60">
+                    <td className="py-3 px-4">
+                      <p className="font-semibold text-slate-900">
+                        {s.firstName} {s.lastName}
+                      </p>
+                      <p className="text-[11px] text-slate-400 font-mono">
+                        {s.studentId}
+                      </p>
+                    </td>
+                    <td className="py-3 px-3 font-medium text-slate-700">
+                      {s.className}
+                    </td>
+                    <td className="py-3 px-3">
+                      {s.schoolFeeBalance === 0 ? (
+                        <Badge variant="success">Tuition Cleared</Badge>
+                      ) : (
+                        <Badge variant="danger">
+                          {formatCurrency(s.schoolFeeBalance)} Due
+                        </Badge>
+                      )}
+                    </td>
+                    <td className="py-3 px-3 text-slate-700">
+                      {formatCurrency(600)}
+                    </td>
+                    <td className="py-3 px-3 font-semibold text-emerald-700">
+                      {formatCurrency(Math.max(0, 600 - s.feedingFeeBalance))}
+                    </td>
+                    <td className="py-3 px-3">
+                      {s.feedingFeeBalance === 0 ? (
+                        <span className="font-bold text-emerald-700">
+                          GH₵ 0.00 (PAID)
+                        </span>
+                      ) : (
+                        <span className="font-bold text-amber-800">
+                          {formatCurrency(s.feedingFeeBalance)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <button
+                        onClick={() => {
+                          setSelectedStudentId(s.id);
+                          setCurrentNav('students');
+                        }}
+                        className="text-xs text-blue-600 font-semibold hover:underline"
+                      >
+                        Feeding History
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

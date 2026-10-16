@@ -164,12 +164,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [selectedReceiptPayment, setSelectedReceiptPayment] = useState<PaymentRecord | null>(null);
   const [selectedClassFilter, setSelectedClassFilter] = useState<string>('ALL');
 
+  // Purge legacy cached keys from prior builds to ensure zero stale mock data persists
+  useEffect(() => {
+    try {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('schoolos_') && !key.endsWith('_v5')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (e) {
+      console.warn('Failed to purge legacy cache', e);
+    }
+  }, []);
+
   // Data collections
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [parents] = useState<Parent[]>(mockParents);
   const [teachers, setTeachers] = useState<Teacher[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_teachers_v2');
+      const saved = localStorage.getItem('schoolos_teachers_v5');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached teachers', e);
@@ -179,7 +192,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [classes, setClasses] = useState<ClassRoom[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_classes_v2');
+      const saved = localStorage.getItem('schoolos_classes_v5');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached classes', e);
@@ -189,7 +202,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_teachers_v2', JSON.stringify(teachers));
+      localStorage.setItem('schoolos_teachers_v5', JSON.stringify(teachers));
     } catch (e) {
       console.warn('Failed to save teachers to storage', e);
     }
@@ -197,7 +210,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_classes_v2', JSON.stringify(classes));
+      localStorage.setItem('schoolos_classes_v5', JSON.stringify(classes));
     } catch (e) {
       console.warn('Failed to save classes to storage', e);
     }
@@ -228,7 +241,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Chat & Messaging (Offline-First Persistent Storage)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_chat_messages_v2');
+      const saved = localStorage.getItem('schoolos_chat_messages_v5');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -238,12 +251,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return mockChatMessages;
   });
 
-  const [activeChatContactId, setActiveChatContactId] = useState<string | null>('tch_01');
+  const [activeChatContactId, setActiveChatContactId] = useState<string | null>(null);
 
   // Sync to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_chat_messages_v2', JSON.stringify(chatMessages));
+      localStorage.setItem('schoolos_chat_messages_v5', JSON.stringify(chatMessages));
     } catch (e) {
       console.warn('Failed to cache chat messages locally', e);
     }
@@ -252,7 +265,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Listen to cross-tab storage changes
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'schoolos_chat_messages_v2' && e.newValue) {
+      if (e.key === 'schoolos_chat_messages_v5' && e.newValue) {
         try {
           setChatMessages(JSON.parse(e.newValue));
         } catch {}
@@ -298,7 +311,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Terminal Report Cards Inspection & Dispatch Workflow
   const [reportCards, setReportCards] = useState<StudentReportCardRecord[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_report_cards_v2');
+      const saved = localStorage.getItem('schoolos_report_cards_v5');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached report cards', e);
@@ -308,7 +321,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_report_cards_v2', JSON.stringify(reportCards));
+      localStorage.setItem('schoolos_report_cards_v5', JSON.stringify(reportCards));
     } catch (e) {
       console.warn('Failed to save report cards to storage', e);
     }
@@ -567,10 +580,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       busNumber: busData.busNumber || `School Bus ${buses.length + 1}`,
       registrationNumber: busData.registrationNumber || `GE-${Math.floor(1000 + Math.random() * 9000)}-24`,
       capacity: busData.capacity || 30,
-      driverName: busData.driverName || 'Kofi Asare',
-      driverPhone: busData.driverPhone || '+233 24 555 0100',
-      routeId: busData.routeId || (routes[0]?.id || 'rt_01'),
-      routeName: busData.routeName || (routes[0]?.name || 'Madina - Adenta Route'),
+      driverName: busData.driverName || 'Driver Unassigned',
+      driverPhone: busData.driverPhone || 'Not Provided',
+      routeId: busData.routeId || '',
+      routeName: busData.routeName || 'Unassigned Route',
       status: busData.status || 'Active',
     };
     setBuses([newBus, ...buses]);

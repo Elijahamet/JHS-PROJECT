@@ -16,6 +16,7 @@ import {
   Send,
   Printer,
   Eye,
+  Users,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -34,6 +35,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
     routes,
     announcements,
     reportCards,
+    attendance,
     setSelectedStudentId,
     setIsReportCardModalOpen,
     setSelectedReceiptPayment,
@@ -46,46 +48,41 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
     setActiveTab(tab);
   }, [tab]);
 
+  // Primary linked student for parent persona
+  const child = students.find((s) => s.id === currentUser?.linkedStudentId) || students[0];
+
   // Online Payment Simulation States
   const [payCategory, setPayCategory] = useState<'School Fees' | 'Feeding Fees'>('Feeding Fees');
-  const [payAmount, setPayAmount] = useState<number>(250);
+  const [payAmount, setPayAmount] = useState<number>(() => {
+    return child?.feedingFeeBalance && child.feedingFeeBalance > 0 ? child.feedingFeeBalance : 250;
+  });
   const [payChannel, setPayChannel] = useState<'mtn' | 'telecel' | 'card'>('mtn');
   const [momoNumber, setMomoNumber] = useState('024 456 7890');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentSuccessToast, setPaymentSuccessToast] = useState<string | null>(null);
 
-  // Primary linked student for parent persona
-  const child = students.find((s) => s.id === currentUser?.linkedStudentId) || students[0] || {
-    id: 'std_01',
-    studentId: 'BFA-2024-001',
-    firstName: 'Kofi',
-    lastName: 'Mensah',
-    className: 'JHS 2A',
-    photoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=256',
-    schoolFeeBalance: 0,
-    feedingFeeBalance: 250,
-    attendanceRate: 96.5,
-    lastGradeAverage: 88.4,
-  };
+  if (!child) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-2xs text-center space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mx-auto">
+            <Users className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">No Student Ward Linked Yet</h2>
+            <p className="text-xs text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
+              There is currently no student or ward linked to your parent profile ({currentUser?.name || 'Parent Account'}). Once your child is enrolled by the school administration, their live attendance, continuous assessment grades, fee statements, and terminal report cards will appear here automatically.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const childReport = reportCards.find((r) => r.studentId === child.id) || reportCards[0];
-
-  const busRoute = routes[0] || {
-    id: 'route_01',
-    name: 'Route 1: Madina - Adenta - Campus',
-    status: 'On Route',
-    busNumber: 'GR-4891-22',
-  };
-
-  const subjectScores = [
-    { name: 'Mathematics', classScore: 28, examScore: 62, total: 90, grade: '1', remark: 'Excellent' },
-    { name: 'English Language', classScore: 26, examScore: 58, total: 84, grade: '1', remark: 'Excellent' },
-    { name: 'Integrated Science', classScore: 25, examScore: 61, total: 86, grade: '1', remark: 'Excellent' },
-    { name: 'Social Studies', classScore: 27, examScore: 54, total: 81, grade: '1', remark: 'Excellent' },
-    { name: 'Information & Comm. Tech (ICT)', classScore: 29, examScore: 63, total: 92, grade: '1', remark: 'Highest' },
-    { name: 'Creative Arts & Design', classScore: 24, examScore: 56, total: 80, grade: '1', remark: 'Excellent' },
-    { name: 'Ghanaian Language (Twi)', classScore: 23, examScore: 52, total: 75, grade: '2', remark: 'Very Good' },
-  ];
+  const childReport = reportCards.find((r) => r.studentId === child.id);
+  const busRoute = routes.find((r) => r.id === (child as any).busRouteId) || routes[0];
+  const childAttendance = attendance.filter((a) => a.studentId === child.id);
+  const subjectScores = childReport?.subjects || [];
 
   const handleProcessPayment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +135,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                 {child.firstName}&apos;s Academic & School Dashboard
               </h1>
               <p className="text-xs text-purple-200 mt-0.5">
-                Class: <strong>{child.className}</strong> • Form Master: Mr. Emmanuel Darko • Roll No: {child.studentId}
+                Class: <strong>{child.className}</strong> • Student ID: {child.studentId}
               </p>
             </div>
           </div>
@@ -206,14 +203,18 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
               <span className="text-[11px] text-emerald-800 font-semibold uppercase tracking-wider">Today&apos;s Attendance</span>
               <p className="text-sm font-bold text-emerald-900 mt-1 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Present in Class (07:40 AM)</span>
+                <span>
+                  {childAttendance.find((a) => a.date === new Date().toISOString().split('T')[0])?.status
+                    ? `${childAttendance.find((a) => a.date === new Date().toISOString().split('T')[0])?.status} in Class`
+                    : 'Roll Call Pending'}
+                </span>
               </p>
             </div>
 
             <div className="p-3.5 bg-blue-50 rounded-xl border border-blue-200">
               <span className="text-[11px] text-blue-800 font-semibold uppercase tracking-wider">Academic Standing</span>
               <p className="text-sm font-bold text-blue-900 mt-1">
-                {child.lastGradeAverage}% • 4th in Class
+                {child.lastGradeAverage > 0 ? `${child.lastGradeAverage}% Average` : 'No marks recorded'}
               </p>
             </div>
 
@@ -221,14 +222,14 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
               <span className="text-[11px] text-purple-800 font-semibold uppercase tracking-wider">School Bus Status</span>
               <p className="text-xs font-bold text-purple-900 mt-1 flex items-center gap-1">
                 <Bus className="w-3.5 h-3.5" />
-                <span>{busRoute.status} ({busRoute.busNumber})</span>
+                <span>{busRoute ? `${busRoute.status} (${busRoute.busNumber})` : 'Not Enrolled in Transit'}</span>
               </p>
             </div>
 
             <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
               <span className="text-[11px] text-slate-600 font-semibold uppercase tracking-wider">Academic Term</span>
               <p className="text-xs font-bold text-slate-800 mt-1">
-                Term 2 • Week 5 of 12
+                Term 2 • 2024 / 2025
               </p>
             </div>
           </div>
@@ -244,7 +245,11 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     School Tuition Fees
                   </h3>
                 </div>
-                <Badge variant="success">Fully Paid</Badge>
+                {child.schoolFeeBalance === 0 ? (
+                  <Badge variant="success">Fully Paid</Badge>
+                ) : (
+                  <Badge variant="danger">{formatCurrency(child.schoolFeeBalance)} Due</Badge>
+                )}
               </div>
 
               <div className="space-y-1.5 text-xs">
@@ -254,11 +259,15 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Total Paid:</span>
-                  <span className="font-semibold text-emerald-700">{formatCurrency(2000)}</span>
+                  <span className="font-semibold text-emerald-700">
+                    {formatCurrency(Math.max(0, 2000 - child.schoolFeeBalance))}
+                  </span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-slate-100 font-bold">
                   <span className="text-slate-700">Remaining Balance:</span>
-                  <span className="text-emerald-700">GH₵ 0.00</span>
+                  <span className={child.schoolFeeBalance === 0 ? 'text-emerald-700' : 'text-rose-600'}>
+                    {formatCurrency(child.schoolFeeBalance)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -272,7 +281,11 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     Daily Feeding Programme Fee
                   </h3>
                 </div>
-                <Badge variant="warning">Balance Due</Badge>
+                {child.feedingFeeBalance === 0 ? (
+                  <Badge variant="success">Cleared</Badge>
+                ) : (
+                  <Badge variant="warning">Balance Due</Badge>
+                )}
               </div>
 
               <div className="space-y-1.5 text-xs">
@@ -282,24 +295,32 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Amount Paid:</span>
-                  <span className="font-semibold text-emerald-700">{formatCurrency(350)}</span>
+                  <span className="font-semibold text-emerald-700">
+                    {formatCurrency(Math.max(0, 600 - child.feedingFeeBalance))}
+                  </span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-amber-100 font-bold">
                   <span className="text-slate-700">Arrears Due:</span>
-                  <span className="text-amber-800">{formatCurrency(250)}</span>
+                  <span className={child.feedingFeeBalance === 0 ? 'text-emerald-700' : 'text-amber-800'}>
+                    {formatCurrency(child.feedingFeeBalance)}
+                  </span>
                 </div>
               </div>
 
               <button
                 onClick={() => {
                   setPayCategory('Feeding Fees');
-                  setPayAmount(250);
+                  setPayAmount(child.feedingFeeBalance > 0 ? child.feedingFeeBalance : 100);
                   setActiveTab('pay');
                 }}
                 className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-colors flex items-center justify-center gap-1.5"
               >
                 <Receipt className="w-3.5 h-3.5" />
-                <span>Pay Feeding Balance (GH₵ 250.00) Online</span>
+                <span>
+                  {child.feedingFeeBalance > 0
+                    ? `Pay Feeding Balance (${formatCurrency(child.feedingFeeBalance)}) Online`
+                    : 'Make Advance Feeding Payment'}
+                </span>
               </button>
             </div>
           </div>
@@ -308,13 +329,19 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-2">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Note From Class Teacher • Mr. Emmanuel Darko
+                Note From Class Teacher
               </h3>
-              <span className="text-[11px] text-slate-400">Sent Yesterday</span>
+              <span className="text-[11px] text-slate-400">Current Term</span>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              &ldquo;Good day Mrs. Osei, Kofi has demonstrated very strong performance in mathematics this week. Please ensure he completes the weekend homework on algebraic factorization due on Monday morning.&rdquo;
-            </p>
+            {childReport?.teacherNoteToParent ? (
+              <p className="text-xs text-slate-700 leading-relaxed italic">
+                &ldquo;{childReport.teacherNoteToParent}&rdquo;
+              </p>
+            ) : (
+              <p className="text-xs text-slate-400 italic">
+                No personal remarks or teacher dispatch notes recorded yet for this term.
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -412,29 +439,30 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {(childReport.subjects && childReport.subjects.length > 0 ? childReport.subjects : [
-                      { subjectName: 'Mathematics', classwork: 18, homework: 9, exam: 58, total: 85, grade: '1', remarks: 'Excellent' },
-                      { subjectName: 'English Language', classwork: 18, homework: 8, exam: 58, total: 84, grade: '1', remarks: 'Excellent' },
-                      { subjectName: 'Integrated Science', classwork: 18, homework: 9, exam: 61, total: 88, grade: '1', remarks: 'Excellent' },
-                      { subjectName: 'Social Studies', classwork: 17, homework: 8, exam: 57, total: 82, grade: '1', remarks: 'Very Good' },
-                      { subjectName: 'Computing / ICT', classwork: 19, homework: 9, exam: 65, total: 93, grade: '1', remarks: 'Highest' },
-                      { subjectName: 'French', classwork: 16, homework: 8, exam: 54, total: 78, grade: '2', remarks: 'Good' },
-                    ]).map((sub, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/70">
-                        <td className="py-2.5 px-3 font-bold text-slate-900">{sub.subjectName}</td>
-                        <td className="py-2.5 px-2 text-center text-slate-700">{sub.classwork + sub.homework}</td>
-                        <td className="py-2.5 px-2 text-center text-slate-700">{sub.exam}</td>
-                        <td className="py-2.5 px-2 text-center font-bold text-blue-700">{sub.total}</td>
-                        <td className="py-2.5 px-2 text-center">
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Grade {sub.grade}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-3 text-right text-slate-600 font-medium">
-                          {sub.remarks}
+                    {subjectScores.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-slate-400">
+                          No terminal assessment subjects or scores recorded for this report card yet.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      subjectScores.map((sub, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/70">
+                          <td className="py-2.5 px-3 font-bold text-slate-900">{sub.subjectName}</td>
+                          <td className="py-2.5 px-2 text-center text-slate-700">{sub.classwork + sub.homework}</td>
+                          <td className="py-2.5 px-2 text-center text-slate-700">{sub.exam}</td>
+                          <td className="py-2.5 px-2 text-center font-bold text-blue-700">{sub.total}</td>
+                          <td className="py-2.5 px-2 text-center">
+                            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Grade {sub.grade}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 text-right text-slate-600 font-medium">
+                            {sub.remarks}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -616,21 +644,33 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
               <h2 className="text-lg font-bold text-slate-900">Attendance & Punctuality Record</h2>
               <p className="text-xs text-slate-500">Official biometric and roll call logs for {child.firstName}.</p>
             </div>
-            <Badge variant="success">96.7% Term Attendance</Badge>
+            <Badge variant="success">
+              {childAttendance.length > 0
+                ? `${Math.round((childAttendance.filter((a) => a.status === 'Present').length / childAttendance.length) * 100)}% Term Attendance`
+                : child.attendanceRate > 0
+                ? `${child.attendanceRate}% Term Attendance`
+                : 'No Attendance Recorded'}
+            </Badge>
           </div>
 
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
               <span className="text-xs text-emerald-800 font-semibold">Days Present</span>
-              <p className="text-2xl font-black text-emerald-900 mt-1">58 Days</p>
+              <p className="text-2xl font-black text-emerald-900 mt-1">
+                {childAttendance.filter((a) => a.status === 'Present').length} Days
+              </p>
             </div>
             <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
               <span className="text-xs text-amber-800 font-semibold">Late Arrivals</span>
-              <p className="text-2xl font-black text-amber-900 mt-1">2 Days</p>
+              <p className="text-2xl font-black text-amber-900 mt-1">
+                {childAttendance.filter((a) => a.status === 'Late').length} Days
+              </p>
             </div>
             <div className="p-3 bg-rose-50 rounded-xl border border-rose-100">
               <span className="text-xs text-rose-800 font-semibold">Unexcused Absences</span>
-              <p className="text-2xl font-black text-rose-900 mt-1">0 Days</p>
+              <p className="text-2xl font-black text-rose-900 mt-1">
+                {childAttendance.filter((a) => a.status === 'Absent').length} Days
+              </p>
             </div>
           </div>
 
@@ -645,24 +685,36 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {[
-                  { date: 'Today (Oct 01, 2026)', day: 'Thursday', time: '07:40 AM', status: 'Present', color: 'text-emerald-700 bg-emerald-50' },
-                  { date: 'Sep 30, 2026', day: 'Wednesday', time: '07:35 AM', status: 'Present', color: 'text-emerald-700 bg-emerald-50' },
-                  { date: 'Sep 29, 2026', day: 'Tuesday', time: '07:55 AM', status: 'Late', color: 'text-amber-700 bg-amber-50' },
-                  { date: 'Sep 28, 2026', day: 'Monday', time: '07:30 AM', status: 'Present', color: 'text-emerald-700 bg-emerald-50' },
-                  { date: 'Sep 25, 2026', day: 'Friday', time: '07:38 AM', status: 'Present', color: 'text-emerald-700 bg-emerald-50' },
-                ].map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50">
-                    <td className="py-2.5 px-4 font-semibold text-slate-900">{row.date}</td>
-                    <td className="py-2.5 px-3 text-slate-600">{row.day}</td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{row.time}</td>
-                    <td className="py-2.5 px-4 text-right">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${row.color}`}>
-                        {row.status}
-                      </span>
+                {childAttendance.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-8 text-center text-slate-400">
+                      No attendance roll calls recorded for {child.firstName} yet.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  childAttendance.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-semibold text-slate-900">{formatDate(row.date)}</td>
+                      <td className="py-2.5 px-3 text-slate-600">
+                        {new Date(row.date).toLocaleDateString('en-US', { weekday: 'long' })}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-slate-700">07:45 AM</td>
+                      <td className="py-2.5 px-4 text-right">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                            row.status === 'Present'
+                              ? 'text-emerald-700 bg-emerald-50'
+                              : row.status === 'Late'
+                              ? 'text-amber-700 bg-amber-50'
+                              : 'text-rose-700 bg-rose-50'
+                          }`}
+                        >
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -700,7 +752,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     type="button"
                     onClick={() => {
                       setPayCategory('Feeding Fees');
-                      setPayAmount(250);
+                      setPayAmount(child.feedingFeeBalance > 0 ? child.feedingFeeBalance : 100);
                     }}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       payCategory === 'Feeding Fees'
@@ -710,14 +762,18 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                   >
                     <UtensilsCrossed className="w-5 h-5 text-amber-600 mb-1" />
                     <p className="text-xs font-bold text-slate-900">Feeding Programme</p>
-                    <p className="text-[11px] text-amber-800 font-semibold">Arrears: GH₵ 250.00</p>
+                    <p className="text-[11px] text-amber-800 font-semibold">
+                      {child.feedingFeeBalance > 0
+                        ? `Arrears: ${formatCurrency(child.feedingFeeBalance)}`
+                        : 'Cleared (Deposit)'}
+                    </p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => {
                       setPayCategory('School Fees');
-                      setPayAmount(500);
+                      setPayAmount(child.schoolFeeBalance > 0 ? child.schoolFeeBalance : 500);
                     }}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       payCategory === 'School Fees'
@@ -726,8 +782,12 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     }`}
                   >
                     <CreditCard className="w-5 h-5 text-blue-600 mb-1" />
-                    <p className="text-xs font-bold text-slate-900">Tuition Advance</p>
-                    <p className="text-[11px] text-emerald-700 font-semibold">Fully Paid (Deposit)</p>
+                    <p className="text-xs font-bold text-slate-900">Tuition Fees</p>
+                    <p className="text-[11px] text-emerald-700 font-semibold">
+                      {child.schoolFeeBalance > 0
+                        ? `Arrears: ${formatCurrency(child.schoolFeeBalance)}`
+                        : 'Fully Paid (Advance)'}
+                    </p>
                   </button>
                 </div>
               </div>

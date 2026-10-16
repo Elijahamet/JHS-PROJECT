@@ -103,20 +103,19 @@ export const AccountantPortalView: React.FC<AccountantPortalProps> = ({ tab = 'c
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Collected Today"
-          value={formatCurrency(totalCollectionsToday || 4350)}
+          value={formatCurrency(totalCollectionsToday)}
           subtitle="Cash, MoMo & Bank Transfer"
           icon={Receipt}
-          trend={{ value: '+18.5%', isPositive: true }}
         />
         <StatCard
           title="Tuition Balance Due"
-          value={formatCurrency(totalTuitionDue || 42500)}
+          value={formatCurrency(totalTuitionDue)}
           subtitle="Outstanding School Fees"
           icon={CreditCard}
         />
         <StatCard
           title="Feeding Balance Due"
-          value={formatCurrency(totalFeedingDue || 8400)}
+          value={formatCurrency(totalFeedingDue)}
           subtitle="Separate Canteen Arrears"
           icon={UtensilsCrossed}
         />

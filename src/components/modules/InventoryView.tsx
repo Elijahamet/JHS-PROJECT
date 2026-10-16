@@ -33,6 +33,18 @@ export const InventoryView: React.FC = () => {
 
   const totalQuantity = inventory.reduce((sum, item) => sum + item.quantity, 0);
 
+  const ictCount = inventory
+    .filter((i) => i.category === 'ICT Equipment' || i.category === 'Science Lab')
+    .reduce((sum, i) => sum + i.quantity, 0);
+  const goodCount = inventory
+    .filter((i) => i.condition === 'Good')
+    .reduce((sum, i) => sum + i.quantity, 0);
+  const goodConditionPct =
+    totalQuantity > 0 ? `${Math.round((goodCount / totalQuantity) * 100)}%` : '0%';
+  const maintenanceCount = inventory.filter(
+    (i) => i.condition === 'Fair' || i.condition === 'Needs Repair'
+  ).length;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -68,20 +80,20 @@ export const InventoryView: React.FC = () => {
         />
         <StatCard
           title="ICT Lab Computers"
-          value="32 Units"
-          subtitle="Dell Core i5 Laptops (Block B)"
+          value={`${ictCount} Units`}
+          subtitle="Lab & Classroom Hardware"
           icon={Laptop}
         />
         <StatCard
           title="Assets in Good Condition"
-          value="96.2%"
-          subtitle="Annual estate audit passed"
+          value={goodConditionPct}
+          subtitle="Audited operational stock"
           icon={CheckCircle2}
         />
         <StatCard
           title="Maintenance Priority"
-          value="1 Item (Fair)"
-          subtitle="Olympus Microscopes service"
+          value={`${maintenanceCount} Items`}
+          subtitle="Requires attention / repair"
           highlight
         />
       </div>
@@ -133,42 +145,50 @@ export const InventoryView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3 px-4 font-mono font-medium text-slate-700">
-                    {item.itemCode}
-                  </td>
-                  <td className="py-3 px-4 font-semibold text-slate-900">
-                    {item.name}
-                  </td>
-                  <td className="py-3 px-3">
-                    <Badge variant="navy">{item.category}</Badge>
-                  </td>
-                  <td className="py-3 px-3 text-center font-bold text-slate-900">
-                    {item.quantity} {item.unit}
-                  </td>
-                  <td className="py-3 px-4 text-slate-700">{item.location}</td>
-                  <td className="py-3 px-3">
-                    <Badge
-                      variant={
-                        item.condition === 'Good'
-                          ? 'success'
-                          : item.condition === 'Fair'
-                          ? 'warning'
-                          : 'danger'
-                      }
-                    >
-                      {item.condition}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4 text-slate-600">
-                    {item.responsiblePerson}
-                  </td>
-                  <td className="py-3 px-3 text-slate-500">
-                    {formatDate(item.lastUpdated)}
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-slate-400">
+                    No inventory assets logged yet. Click &quot;Add Asset Record&quot; to catalog school property.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3 px-4 font-mono font-medium text-slate-700">
+                      {item.itemCode}
+                    </td>
+                    <td className="py-3 px-4 font-semibold text-slate-900">
+                      {item.name}
+                    </td>
+                    <td className="py-3 px-3">
+                      <Badge variant="navy">{item.category}</Badge>
+                    </td>
+                    <td className="py-3 px-3 text-center font-bold text-slate-900">
+                      {item.quantity} {item.unit}
+                    </td>
+                    <td className="py-3 px-4 text-slate-700">{item.location}</td>
+                    <td className="py-3 px-3">
+                      <Badge
+                        variant={
+                          item.condition === 'Good'
+                            ? 'success'
+                            : item.condition === 'Fair'
+                            ? 'warning'
+                            : 'danger'
+                        }
+                      >
+                        {item.condition}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-slate-600">
+                      {item.responsiblePerson}
+                    </td>
+                    <td className="py-3 px-3 text-slate-500">
+                      {formatDate(item.lastUpdated)}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

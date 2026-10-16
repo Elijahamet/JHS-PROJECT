@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
+import { useApp } from '../../context/AppContext';
 
 export interface StudentTestDiagnosticViewProps {
   onSyncScore?: (studentId: string, subject: string, classScore: number) => void;
@@ -99,26 +100,20 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
   defaultSubject = 'Mathematics',
   onBackToMarks,
 }) => {
-  // Built-in Roster fallback if not provided
-  const availableStudents = studentsList.length > 0 ? studentsList : [
-    { id: 'std_03', name: 'Kwame Osei', roll: 'BFA-2024-003', gender: 'Male', classScore: 22, examScore: 54 },
-    { id: 'std_05', name: 'Yaw Adjei', roll: 'BFA-2024-005', gender: 'Male', classScore: 19, examScore: 48 },
-    { id: 'std_01', name: 'Kofi Mensah', roll: 'BFA-2024-001', gender: 'Male', classScore: 26, examScore: 64 },
-    { id: 'std_02', name: 'Ama Boateng', roll: 'BFA-2024-002', gender: 'Female', classScore: 28, examScore: 68 },
-    { id: 'std_06', name: 'Esi Frimpong', roll: 'BFA-2024-006', gender: 'Female', classScore: 25, examScore: 60 },
-  ];
+  const { classes } = useApp();
+  const availableStudents = studentsList;
 
   // Selection state
-  const [selectedClass, setSelectedClass] = useState('JHS 2A');
-  const [selectedStudentId, setSelectedStudentId] = useState('std_03');
+  const [selectedClass, setSelectedClass] = useState(classes[0]?.name || '');
+  const [selectedStudentId, setSelectedStudentId] = useState(availableStudents[0]?.id || '');
   const [selectedSubject, setSelectedSubject] = useState(defaultSubject);
-  const [testTitle, setTestTitle] = useState('Mid-Term Assessment: Algebraic Expressions & Linear Equations');
+  const [testTitle, setTestTitle] = useState('');
 
   // Test Paper Shoot / Upload State
-  const [uploadedImage, setUploadedImage] = useState<string>('/assets/math_test_shoot.jpg');
-  const [uploadedFileName, setUploadedFileName] = useState<string>('kwame_osei_math_test_shoot.jpg');
-  const [isSampleLoaded, setIsSampleLoaded] = useState<boolean>(true);
-  const [activeSampleId, setActiveSampleId] = useState<'math' | 'science' | 'custom'>('math');
+  const [uploadedImage, setUploadedImage] = useState<string>('');
+  const [uploadedFileName, setUploadedFileName] = useState<string>('No test paper selected');
+  const [isSampleLoaded, setIsSampleLoaded] = useState<boolean>(false);
+  const [activeSampleId, setActiveSampleId] = useState<'math' | 'science' | 'custom'>('custom');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Analysis Lifecycle States
@@ -140,10 +135,10 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
 
   // Rich Presets Data
   const sampleMathReport: DiagnosticReportData = {
-    studentId: 'std_03',
-    studentName: 'Kwame Osei',
-    studentRoll: 'BFA-2024-003',
-    className: 'JHS 2A',
+    studentId: currentStudent?.id || 'std_demo_01',
+    studentName: currentStudent?.name || 'Selected Student',
+    studentRoll: currentStudent?.roll || 'BFA-2024',
+    className: selectedClass || 'JHS 2',
     subject: 'Mathematics',
     testTitle: 'Mid-Term Assessment: Algebraic Expressions & Linear Equations',
     testDate: '12 Oct 2024',
@@ -154,7 +149,7 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
     subjectConfidence: 36,
     coreBottleneckTitle: 'Sign-Inversion Dyscalculia during Equation Transposition & Bracket Expansion',
     coreBottleneckNarrative:
-      "Kwame demonstrates solid raw arithmetic capabilities (he can add, multiply, and divide standard integers accurately without hesitation). However, when moving algebraic terms across an equality sign ('='), his working reveals a severe cognitive misconception: he treats the negative sign as a permanent prefix attached to the number, rather than an inverse operation being executed across the equation balance. In Question 5 ('6x - 9 = 2x + 15'), instead of adding 9 to both sides, he wrote '6x = 2x + 15 - 9', carrying the minus sign across untouched. Furthermore, in Question 4, he bypassed distributing the multiplier across parentheses containing negative terms ('4(x - 3)' became '2x - 3'), indicating an anxiety-driven tendency to rush and guess rather than systematically expanding algebraic factors.",
+      "The student demonstrates solid raw arithmetic capabilities (accurate addition, multiplication, and integer division). However, when moving algebraic terms across an equality sign ('='), their working reveals a severe cognitive misconception: treating the negative sign as a permanent prefix attached to the number, rather than an inverse operation being executed across the equation balance. In Question 5 ('6x - 9 = 2x + 15'), instead of adding 9 to both sides, the student wrote '6x = 2x + 15 - 9', carrying the minus sign across untouched. Furthermore, in Question 4, the student bypassed distributing the multiplier across parentheses containing negative terms ('4(x - 3)' became '2x - 3'), indicating an anxiety-driven tendency to rush and guess rather than systematically expanding algebraic factors.",
     psychologicalBehavior:
       "Avoids multi-step scratchwork. Exhibits 'hurry-up-and-finish' behavior when faced with brackets or fraction denominators, leading to algorithmic skipping.",
     curriculumDeficiency:
@@ -236,9 +231,9 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
       phase1:
         'Week 1 Focus: Balance Scale Physical Metaphor. Stop teaching "moving numbers across equal sign". Teach "whatever you do to the left scale pan, you must execute identically to the right scale pan" (+9 on both sides).',
       phase2:
-        'Week 2 Focus: Rainbow Bracket Expansion. Have Kwame use color highlighters to draw two curved arrows from the outer multiplier to both inside terms before writing any numerals.',
+        'Week 2 Focus: Rainbow Bracket Expansion. Have the student use color highlighters to draw two curved arrows from the outer multiplier to both inside terms before writing any numerals.',
       phase3:
-        'Back-substitution habit: Kwame must substitute his calculated x back into the equation on every test problem before moving to the next item.',
+        'Back-substitution habit: Student must substitute the calculated x back into the equation on every test problem before moving to the next item.',
       customPracticeProblems: [
         'Practice 1: 5(y - 4) = 3y + 10 (Target: Distributive multiplication on negative terms)',
         'Practice 2: 7x - 12 = 3x + 16 (Target: Correct addition of 12 to both sides of equation)',
@@ -247,15 +242,15 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
       teachingAidTip:
         'Use classroom Algebra Tiles or a double-pan balance scale during Friday remedial clinic.',
       parentGuidanceAdvice:
-        'Encourage parent (Mrs. Osei) to supervise 15 minutes of evening equations. Advise her NOT to teach shortcut rules like "change sign when jumping", but rather ask Kwame: "What operation undoes minus 9?"',
+        'Encourage parent/guardian to supervise 15 minutes of evening equations. Advise guardian NOT to teach shortcut rules like "change sign when jumping", but rather ask: "What operation undoes minus 9?"',
     },
   };
 
   const sampleScienceReport: DiagnosticReportData = {
-    studentId: 'std_05',
-    studentName: 'Yaw Adjei',
-    studentRoll: 'BFA-2024-005',
-    className: 'JHS 2A',
+    studentId: currentStudent?.id || 'std_demo_02',
+    studentName: currentStudent?.name || 'Selected Student',
+    studentRoll: currentStudent?.roll || 'BFA-2024',
+    className: selectedClass || 'JHS 2',
     subject: 'Integrated Science',
     testTitle: 'Unit Test: Plant Physiology — Photosynthesis, Cellular Respiration & Gas Exchange',
     testDate: '14 Nov 2024',
@@ -266,7 +261,7 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
     subjectConfidence: 32,
     coreBottleneckTitle: 'Fundamental Conflation of Plant Respiration with Photosynthesis & Equation Misconceptions',
     coreBottleneckNarrative:
-      "Yaw demonstrates strong visual-spatial retention: his hand-drawn cross-section of the leaf is remarkably well-sketched and accurately labels the Upper Epidermis, Palisade Mesophyll, and Guard Cells. However, conceptually, he suffers from a classic, deep-seated misconception: he fundamentally believes that 'plants breathe carbon dioxide to make oxygen for people, and only animals respire.' In Part II Question 1, he defined plant respiration as 'plants taking in CO2 to make energy for night time.' He has merged two opposite biochemical pathways into one. Furthermore, in his chemical word equations, he consistently omits the biological catalysts (chlorophyll), treating 'sunlight' as a physical reactant substance rather than the energy driver.",
+      "The student demonstrates strong visual-spatial retention: the hand-drawn cross-section of the leaf is remarkably well-sketched and accurately labels the Upper Epidermis, Palisade Mesophyll, and Guard Cells. However, conceptually, the student suffers from a classic, deep-seated misconception: fundamentally believing that 'plants breathe carbon dioxide to make oxygen for people, and only animals respire.' In Part II Question 1, the student defined plant respiration as 'plants taking in CO2 to make energy for night time.' Two opposite biochemical pathways are merged into one. Furthermore, in chemical word equations, the student consistently omits the biological catalysts (chlorophyll), treating 'sunlight' as a physical reactant substance rather than the energy driver.",
     psychologicalBehavior:
       'High visual confidence, but low vocabulary precision. Relies heavily on colloquial phrases learned in primary school rather than formal scientific definitions.',
     curriculumDeficiency:
@@ -379,10 +374,6 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
     };
   };
 
-  // Set default active report to Math on initial load
-  React.useEffect(() => {
-    setActiveReport(sampleMathReport);
-  }, []);
 
   // Handle Preset Selection
   const handleLoadSample = (sampleType: 'math' | 'science') => {
@@ -392,21 +383,29 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
     setIsParentNotified(false);
 
     if (sampleType === 'math') {
-      setSelectedClass('JHS 2A');
-      setSelectedStudentId('std_03');
       setSelectedSubject('Mathematics');
       setTestTitle('Mid-Term Assessment: Algebraic Expressions & Linear Equations');
       setUploadedImage('/assets/math_test_shoot.jpg');
-      setUploadedFileName('kwame_osei_math_test_shoot.jpg');
-      setActiveReport(sampleMathReport);
+      setUploadedFileName('algebra_test_paper_shoot.jpg');
+      setActiveReport({
+        ...sampleMathReport,
+        studentName: currentStudent ? currentStudent.name : 'Enrolled Student',
+        studentId: currentStudent ? currentStudent.id : '',
+        studentRoll: currentStudent ? currentStudent.roll : '',
+        className: selectedClass || 'Assigned Class',
+      });
     } else {
-      setSelectedClass('JHS 2A');
-      setSelectedStudentId('std_05');
       setSelectedSubject('Integrated Science');
       setTestTitle('Unit Test: Plant Physiology — Photosynthesis & Respiration');
       setUploadedImage('/assets/science_test_shoot.jpg');
-      setUploadedFileName('yaw_adjei_science_test_shoot.jpg');
-      setActiveReport(sampleScienceReport);
+      setUploadedFileName('plant_physiology_shoot.jpg');
+      setActiveReport({
+        ...sampleScienceReport,
+        studentName: currentStudent ? currentStudent.name : 'Enrolled Student',
+        studentId: currentStudent ? currentStudent.id : '',
+        studentRoll: currentStudent ? currentStudent.roll : '',
+        className: selectedClass || 'Assigned Class',
+      });
     }
   };
 
@@ -596,9 +595,15 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
               onChange={(e) => setSelectedClass(e.target.value)}
               className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="JHS 2A">JHS 2A (Form Class - 34 Pupils)</option>
-              <option value="JHS 2B">JHS 2B (Mathematics - 31 Pupils)</option>
-              <option value="Basic 4">Basic 4 (Integrated Science - 33 Pupils)</option>
+              {classes.length === 0 ? (
+                <option value="">No classes configured</option>
+              ) : (
+                classes.map((cls) => (
+                  <option key={cls.id} value={cls.name}>
+                    {cls.name} ({cls.stage})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -615,11 +620,15 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
               }}
               className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {availableStudents.map((std) => (
-                <option key={std.id} value={std.id}>
-                  {std.name} ({std.roll})
-                </option>
-              ))}
+              {availableStudents.length === 0 ? (
+                <option value="">No enrolled students</option>
+              ) : (
+                availableStudents.map((std) => (
+                  <option key={std.id} value={std.id}>
+                    {std.name} ({std.roll})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -681,11 +690,32 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
 
             {/* Test Paper Shoot Preview Card */}
             <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 group">
-              <img
-                src={uploadedImage}
-                alt="Student test paper shoot"
-                className="w-full h-[430px] object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
-              />
+              {uploadedImage ? (
+                <img
+                  src={uploadedImage}
+                  alt="Student test paper shoot"
+                  className="w-full h-[430px] object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              ) : (
+                <div className="w-full h-[430px] bg-slate-900 flex flex-col items-center justify-center p-6 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-900/60 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4">
+                    <Camera className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white mb-1">No Test Answer Sheet Loaded</h4>
+                  <p className="text-xs text-slate-400 max-w-xs mb-4">
+                    Upload a smartphone photo of a student&apos;s handwritten exam or test sheet to begin optical AI cognitive diagnosis.
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    icon={Upload}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-xs font-bold"
+                  >
+                    Select Photo File
+                  </Button>
+                </div>
+              )}
 
               {/* Laser Scanning Animation Overlay during analysis */}
               {isAnalyzing && (

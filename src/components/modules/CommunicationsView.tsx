@@ -35,6 +35,7 @@ export const CommunicationsView: React.FC = () => {
     teachers,
     parents,
     students,
+    classes,
     chatMessages,
     activeChatContactId,
     setActiveChatContactId,
@@ -56,7 +57,7 @@ export const CommunicationsView: React.FC = () => {
   const [searchContact, setSearchContact] = useState('');
   const [messageInput, setMessageInput] = useState('');
   const [broadcastAudience, setBroadcastAudience] = useState<'All Parents' | 'Class' | 'Individual'>('All Parents');
-  const [broadcastClass, setBroadcastClass] = useState('JHS 2A');
+  const [broadcastClass, setBroadcastClass] = useState(classes[0]?.name || '');
   const [broadcastParentId, setBroadcastParentId] = useState(parents[0]?.id || '');
   const [broadcastCategory, setBroadcastCategory] = useState<ParentNotificationRecord['category']>('academic');
   const [broadcastTitle, setBroadcastTitle] = useState('Term 2 Academic Report Cards Published');
@@ -635,7 +636,7 @@ export const CommunicationsView: React.FC = () => {
                         'Marks have been reviewed and approved.',
                         'Please verify attendance for today.',
                         'Staff coordination meeting at 2:00 PM.',
-                        'Kindly review Kofi Mensah report card draft.',
+                        'Kindly review student report card drafts.',
                       ]
                     : [
                         'Fee payment received with thanks.',
@@ -793,12 +794,11 @@ export const CommunicationsView: React.FC = () => {
                     onChange={(e) => setBroadcastClass(e.target.value)}
                     className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-blue-600"
                   >
-                    <option value="JHS 2A">JHS 2A (Form Master: Mr. Darko)</option>
-                    <option value="JHS 2B">JHS 2B</option>
-                    <option value="Basic 4">Basic 4</option>
-                    <option value="Basic 5">Basic 5</option>
-                    <option value="JHS 1">JHS 1</option>
-                    <option value="JHS 3">JHS 3</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.classTeacherName && cls.classTeacherName !== 'Unassigned' ? `(Teacher: ${cls.classTeacherName})` : ''}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}

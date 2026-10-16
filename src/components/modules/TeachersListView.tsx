@@ -62,95 +62,101 @@ export const TeachersListView: React.FC = () => {
       </div>
 
       {/* Teachers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-        {filteredTeachers.map((t) => (
-          <div
-            key={t.id}
-            className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-4"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900 text-sm">{t.fullName}</h3>
-                  <Badge variant={t.status === 'Active' ? 'success' : 'neutral'}>
-                    {t.status}
+      {filteredTeachers.length === 0 ? (
+        <div className="bg-white border border-slate-200/80 rounded-xl p-8 text-center text-slate-400">
+          No teachers registered yet. Click &quot;Add Teacher&quot; to onboard faculty.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+          {filteredTeachers.map((t) => (
+            <div
+              key={t.id}
+              className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-4"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-slate-900 text-sm">{t.fullName}</h3>
+                    <Badge variant={t.status === 'Active' ? 'success' : 'neutral'}>
+                      {t.status}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">
+                    ID: {t.staffId}
+                  </p>
+                </div>
+
+                {t.isClassTeacherOf && (
+                  <Badge variant="navy">
+                    Class Teacher: {t.isClassTeacherOf}
                   </Badge>
+                )}
+              </div>
+
+              <div className="space-y-1.5 text-xs text-slate-600">
+                <div className="flex items-center gap-2">
+                  <Award className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{t.qualification}</span>
                 </div>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">
-                  ID: {t.staffId}
-                </p>
-              </div>
-
-              {t.isClassTeacherOf && (
-                <Badge variant="navy">
-                  Class Teacher: {t.isClassTeacherOf}
-                </Badge>
-              )}
-            </div>
-
-            <div className="space-y-1.5 text-xs text-slate-600">
-              <div className="flex items-center gap-2">
-                <Award className="w-3.5 h-3.5 text-slate-400" />
-                <span>{t.qualification}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-slate-400" />
-                <span>{t.phone}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-slate-400" />
-                <span>{t.email}</span>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-100 space-y-2">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                  Subjects Assigned
-                </span>
-                <div className="flex flex-wrap gap-1">
-                  {t.subjectsAssigned.map((sub, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded font-medium"
-                    >
-                      {sub}
-                    </span>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{t.phone}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{t.email}</span>
                 </div>
               </div>
 
-              <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-                  Classes Taught
-                </span>
-                <div className="flex flex-wrap gap-1">
-                  {t.classesAssigned.map((cls, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[11px] rounded font-semibold border border-blue-200/60"
-                    >
-                      {cls}
-                    </span>
-                  ))}
+              <div className="pt-3 border-t border-slate-100 space-y-2">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+                    Subjects Assigned
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {t.subjectsAssigned.map((sub, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded font-medium"
+                      >
+                        {sub}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+                    Classes Taught
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {t.classesAssigned.map((cls, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[11px] rounded font-semibold border border-blue-200/60"
+                      >
+                        {cls}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-400 text-[11px]">Joined {t.joinDate}</span>
-              <Button
-                size="sm"
-                variant="outline"
-                icon={MessageSquare}
-                onClick={() => openChatWith(t.id)}
-              >
-                Chat with Teacher
-              </Button>
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-400 text-[11px]">Joined {t.joinDate}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon={MessageSquare}
+                  onClick={() => openChatWith(t.id)}
+                >
+                  Chat with Teacher
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

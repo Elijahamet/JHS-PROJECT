@@ -57,13 +57,13 @@ export const SuperAdminView: React.FC = () => {
         />
         <StatCard
           title="Active Students"
-          value="1,152"
+          value={schools.reduce((acc, s) => acc + (s.studentCount || 0), 0).toLocaleString()}
           subtitle="Across all onboarded campuses"
           icon={GraduationCap}
         />
         <StatCard
           title="Total Platform Users"
-          value="1,840"
+          value={(schools.reduce((acc, s) => acc + (s.studentCount || 0) + (s.teacherCount || 0), 0)).toLocaleString()}
           subtitle="Teachers, Parents & Staff"
           icon={Users}
         />

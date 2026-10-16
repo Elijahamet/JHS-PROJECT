@@ -43,6 +43,11 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
     setSelectedStudentId,
     announcements,
     reportCards,
+    students,
+    classes,
+    teachers,
+    attendance,
+    assessments,
     submitReportForInspection,
     sendReportToParent,
     bulkSendApprovedReports,
@@ -61,36 +66,108 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
     setActiveTab(tab);
   }, [tab]);
 
-  // Demo class roster for JHS 2A
-  const [jhsStudents, setJhsStudents] = useState([
-    { id: 'std_01', name: 'Kofi Mensah', gender: 'Male', roll: 'BFA-2024-001', attendance: 'Present', classScore: 26, examScore: 64, remark: 'Exceptional analytical ability and leadership.', conduct: 'Excellent' },
-    { id: 'std_02', name: 'Ama Boateng', gender: 'Female', roll: 'BFA-2024-002', attendance: 'Present', classScore: 28, examScore: 68, remark: 'Consistently diligent and disciplined in class assignments.', conduct: 'Excellent' },
-    { id: 'std_03', name: 'Kwame Osei', gender: 'Male', roll: 'BFA-2024-003', attendance: 'Late', classScore: 22, examScore: 54, remark: 'Capable student; needs to pay more attention in calculations.', conduct: 'Very Good' },
-    { id: 'std_04', name: 'Akua Serwaa', gender: 'Female', roll: 'BFA-2024-004', attendance: 'Present', classScore: 27, examScore: 62, remark: 'Brilliant contributions during science practicals.', conduct: 'Excellent' },
-    { id: 'std_05', name: 'Yaw Adjei', gender: 'Male', roll: 'BFA-2024-005', attendance: 'Absent', classScore: 19, examScore: 48, remark: 'Encouraged to attend after-school tutoring for science.', conduct: 'Good' },
-    { id: 'std_06', name: 'Esi Frimpong', gender: 'Female', roll: 'BFA-2024-006', attendance: 'Present', classScore: 25, examScore: 60, remark: 'Polite and attentive pupil with good grasp of concepts.', conduct: 'Very Good' },
-    { id: 'std_07', name: 'Kojo Antwi', gender: 'Male', roll: 'BFA-2024-007', attendance: 'Present', classScore: 23, examScore: 58, remark: 'Good effort throughout the term; keep practicing.', conduct: 'Good' },
-  ]);
+  // Current logged in teacher identity
+  const currentTeacher = teachers.find(
+    (t) => t.id === currentUser.id ||
+           t.fullName === currentUser.name ||
+           (currentUser.email && t.email?.toLowerCase() === currentUser.email?.toLowerCase()) ||
+           t.staffId === (currentUser as any).teacherStaffId
+  );
+
+  // Dynamic assigned classes for this teacher
+  const teacherAssignedClasses = classes.filter(
+    (c) => c.classTeacherId === currentTeacher?.id ||
+           c.classTeacherName === currentTeacher?.fullName ||
+           (currentTeacher?.classesAssigned && currentTeacher.classesAssigned.includes(c.name))
+  );
+
+  const teacherClasses = teacherAssignedClasses.map((cls) => {
+    const classPupils = students.filter((s) => s.classId === cls.id || s.className === cls.name);
+    const classAtt = attendance.filter((a) => classPupils.some((s) => s.id === a.studentId));
+    const present = classAtt.filter((a) => a.status === 'Present').length;
+    const attText = classPupils.length > 0
+      ? `${present} Present (${Math.round((present / classPupils.length) * 100)}%)`
+      : 'No attendance recorded';
+    return {
+      name: cls.name,
+      count: classPupils.length,
+      role: cls.classTeacherId === currentTeacher?.id || cls.classTeacherName === currentTeacher?.fullName ? 'Form Class Master' : 'Subject Instructor',
+      room: cls.roomNumber || 'Room Assigned',
+      attendanceToday: attText,
+    };
+  });
+
+  const formClass = teacherAssignedClasses.find(
+    (c) => c.classTeacherId === currentTeacher?.id || c.classTeacherName === currentTeacher?.fullName
+  ) || teacherAssignedClasses[0];
+
+  const formClassName = formClass ? formClass.name : 'Unassigned';
+
+  const classStudents = students.filter(
+    (s) => formClass && (s.classId === formClass.id || s.className === formClass.name)
+  );
+
+  // Dynamic roster for the form class
+  const [jhsStudents, setJhsStudents] = useState<Array<{
+    id: string;
+    name: string;
+    gender: string;
+    roll: string;
+    attendance: string;
+    classScore: number;
+    examScore: number;
+    remark: string;
+    conduct: string;
+  }>>([]);
 
   const [selectedSubject, setSelectedSubject] = useState('Mathematics');
-  const [selectedStudentForRemark, setSelectedStudentForRemark] = useState(jhsStudents[0].id);
-  const [remarkText, setRemarkText] = useState(jhsStudents[0].remark);
-  const [conductRating, setConductRating] = useState(jhsStudents[0].conduct);
+  const [selectedStudentForRemark, setSelectedStudentForRemark] = useState('');
+  const [remarkText, setRemarkText] = useState('');
+  const [conductRating, setConductRating] = useState('Good');
   const [saveToast, setSaveToast] = useState<string | null>(null);
 
-  const teacherClasses = [
-    { name: 'JHS 2A', count: 34, role: 'Class Teacher • Mathematics & Science', room: 'Block C - Room 302', attendanceToday: '32 Present (94.1%)' },
-    { name: 'JHS 2B', count: 31, role: 'Subject Instructor • Mathematics', room: 'Block C - Room 303', attendanceToday: '29 Present (93.5%)' },
-    { name: 'Basic 4', count: 33, role: 'Subject Instructor • Integrated Science', room: 'Block B - Room 201', attendanceToday: '31 Present (93.9%)' },
-  ];
+  React.useEffect(() => {
+    const roster = classStudents.map((s) => {
+      const att = attendance.find((a) => a.studentId === s.id)?.status || 'Present';
+      const asm = assessments.find((a) => a.studentId === s.id);
+      const rep = reportCards.find((r) => r.studentId === s.id);
+      return {
+        id: s.id,
+        name: `${s.firstName} ${s.lastName}`,
+        gender: s.gender,
+        roll: s.studentId,
+        attendance: att,
+        classScore: (asm?.classworkScore || 0) + (asm?.homeworkScore || 0),
+        examScore: asm?.examScore || 0,
+        remark: rep?.classTeacherRemarks || '',
+        conduct: 'Good',
+      };
+    });
+    setJhsStudents(roster);
+    if (roster.length > 0 && !selectedStudentForRemark) {
+      setSelectedStudentForRemark(roster[0].id);
+      setRemarkText(roster[0].remark);
+      setConductRating(roster[0].conduct);
+    }
+  }, [students, classes, attendance, assessments, reportCards, formClass]);
 
-  const timetable = [
-    { period: 'Period 1', time: '08:00 - 08:45 AM', class: 'JHS 2A', subject: 'Mathematics', topic: 'Algebraic Expressions & Factorization', room: 'Room 302' },
-    { period: 'Period 2', time: '08:45 - 09:30 AM', class: 'JHS 2A', subject: 'Integrated Science', topic: 'Photosynthesis & Plant Respiration', room: 'Science Lab' },
-    { period: 'Break', time: '09:30 - 10:15 AM', class: 'All', subject: 'Morning Snack & Assembly', topic: 'Supervision Duty', room: 'School Quadrangle' },
-    { period: 'Period 4', time: '10:30 - 11:15 AM', class: 'Basic 4', subject: 'Science', topic: 'Living Things & Natural Habitats', room: 'Room 201' },
-    { period: 'Period 6', time: '12:45 - 01:30 PM', class: 'JHS 2B', subject: 'Mathematics', topic: 'Geometry & Angles of Elevation', room: 'Room 303' },
-  ];
+  const timetable = teacherAssignedClasses.length > 0
+    ? teacherAssignedClasses.map((cls, idx) => ({
+        period: `Period ${idx + 1}`,
+        time: idx === 0 ? '08:00 - 08:45 AM' : idx === 1 ? '08:45 - 09:30 AM' : '10:30 - 11:15 AM',
+        class: cls.name,
+        subject: currentTeacher?.subjectsAssigned?.[0] || 'Core Subject',
+        topic: 'Classroom Lecture & Exercises',
+        room: cls.roomNumber || 'Classroom',
+      }))
+    : [];
+
+  const classAttendanceRecords = attendance.filter((a) => classStudents.some((s) => s.id === a.studentId));
+  const presentCount = classAttendanceRecords.filter((a) => a.status === 'Present').length;
+  const lateCount = classAttendanceRecords.filter((a) => a.status === 'Late').length;
+  const absentCount = classAttendanceRecords.filter((a) => a.status === 'Absent').length;
+  const rollCallRate = classStudents.length > 0 ? ((presentCount / classStudents.length) * 100).toFixed(1) : '0.0';
+  const marksRecordedCount = classStudents.filter((s) => assessments.some((a) => a.studentId === s.id)).length;
 
   const handleAttendanceChange = (studentId: string, status: string) => {
     setJhsStudents((prev) =>
@@ -158,13 +235,13 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
                 Teacher Platform • Classroom Desk
               </span>
-              <span className="text-xs text-blue-200">• Form Master: <strong>JHS 2A</strong></span>
+              <span className="text-xs text-blue-200">• Form Master: <strong>{formClassName}</strong></span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white">
               Welcome, {currentUser.name}
             </h1>
             <p className="text-xs text-blue-200 max-w-2xl leading-relaxed">
-              Mathematics & Integrated Science Faculty • Manage your assigned classes, take morning roll call, grade continuous assessments, and formulate terminal remarks.
+              Faculty Desk • Manage your assigned classes, take morning roll call, grade continuous assessments, and formulate terminal remarks.
             </p>
           </div>
 
@@ -237,28 +314,28 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Form Class</span>
-              <p className="text-xl font-black text-slate-900 mt-1">JHS 2A</p>
+              <p className="text-xl font-black text-slate-900 mt-1">{formClassName}</p>
               <p className="text-[11px] text-emerald-700 font-medium mt-1 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> 34 Registered Pupils
+                <CheckCircle2 className="w-3.5 h-3.5" /> {classStudents.length} Registered Pupils
               </p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Today&apos;s Roll Call</span>
-              <p className="text-xl font-black text-emerald-700 mt-1">94.1%</p>
-              <p className="text-[11px] text-slate-500 mt-1">32 Present • 1 Late • 1 Absent</p>
+              <p className="text-xl font-black text-emerald-700 mt-1">{rollCallRate}%</p>
+              <p className="text-[11px] text-slate-500 mt-1">{presentCount} Present • {lateCount} Late • {absentCount} Absent</p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Marks Recorded</span>
-              <p className="text-xl font-black text-indigo-700 mt-1">6 / 7</p>
+              <p className="text-xl font-black text-indigo-700 mt-1">{marksRecordedCount} / {classStudents.length}</p>
               <p className="text-[11px] text-slate-500 mt-1">Pupils marked for Term 2 tests</p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Next Period</span>
-              <p className="text-xl font-black text-blue-700 mt-1">08:00 AM</p>
-              <p className="text-[11px] text-slate-500 mt-1">Mathematics in Room 302</p>
+              <p className="text-xl font-black text-blue-700 mt-1">{timetable[0] ? timetable[0].time.split(' - ')[0] : 'None'}</p>
+              <p className="text-[11px] text-slate-500 mt-1">{timetable[0] ? `${timetable[0].subject} in ${timetable[0].room}` : 'No scheduled periods'}</p>
             </div>
           </div>
 
@@ -269,33 +346,39 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 <Clock className="w-4 h-4 text-blue-600" />
                 <h3 className="text-sm font-bold text-slate-900">Today&apos;s Teaching Schedule & Periods</h3>
               </div>
-              <Badge variant="navy">Term 2 • Week 5</Badge>
+              <Badge variant="navy">Term 2</Badge>
             </div>
 
             <div className="space-y-2.5">
-              {timetable.map((slot, idx) => (
-                <div
-                  key={idx}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-slate-100 hover:border-blue-200 bg-slate-50/50 hover:bg-blue-50/30 transition-all text-xs gap-2"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono font-bold text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded-md">
-                      {slot.time}
-                    </span>
-                    <div>
-                      <span className="font-bold text-slate-900 text-sm">{slot.subject}</span>
-                      <span className="text-slate-400 mx-1.5">•</span>
-                      <span className="font-semibold text-blue-700">{slot.class}</span>
-                      <p className="text-slate-500 mt-0.5">{slot.topic}</p>
+              {timetable.length === 0 ? (
+                <div className="py-6 text-center text-xs text-slate-400">
+                  No teaching periods scheduled for today.
+                </div>
+              ) : (
+                timetable.map((slot, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-slate-100 hover:border-blue-200 bg-slate-50/50 hover:bg-blue-50/30 transition-all text-xs gap-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono font-bold text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded-md">
+                        {slot.time}
+                      </span>
+                      <div>
+                        <span className="font-bold text-slate-900 text-sm">{slot.subject}</span>
+                        <span className="text-slate-400 mx-1.5">•</span>
+                        <span className="font-semibold text-blue-700">{slot.class}</span>
+                        <p className="text-slate-500 mt-0.5">{slot.topic}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 self-start sm:self-center">
+                      <span className="text-[11px] text-slate-600 font-medium px-2 py-0.5 rounded bg-white border border-slate-200">
+                        {slot.room}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 self-start sm:self-center">
-                    <span className="text-[11px] text-slate-600 font-medium px-2 py-0.5 rounded bg-white border border-slate-200">
-                      {slot.room}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -328,30 +411,36 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
           <div className="space-y-3">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">My Assigned Classes</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {teacherClasses.map((cls, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-3 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-base font-bold text-slate-900">{cls.name}</h4>
-                      <Badge variant="navy">{cls.count} Pupils</Badge>
-                    </div>
-                    <p className="text-xs text-slate-600 font-medium mt-1">{cls.role}</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{cls.room}</p>
-                  </div>
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] text-emerald-700 font-medium">{cls.attendanceToday}</span>
-                    <button
-                      onClick={() => setActiveTab('classes')}
-                      className="text-xs text-blue-600 font-semibold hover:underline"
-                    >
-                      View Roster →
-                    </button>
-                  </div>
+              {teacherClasses.length === 0 ? (
+                <div className="col-span-3 p-6 text-center bg-white border border-slate-200 rounded-xl text-xs text-slate-400">
+                  No classes currently assigned to your teacher profile. Please contact administration.
                 </div>
-              ))}
+              ) : (
+                teacherClasses.map((cls, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-3 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-base font-bold text-slate-900">{cls.name}</h4>
+                        <Badge variant="navy">{cls.count} Pupils</Badge>
+                      </div>
+                      <p className="text-xs text-slate-600 font-medium mt-1">{cls.role}</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">{cls.room}</p>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-emerald-700 font-medium">{cls.attendanceToday}</span>
+                      <button
+                        onClick={() => setActiveTab('classes')}
+                        className="text-xs text-blue-600 font-semibold hover:underline"
+                      >
+                        View Roster →
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -364,10 +453,10 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Form Class Student Roster • JHS 2A</h2>
+              <h2 className="text-lg font-bold text-slate-900">Form Class Student Roster • {formClassName}</h2>
               <p className="text-xs text-slate-500">Student records, emergency contacts, and academic averages for your form class.</p>
             </div>
-            <Badge variant="success">34 Registered Pupils</Badge>
+            <Badge variant="success">{classStudents.length} Registered Pupils</Badge>
           </div>
 
           <div className="overflow-x-auto">
@@ -382,31 +471,39 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {jhsStudents.map((std) => (
-                  <tr key={std.id} className="hover:bg-slate-50/70">
-                    <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
-                    <td className="py-3 px-3 font-mono text-slate-500">{std.roll}</td>
-                    <td className="py-3 px-3 text-slate-700">{std.gender}</td>
-                    <td className="py-3 px-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Active Pupil
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right space-x-2">
-                      <button
-                        onClick={() => {
-                          setSelectedStudentForRemark(std.id);
-                          setRemarkText(std.remark);
-                          setConductRating(std.conduct);
-                          setActiveTab('remarks');
-                        }}
-                        className="text-xs font-semibold text-blue-600 hover:underline"
-                      >
-                        Enter Remarks
-                      </button>
+                {jhsStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-xs text-slate-400">
+                      No pupils currently enrolled in {formClassName}. Click &ldquo;Add Student&rdquo; in the admin desk to enroll pupils.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  jhsStudents.map((std) => (
+                    <tr key={std.id} className="hover:bg-slate-50/70">
+                      <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
+                      <td className="py-3 px-3 font-mono text-slate-500">{std.roll}</td>
+                      <td className="py-3 px-3 text-slate-700">{std.gender}</td>
+                      <td className="py-3 px-3">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Active Pupil
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right space-x-2">
+                        <button
+                          onClick={() => {
+                            setSelectedStudentForRemark(std.id);
+                            setRemarkText(std.remark);
+                            setConductRating(std.conduct);
+                            setActiveTab('remarks');
+                          }}
+                          className="text-xs font-semibold text-blue-600 hover:underline"
+                        >
+                          Enter Remarks
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -423,7 +520,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700 block">
                 Daily Roll Call Register
               </span>
-              <h2 className="text-xl font-bold text-slate-900">Mark Attendance • JHS 2A</h2>
+              <h2 className="text-xl font-bold text-slate-900">Mark Attendance • {formClassName}</h2>
               <p className="text-xs text-slate-500 mt-0.5">Click status buttons to record present, absent, or late for each pupil today.</p>
             </div>
 
@@ -445,46 +542,54 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {jhsStudents.map((std) => (
-                  <tr key={std.id} className="hover:bg-slate-50/70">
-                    <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
-                    <td className="py-3 px-3 font-mono text-slate-500">{std.roll}</td>
-                    <td className="py-3 px-4 text-center">
-                      <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 gap-1 text-[11px]">
-                        <button
-                          onClick={() => handleAttendanceChange(std.id, 'Present')}
-                          className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
-                            std.attendance === 'Present'
-                              ? 'bg-emerald-600 text-white shadow-xs'
-                              : 'text-slate-600 hover:text-slate-900'
-                          }`}
-                        >
-                          Present
-                        </button>
-                        <button
-                          onClick={() => handleAttendanceChange(std.id, 'Late')}
-                          className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
-                            std.attendance === 'Late'
-                              ? 'bg-amber-500 text-white shadow-xs'
-                              : 'text-slate-600 hover:text-slate-900'
-                          }`}
-                        >
-                          Late
-                        </button>
-                        <button
-                          onClick={() => handleAttendanceChange(std.id, 'Absent')}
-                          className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
-                            std.attendance === 'Absent'
-                              ? 'bg-rose-600 text-white shadow-xs'
-                              : 'text-slate-600 hover:text-slate-900'
-                          }`}
-                        >
-                          Absent
-                        </button>
-                      </div>
+                {jhsStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-xs text-slate-400">
+                      No registered pupils found in {formClassName} to mark attendance.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  jhsStudents.map((std) => (
+                    <tr key={std.id} className="hover:bg-slate-50/70">
+                      <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
+                      <td className="py-3 px-3 font-mono text-slate-500">{std.roll}</td>
+                      <td className="py-3 px-4 text-center">
+                        <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 gap-1 text-[11px]">
+                          <button
+                            onClick={() => handleAttendanceChange(std.id, 'Present')}
+                            className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
+                              std.attendance === 'Present'
+                                ? 'bg-emerald-600 text-white shadow-xs'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                          >
+                            Present
+                          </button>
+                          <button
+                            onClick={() => handleAttendanceChange(std.id, 'Late')}
+                            className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
+                              std.attendance === 'Late'
+                                ? 'bg-amber-500 text-white shadow-xs'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                          >
+                            Late
+                          </button>
+                          <button
+                            onClick={() => handleAttendanceChange(std.id, 'Absent')}
+                            className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
+                              std.attendance === 'Absent'
+                                ? 'bg-rose-600 text-white shadow-xs'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                          >
+                            Absent
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -544,10 +649,17 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {jhsStudents.map((std) => {
-                  const total = std.classScore + std.examScore;
-                  const gradeInfo = calculateGrade(total);
-                  return (
+                {jhsStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-xs text-slate-400">
+                      No enrolled pupils found in {formClassName} to enter assessment marks.
+                    </td>
+                  </tr>
+                ) : (
+                  jhsStudents.map((std) => {
+                    const total = std.classScore + std.examScore;
+                    const gradeInfo = calculateGrade(total);
+                    return (
                     <tr key={std.id} className="hover:bg-slate-50/70">
                       <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
                       <td className="py-3 px-3 text-center">
@@ -583,7 +695,8 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                       </td>
                     </tr>
                   );
-                })}
+                })
+                )}
               </tbody>
             </table>
           </div>
@@ -942,10 +1055,10 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
           {/* 5B. Interactive Report Card Generator (Matches provided design) */}
           {remarksSubTab === 'generator' && (
             <ReportCardSheet
-              initialStudentName={jhsStudents.find((s) => s.id === selectedStudentForRemark)?.name || jhsStudents[0].name}
-              initialLevel="Junior High School 2"
-              initialClassName="JHS 2A"
-              initialSchoolName="Salford High School"
+              initialStudentName={jhsStudents.find((s) => s.id === selectedStudentForRemark)?.name || jhsStudents[0]?.name || 'Enrolled Pupil'}
+              initialLevel="Junior High School"
+              initialClassName={formClassName}
+              initialSchoolName="Bright Future Academy"
               isModal={false}
             />
           )}
@@ -973,24 +1086,28 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 {/* Student Selector List */}
                 <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50 space-y-1.5 max-h-96 overflow-y-auto">
                   <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">Select Student</span>
-                  {jhsStudents.map((std) => (
-                    <button
-                      key={std.id}
-                      onClick={() => {
-                        setSelectedStudentForRemark(std.id);
-                        setRemarkText(std.remark);
-                        setConductRating(std.conduct);
-                      }}
-                      className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-between ${
-                        selectedStudentForRemark === std.id
-                          ? 'bg-blue-600 text-white shadow-xs'
-                          : 'hover:bg-slate-100 text-slate-800'
-                      }`}
-                    >
+                  {jhsStudents.length === 0 ? (
+                    <p className="p-3 text-xs text-slate-400">No pupils currently enrolled in {formClassName}.</p>
+                  ) : (
+                    jhsStudents.map((std) => (
+                      <button
+                        key={std.id}
+                        onClick={() => {
+                          setSelectedStudentForRemark(std.id);
+                          setRemarkText(std.remark);
+                          setConductRating(std.conduct);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-between ${
+                          selectedStudentForRemark === std.id
+                            ? 'bg-blue-600 text-white shadow-xs'
+                            : 'hover:bg-slate-100 text-slate-800'
+                        }`}
+                      >
                       <span>{std.name}</span>
                       <span className="text-[10px] opacity-75">{std.roll}</span>
                     </button>
-                  ))}
+                  ))
+                  )}
                 </div>
 
                 {/* Remark Form & Suggestion Chips */}
@@ -1214,7 +1331,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                     />
                     <div className="flex-1">
                       <span className="font-bold text-slate-900 block">Parent Portal Instant Release</span>
-                      <span className="text-[11px] text-slate-500">Unlocks official PDF report card download on Mrs. Abena Osei&apos;s dashboard</span>
+                      <span className="text-[11px] text-slate-500">Unlocks official PDF report card download on {dispatchModalReport?.parentName ? `${dispatchModalReport.parentName}'s` : 'Parent'} dashboard</span>
                     </div>
                   </label>
 

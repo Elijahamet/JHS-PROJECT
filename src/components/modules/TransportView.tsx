@@ -69,9 +69,13 @@ export const TransportView: React.FC = () => {
           icon={Users}
         />
         <StatCard
-          title="Morning Trip Status"
-          value="2 Completed • 1 On Route"
-          subtitle="Route 1 (Madina-Adenta) on transit"
+          title="Trip Status"
+          value={
+            routes.length > 0
+              ? `${routes.filter((r) => r.status === 'Completed').length} Done • ${routes.filter((r) => r.status === 'On Route').length} On Route`
+              : 'No Active Trips'
+          }
+          subtitle={routes.length > 0 ? `${routes.length} Transit Routes` : 'Fleet on Standby'}
           highlight
         />
       </div>
@@ -82,8 +86,13 @@ export const TransportView: React.FC = () => {
           Active Routes & Live Trip Status
         </h3>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {routes.map((rt) => {
+        {routes.length === 0 ? (
+          <div className="bg-white border border-slate-200/80 rounded-xl p-8 text-center text-slate-400">
+            No transport routes configured yet. Click &quot;Add Fleet / Route&quot; to establish bus transit corridors.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            {routes.map((rt) => {
             let statusVariant: 'neutral' | 'info' | 'success' = 'neutral';
             if (rt.status === 'On Route') statusVariant = 'info';
             if (rt.status === 'Completed') statusVariant = 'success';
@@ -165,6 +174,7 @@ export const TransportView: React.FC = () => {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Fleet Vehicles (Buses, Vans & Utility Trucks) */}
@@ -202,46 +212,54 @@ export const TransportView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {buses.map((bus) => (
-                  <tr key={bus.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-slate-900">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0">
-                          <Bus className="w-3.5 h-3.5" />
-                        </div>
-                        <span>{bus.busNumber}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 font-mono font-medium text-slate-700">
-                      {bus.registrationNumber}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {bus.capacity} Passengers
-                    </td>
-                    <td className="px-4 py-3 text-slate-700 font-medium">
-                      {bus.routeName}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      <div>
-                        <span className="font-semibold text-slate-900 block">{bus.driverName}</span>
-                        <span className="text-[11px] text-slate-400 font-mono">{bus.driverPhone}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        variant={
-                          bus.status === 'Active'
-                            ? 'success'
-                            : bus.status === 'Standby'
-                            ? 'info'
-                            : 'danger'
-                        }
-                      >
-                        {bus.status}
-                      </Badge>
+                {buses.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-slate-400">
+                      No vehicles registered in fleet yet. Click &quot;Register Vehicle&quot; to add buses or vans.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  buses.map((bus) => (
+                    <tr key={bus.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-4 py-3 font-semibold text-slate-900">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0">
+                            <Bus className="w-3.5 h-3.5" />
+                          </div>
+                          <span>{bus.busNumber}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 font-mono font-medium text-slate-700">
+                        {bus.registrationNumber}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {bus.capacity} Passengers
+                      </td>
+                      <td className="px-4 py-3 text-slate-700 font-medium">
+                        {bus.routeName}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        <div>
+                          <span className="font-semibold text-slate-900 block">{bus.driverName}</span>
+                          <span className="text-[11px] text-slate-400 font-mono">{bus.driverPhone}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge
+                          variant={
+                            bus.status === 'Active'
+                              ? 'success'
+                              : bus.status === 'Standby'
+                              ? 'info'
+                              : 'danger'
+                          }
+                        >
+                          {bus.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

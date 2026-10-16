@@ -24,18 +24,7 @@ export interface ReportCardSubjectItem {
   q4: string;
 }
 
-const DEFAULT_SUBJECTS: ReportCardSubjectItem[] = [
-  { id: 'sub_1', name: 'English', q1: '88%', q2: '92%', q3: '85%', q4: '90%' },
-  { id: 'sub_2', name: 'Economic', q1: '78%', q2: '82%', q3: '80%', q4: '85%' },
-  { id: 'sub_3', name: 'History', q1: '90%', q2: '88%', q3: '94%', q4: '91%' },
-  { id: 'sub_4', name: 'Biology', q1: '84%', q2: '86%', q3: '89%', q4: '92%' },
-  { id: 'sub_5', name: 'Math', q1: '95%', q2: '92%', q3: '98%', q4: '96%' },
-  { id: 'sub_6', name: 'Science', q1: '86%', q2: '89%', q3: '91%', q4: '90%' },
-  { id: 'sub_7', name: 'Social Studies', q1: '82%', q2: '84%', q3: '85%', q4: '88%' },
-  { id: 'sub_8', name: 'Art', q1: '94%', q2: '90%', q3: '96%', q4: '95%' },
-  { id: 'sub_9', name: 'Physical Education', q1: '98%', q2: '95%', q3: '96%', q4: '99%' },
-  { id: 'sub_10', name: 'Chemistry', q1: '80%', q2: '85%', q3: '88%', q4: '87%' },
-];
+const DEFAULT_SUBJECTS: ReportCardSubjectItem[] = [];
 
 interface ReportCardSheetProps {
   initialStudentName?: string;
@@ -47,10 +36,10 @@ interface ReportCardSheetProps {
 }
 
 export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
-  initialStudentName = 'Kofi Mensah',
-  initialLevel = 'Junior High School 2',
-  initialClassName = 'JHS 2A',
-  initialSchoolName = 'Salford High School',
+  initialStudentName = '',
+  initialLevel = '',
+  initialClassName = '',
+  initialSchoolName = '',
   isModal = false,
   onClose,
 }) => {
@@ -61,7 +50,7 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
   const [level, setLevel] = useState(initialLevel);
   const [className, setClassName] = useState(initialClassName);
   const [schoolName, setSchoolName] = useState(
-    initialSchoolName || currentSchool?.name || 'Salford High School'
+    initialSchoolName || currentSchool?.name || ''
   );
 
   const matchingReport = reportCards.find(
@@ -83,9 +72,7 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
   const [gradingScale, setGradingScale] = useState(
     'A = 90% - 100%   B = 80% - 89%   C = 60% - 79%   D = 0% - 59%'
   );
-  const [comment, setComment] = useState(
-    'Demonstrates outstanding intellectual commitment, exemplary conduct, and consistent active participation across all academic disciplines.'
-  );
+  const [comment, setComment] = useState('');
 
   // UI toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);

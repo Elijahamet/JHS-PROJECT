@@ -135,7 +135,7 @@ export const GlobalSearchModal: React.FC = () => {
               <div className="p-8 text-center text-slate-400">
                 <p>Type keywords to search school records...</p>
                 <p className="text-[11px] mt-1 text-slate-400">
-                  Try &quot;Kwame&quot;, &quot;JHS 2A&quot;, &quot;Boateng&quot;, or &quot;Receipt&quot;
+                  Try &quot;Primary&quot;, &quot;JHS 1&quot;, &quot;Fees&quot;, or &quot;Receipt&quot;
                 </p>
               </div>
             ) : searchResults?.totalCount === 0 ? (

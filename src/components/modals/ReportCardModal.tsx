@@ -21,10 +21,10 @@ export const ReportCardModal: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto bg-slate-950/75 backdrop-blur-xs">
       <div className="relative w-full max-w-4xl my-auto animate-fadeIn">
         <ReportCardSheet
-          initialStudentName={student ? `${student.firstName} ${student.lastName}` : 'Kofi Mensah'}
-          initialLevel={student?.stage === 'JHS' ? 'Junior High School 2' : 'Grade 8'}
-          initialClassName={student ? student.className : 'JHS 2A'}
-          initialSchoolName={currentSchool?.name || 'Salford High School'}
+          initialStudentName={student ? `${student.firstName} ${student.lastName}` : ''}
+          initialLevel={student ? (student.stage === 'JHS' ? 'Junior High School' : 'Primary') : ''}
+          initialClassName={student ? student.className : ''}
+          initialSchoolName={currentSchool?.name || ''}
           isModal={true}
           onClose={() => setIsReportCardModalOpen(false)}
         />

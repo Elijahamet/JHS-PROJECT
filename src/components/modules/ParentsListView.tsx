@@ -70,102 +70,108 @@ export const ParentsListView: React.FC = () => {
       </div>
 
       {/* Parents Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredParents.map((parent) => (
-          <div
-            key={parent.id}
-            className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs flex flex-col justify-between space-y-4"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm">
-                    {parent.fullName}
-                  </h3>
-                  <Badge variant="navy" className="mt-1">
-                    {parent.relationship}
-                  </Badge>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                    Outstanding Due
-                  </span>
-                  <span
-                    className={`text-xs font-bold ${
-                      parent.totalBalanceDue === 0
-                        ? 'text-emerald-700'
-                        : 'text-rose-600'
-                    }`}
-                  >
-                    {formatCurrency(parent.totalBalanceDue)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-3.5 space-y-1.5 text-xs text-slate-600">
-                <div className="flex items-center gap-2">
-                  <Phone className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{parent.phone}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="truncate">{parent.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="truncate">{parent.residentialAddress}</span>
-                </div>
-              </div>
-
-              {/* Linked Wards */}
-              <div className="mt-4 pt-3 border-t border-slate-100">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5">
-                  Linked Student Wards
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {parent.childrenNames.map((child, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        const childId = parent.childrenIds[idx];
-                        if (childId) {
-                          setSelectedStudentId(childId);
-                          setCurrentNav('students');
-                        }
-                      }}
-                      className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-200/60 hover:bg-blue-100"
+      {filteredParents.length === 0 ? (
+        <div className="bg-white border border-slate-200/80 rounded-xl p-8 text-center text-slate-400">
+          No parents or guardians registered yet. Parents are automatically linked when student admissions are processed.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredParents.map((parent) => (
+            <div
+              key={parent.id}
+              className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs flex flex-col justify-between space-y-4"
+            >
+              <div>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      {parent.fullName}
+                    </h3>
+                    <Badge variant="navy" className="mt-1">
+                      {parent.relationship}
+                    </Badge>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                      Outstanding Due
+                    </span>
+                    <span
+                      className={`text-xs font-bold ${
+                        parent.totalBalanceDue === 0
+                          ? 'text-emerald-700'
+                          : 'text-rose-600'
+                      }`}
                     >
-                      {child}
-                    </button>
-                  ))}
+                      {formatCurrency(parent.totalBalanceDue)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3.5 space-y-1.5 text-xs text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{parent.phone}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="truncate">{parent.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="truncate">{parent.residentialAddress}</span>
+                  </div>
+                </div>
+
+                {/* Linked Wards */}
+                <div className="mt-4 pt-3 border-t border-slate-100">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5">
+                    Linked Student Wards
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {parent.childrenNames.map((child, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const childId = parent.childrenIds[idx];
+                          if (childId) {
+                            setSelectedStudentId(childId);
+                            setCurrentNav('students');
+                          }
+                        }}
+                        className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-200/60 hover:bg-blue-100"
+                      >
+                        {child}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-500 truncate max-w-[120px]">{parent.occupation}</span>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    icon={Bell}
+                    onClick={() => setIsSendParentNotificationOpen(true)}
+                  >
+                    Notify
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    icon={MessageSquare}
+                    onClick={() => openChatWith(parent.id)}
+                  >
+                    Chat
+                  </Button>
                 </div>
               </div>
             </div>
-
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500 truncate max-w-[120px]">{parent.occupation}</span>
-              <div className="flex items-center gap-1.5">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  icon={Bell}
-                  onClick={() => setIsSendParentNotificationOpen(true)}
-                >
-                  Notify
-                </Button>
-                <Button
-                  size="sm"
-                  variant="primary"
-                  icon={MessageSquare}
-                  onClick={() => openChatWith(parent.id)}
-                >
-                  Chat
-                </Button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

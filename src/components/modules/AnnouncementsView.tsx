@@ -59,53 +59,59 @@ export const AnnouncementsView: React.FC = () => {
 
       {/* Announcements List */}
       <div className="space-y-4">
-        {filtered.map((ann) => (
-          <div
-            key={ann.id}
-            className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-3"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h3 className="text-sm font-bold text-slate-900">{ann.title}</h3>
-                <Badge
-                  variant={
-                    ann.priority === 'Important'
-                      ? 'warning'
-                      : ann.priority === 'Urgent'
-                      ? 'danger'
-                      : 'neutral'
-                  }
-                >
-                  {ann.priority}
-                </Badge>
-                <Badge variant="navy">{ann.audience}</Badge>
-              </div>
-
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{formatDate(ann.publishDate)}</span>
-                <span>•</span>
-                <span className="font-medium text-slate-600">
-                  {ann.authorName} ({ann.authorRole})
-                </span>
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-700 leading-relaxed bg-slate-50/50 p-3.5 rounded-lg border border-slate-100">
-              {ann.message}
-            </p>
-
-            <div className="flex items-center justify-between pt-1 text-[11px] text-slate-500">
-              <span>Status: <strong className="text-emerald-700 font-semibold">{ann.status}</strong></span>
-              <button
-                onClick={() => alert(`Notice link copied for: ${ann.title}`)}
-                className="text-blue-600 hover:underline font-medium"
-              >
-                Copy Public Notice Link
-              </button>
-            </div>
+        {filtered.length === 0 ? (
+          <div className="bg-white border border-slate-200/80 rounded-xl p-8 text-center text-slate-400">
+            No announcements or school notices published yet. Click &quot;Create Announcement&quot; to broadcast.
           </div>
-        ))}
+        ) : (
+          filtered.map((ann) => (
+            <div
+              key={ann.id}
+              className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-3"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h3 className="text-sm font-bold text-slate-900">{ann.title}</h3>
+                  <Badge
+                    variant={
+                      ann.priority === 'Important'
+                        ? 'warning'
+                        : ann.priority === 'Urgent'
+                        ? 'danger'
+                        : 'neutral'
+                    }
+                  >
+                    {ann.priority}
+                  </Badge>
+                  <Badge variant="navy">{ann.audience}</Badge>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>{formatDate(ann.publishDate)}</span>
+                  <span>•</span>
+                  <span className="font-medium text-slate-600">
+                    {ann.authorName} ({ann.authorRole})
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-700 leading-relaxed bg-slate-50/50 p-3.5 rounded-lg border border-slate-100">
+                {ann.message}
+              </p>
+
+              <div className="flex items-center justify-between pt-1 text-[11px] text-slate-500">
+                <span>Status: <strong className="text-emerald-700 font-semibold">{ann.status}</strong></span>
+                <button
+                  onClick={() => alert(`Notice link copied for: ${ann.title}`)}
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  Copy Public Notice Link
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
