@@ -30,6 +30,7 @@ export const DashboardView: React.FC = () => {
     announcements,
     attendance,
     setIsAddStudentOpen,
+    setIsAddClassOpen,
     setIsAddTeacherOpen,
     setIsAddTransportOpen,
     setIsRecordPaymentOpen,
@@ -109,6 +110,14 @@ export const DashboardView: React.FC = () => {
             onClick={() => setIsAddTeacherOpen(true)}
           >
             Add Teacher
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Layers}
+            onClick={() => setIsAddClassOpen(true)}
+          >
+            New Class Stream
           </Button>
           <Button
             size="sm"

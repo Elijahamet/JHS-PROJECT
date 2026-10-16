@@ -70,6 +70,8 @@ interface AppContextType {
   teachers: Teacher[];
   addTeacher: (teacherData: Partial<Teacher>) => void;
   classes: ClassRoom[];
+  addClass: (classData: Partial<ClassRoom>, assignTeacherId?: string) => void;
+  assignTeacherToClass: (classId: string, teacherId: string) => void;
   feeStructures: FeeStructureItem[];
   payments: PaymentRecord[];
   addPayment: (paymentData: {
@@ -127,6 +129,8 @@ interface AppContextType {
   // Modals
   isAddStudentOpen: boolean;
   setIsAddStudentOpen: (open: boolean) => void;
+  isAddClassOpen: boolean;
+  setIsAddClassOpen: (open: boolean) => void;
   isAddTeacherOpen: boolean;
   setIsAddTeacherOpen: (open: boolean) => void;
   isAddTransportOpen: boolean;
@@ -158,8 +162,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Data collections
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [parents] = useState<Parent[]>(mockParents);
-  const [teachers, setTeachers] = useState<Teacher[]>(mockTeachers);
-  const [classes] = useState<ClassRoom[]>(mockClasses);
+  const [teachers, setTeachers] = useState<Teacher[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_teachers_v2');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached teachers', e);
+    }
+    return mockTeachers;
+  });
+
+  const [classes, setClasses] = useState<ClassRoom[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_classes_v2');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached classes', e);
+    }
+    return mockClasses;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_teachers_v2', JSON.stringify(teachers));
+    } catch (e) {
+      console.warn('Failed to save teachers to storage', e);
+    }
+  }, [teachers]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_classes_v2', JSON.stringify(classes));
+    } catch (e) {
+      console.warn('Failed to save classes to storage', e);
+    }
+  }, [classes]);
   const [feeStructures] = useState<FeeStructureItem[]>(mockFeeStructure);
   const [payments, setPayments] = useState<PaymentRecord[]>(mockPayments);
   const [assessments, setAssessments] = useState<AssessmentRecord[]>(mockAssessments);
@@ -274,6 +311,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Modals
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [isAddClassOpen, setIsAddClassOpen] = useState(false);
   const [isAddTeacherOpen, setIsAddTeacherOpen] = useState(false);
   const [isAddTransportOpen, setIsAddTransportOpen] = useState(false);
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
@@ -371,6 +409,111 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       linkTo: 'teachers',
     };
     setNotifications([newNotif, ...notifications]);
+  };
+
+  const addClass = (classData: Partial<ClassRoom>, assignTeacherId?: string) => {
+    const newId = `cls_${Date.now()}`;
+    const stage = classData.stage || (classData.name?.startsWith('JHS') ? 'JHS' : 'Primary');
+
+    const targetTeacherId = assignTeacherId || classData.classTeacherId;
+    const assignedTeacher = targetTeacherId ? teachers.find((t) => t.id === targetTeacherId) : undefined;
+
+    const defaultSubjects = stage === 'JHS'
+      ? ['English Language', 'Mathematics', 'Integrated Science', 'Social Studies', 'Religious and Moral Education', 'Ghanaian Language', 'Career Technology', 'Creative Arts & Design', 'Computing', 'French']
+      : ['English Language', 'Mathematics', 'Natural Science', 'Our World Our People', 'Religious and Moral Education', 'Ghanaian Language (Twi/Ga)', 'Creative Arts & Design', 'Computing'];
+
+    const newClass: ClassRoom = {
+      id: newId,
+      name: classData.name || 'New Class Stream',
+      code: classData.code || (classData.name ? classData.name.replace(/\s+/g, '').toUpperCase() : 'CLS'),
+      stage,
+      classTeacherId: assignedTeacher ? assignedTeacher.id : '',
+      classTeacherName: assignedTeacher ? assignedTeacher.fullName : 'Unassigned',
+      studentCount: classData.studentCount || 0,
+      capacity: classData.capacity || (stage === 'JHS' ? 40 : 35),
+      roomNumber: classData.roomNumber || 'Block B - Room 101',
+      averageAttendance: 100,
+      subjects: classData.subjects && classData.subjects.length > 0 ? classData.subjects : defaultSubjects,
+    };
+
+    setClasses((prev) => [...prev, newClass]);
+
+    // If a teacher was assigned, update that teacher's profile
+    if (assignedTeacher) {
+      setTeachers((prevTeachers) =>
+        prevTeachers.map((t) => {
+          if (t.id === assignedTeacher.id) {
+            const currentClasses = t.classesAssigned || [];
+            const hasClass = currentClasses.includes(newClass.name);
+            return {
+              ...t,
+              isClassTeacherOf: newClass.name,
+              classesAssigned: hasClass ? currentClasses : [...currentClasses, newClass.name],
+            };
+          }
+          return t;
+        })
+      );
+    }
+
+    const teacherMsg = assignedTeacher
+      ? ` with ${assignedTeacher.fullName} officially appointed as Class Teacher.`
+      : '.';
+    const newNotif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Class Stream Established — ${newClass.name}`,
+      message: `Stream ${newClass.name} (${newClass.stage}) has been established${teacherMsg}`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'classes',
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+  };
+
+  const assignTeacherToClass = (classId: string, teacherId: string) => {
+    const targetClass = classes.find((c) => c.id === classId);
+    if (!targetClass) return;
+
+    const targetTeacher = teachers.find((t) => t.id === teacherId);
+    const teacherName = targetTeacher ? targetTeacher.fullName : 'Unassigned';
+    const teacherIdVal = targetTeacher ? targetTeacher.id : '';
+
+    setClasses((prevClasses) =>
+      prevClasses.map((c) =>
+        c.id === classId
+          ? { ...c, classTeacherId: teacherIdVal, classTeacherName: teacherName }
+          : c
+      )
+    );
+
+    if (targetTeacher) {
+      setTeachers((prevTeachers) =>
+        prevTeachers.map((t) => {
+          if (t.id === targetTeacher.id) {
+            const currentClasses = t.classesAssigned || [];
+            const hasClass = currentClasses.includes(targetClass.name);
+            return {
+              ...t,
+              isClassTeacherOf: targetClass.name,
+              classesAssigned: hasClass ? currentClasses : [...currentClasses, targetClass.name],
+            };
+          }
+          return t;
+        })
+      );
+    }
+
+    const newNotif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Teacher Appointed to ${targetClass.name}`,
+      message: `${teacherName} was appointed as Class Teacher for ${targetClass.name}.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'classes',
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
   };
 
   const addTransportBus = (busData: Partial<TransportBus>) => {
@@ -898,6 +1041,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         teachers,
         addTeacher,
         classes,
+        addClass,
+        assignTeacherToClass,
         feeStructures,
         payments,
         addPayment,
@@ -940,6 +1085,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateReportCardData,
         isAddStudentOpen,
         setIsAddStudentOpen,
+        isAddClassOpen,
+        setIsAddClassOpen,
         isAddTeacherOpen,
         setIsAddTeacherOpen,
         isAddTransportOpen,

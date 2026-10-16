@@ -7,6 +7,7 @@ import { GlobalSearchModal } from './components/layout/GlobalSearchModal';
 
 // Modals
 import { AddStudentModal } from './components/modals/AddStudentModal';
+import { AddClassModal } from './components/modals/AddClassModal';
 import { AddTeacherModal } from './components/modals/AddTeacherModal';
 import { AddTransportModal } from './components/modals/AddTransportModal';
 import { RecordPaymentModal } from './components/modals/RecordPaymentModal';
@@ -225,6 +226,7 @@ export const AppContent: React.FC = () => {
 
       {/* Global Modals */}
       <AddStudentModal />
+      <AddClassModal />
       <AddTeacherModal />
       <AddTransportModal />
       <RecordPaymentModal />
