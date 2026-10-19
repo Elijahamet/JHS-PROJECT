@@ -24,9 +24,10 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { School } from '../../types';
 
 export const AuthScreens: React.FC = () => {
-  const { authScreen, setAuthScreen, setUserRole, setCurrentSchool } = useApp();
+  const { authScreen, setAuthScreen, setUserRole, setCurrentSchool, setCurrentUser } = useApp();
 
   // Selected portal role for login
   const [selectedPortalRole, setSelectedPortalRole] = useState<'school_admin' | 'teacher' | 'accountant' | 'parent'>('school_admin');
@@ -122,9 +123,9 @@ export const AuthScreens: React.FC = () => {
     }
 
     if (schoolName.trim()) {
-      setCurrentSchool({
+      const registeredSchool: School = {
         id: `sch_${Date.now()}`,
-        name: schoolName,
+        name: schoolName.trim(),
         motto: 'Knowledge, Integrity & Discipline',
         crestUrl: '/assets/school-crest.svg',
         address: `${city || 'High Street'}, ${region}`,
@@ -140,6 +141,23 @@ export const AuthScreens: React.FC = () => {
         teacherCount: 1,
         classesCount: 9,
         plan: 'Standard',
+      };
+      setCurrentSchool(registeredSchool);
+      try {
+        localStorage.setItem('schoolos_current_school_v6', JSON.stringify(registeredSchool));
+        localStorage.setItem('schoolos_registered_school_name_v6', schoolName.trim());
+      } catch (err) {
+        console.warn('Failed to save registered school', err);
+      }
+
+      setCurrentUser({
+        id: `usr_${Date.now()}`,
+        name: adminName.trim() || 'School Administrator',
+        email: adminEmail.trim() || 'admin@school.edu.gh',
+        role: signupRole,
+        schoolId: registeredSchool.id,
+        schoolName: schoolName.trim(),
+        avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80`,
       });
     }
 

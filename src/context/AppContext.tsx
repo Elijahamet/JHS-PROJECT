@@ -161,8 +161,62 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [schools] = useState<School[]>(mockSchoolsList);
-  const [currentSchool, setCurrentSchool] = useState<School>(mockCurrentSchool);
-  const [currentUser, setCurrentUser] = useState<User>(mockUsers[0]); // default: Cynthia Arthur (School Admin)
+  const [currentSchool, setCurrentSchoolState] = useState<School>(() => {
+    try {
+      const savedSchool = localStorage.getItem('schoolos_current_school_v6');
+      if (savedSchool) {
+        const parsed = JSON.parse(savedSchool);
+        if (parsed && parsed.name) return parsed;
+      }
+      const savedName = localStorage.getItem('schoolos_registered_school_name_v6');
+      if (savedName) {
+        return {
+          ...mockCurrentSchool,
+          name: savedName,
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to load current school from storage', e);
+    }
+    return mockCurrentSchool;
+  });
+
+  const setCurrentSchool = (school: School) => {
+    setCurrentSchoolState(school);
+    try {
+      localStorage.setItem('schoolos_current_school_v6', JSON.stringify(school));
+      localStorage.setItem('schoolos_registered_school_name_v6', school.name);
+    } catch (e) {
+      console.warn('Failed to persist current school', e);
+    }
+  };
+
+  const [currentUser, setCurrentUser] = useState<User>(() => {
+    try {
+      const savedSchool = localStorage.getItem('schoolos_current_school_v6');
+      const savedName = localStorage.getItem('schoolos_registered_school_name_v6');
+      const activeSchoolName = savedSchool ? JSON.parse(savedSchool)?.name : savedName;
+      if (activeSchoolName) {
+        return {
+          ...mockUsers[0],
+          schoolName: activeSchoolName,
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to load user school name', e);
+    }
+    return mockUsers[0];
+  });
+
+  // Keep currentUser.schoolName synced with currentSchool.name
+  useEffect(() => {
+    if (currentSchool?.name && currentUser.schoolName !== currentSchool.name) {
+      setCurrentUser((prev) => ({
+        ...prev,
+        schoolName: currentSchool.name,
+      }));
+    }
+  }, [currentSchool?.name]);
   const [currentNav, setCurrentNav] = useState<string>('dashboard');
   const [authScreen, setAuthScreen] = useState<'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password'>('login');
 

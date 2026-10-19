@@ -12,7 +12,7 @@ import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 
 export const SettingsView: React.FC = () => {
-  const { currentSchool, currentUser } = useApp();
+  const { currentSchool, currentUser, setCurrentSchool } = useApp();
 
   const [activeTab, setActiveTab] = useState<'school' | 'roles' | 'security'>('school');
   const [isSaved, setIsSaved] = useState(false);
@@ -29,6 +29,16 @@ export const SettingsView: React.FC = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    setCurrentSchool({
+      ...currentSchool,
+      name: schoolData.name,
+      motto: schoolData.motto,
+      phone: schoolData.phone,
+      email: schoolData.email,
+      address: schoolData.address,
+      academicYear: schoolData.academicYear,
+      currentTerm: schoolData.currentTerm as any,
+    });
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
