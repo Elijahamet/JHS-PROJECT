@@ -42,8 +42,9 @@ import { SchoolFeesView } from './components/modules/SchoolFeesView';
 import { FeedingFeesView } from './components/modules/FeedingFeesView';
 import { PaymentsView } from './components/modules/PaymentsView';
 
-// Auth
+// Auth & Landing
 import { AuthScreens } from './components/modules/AuthScreens';
+import { LandingPageView } from './components/landing/LandingPageView';
 
 export const AppContent: React.FC = () => {
   const {
@@ -53,6 +54,10 @@ export const AppContent: React.FC = () => {
     selectedStudentId,
     setSelectedStudentId,
   } = useApp();
+
+  if (authScreen === 'landing') {
+    return <LandingPageView />;
+  }
 
   if (authScreen !== 'authenticated') {
     return <AuthScreens />;

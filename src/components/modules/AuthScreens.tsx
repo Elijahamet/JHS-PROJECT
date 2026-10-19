@@ -306,16 +306,17 @@ export const AuthScreens: React.FC = () => {
 
           {/* Right Column: Clean, Authoritative Institutional Sign-In Form */}
           <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-20 py-8 bg-white">
-            {/* Top Bar with Sign In / Register Switcher */}
+            {/* Top Bar with Sign In / Register Switcher & Back to Home */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="lg:hidden w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  SOS
-                </div>
-                <span className="font-bold text-slate-900 text-sm">
-                  SchoolOS Portal
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={() => setAuthScreen('landing')}
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-semibold transition-colors"
+                title="Return to SchoolOS Landing Page"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Home</span>
+              </button>
 
               <div className="flex items-center gap-2 text-xs">
                 <span className="text-slate-500 hidden sm:inline">New institution in Ghana?</span>
@@ -555,7 +556,16 @@ export const AuthScreens: React.FC = () => {
           <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-18 py-8 bg-white">
             {/* Top Navigation Bar */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAuthScreen('landing')}
+                  className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-semibold transition-colors mr-1"
+                  title="Return to SchoolOS Landing Page"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Home</span>
+                </button>
                 <span className="font-bold text-slate-900 text-sm">
                   School Registration
                 </span>

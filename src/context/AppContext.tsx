@@ -56,8 +56,8 @@ interface AppContextType {
   setCurrentSchool: (school: School) => void;
   currentNav: string;
   setCurrentNav: (nav: string) => void;
-  authScreen: 'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password';
-  setAuthScreen: (screen: 'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password') => void;
+  authScreen: 'landing' | 'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password';
+  setAuthScreen: (screen: 'landing' | 'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password') => void;
 
   // Selected item states
   selectedStudentId: string | null;
@@ -218,7 +218,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [currentSchool?.name]);
   const [currentNav, setCurrentNav] = useState<string>('dashboard');
-  const [authScreen, setAuthScreen] = useState<'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password'>('login');
+  const [authScreen, setAuthScreen] = useState<'landing' | 'authenticated' | 'login' | 'signup' | 'forgot_password' | 'reset_password'>('landing');
 
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedReceiptPayment, setSelectedReceiptPayment] = useState<PaymentRecord | null>(null);

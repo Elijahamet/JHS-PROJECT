@@ -6,6 +6,7 @@ import {
   LogOut,
   Calendar,
   MessageSquare,
+  Globe,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -202,6 +203,15 @@ export const Header: React.FC = () => {
               .slice(0, 2)
               .join('')}
           </div>
+
+          <button
+            onClick={() => setAuthScreen('landing')}
+            title="View SchoolOS Landing Page"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+          >
+            <Globe className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden lg:inline">Landing Page</span>
+          </button>
 
           <button
             onClick={() => setAuthScreen('login')}
