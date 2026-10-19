@@ -22,8 +22,245 @@ import {
   HelpCircle,
   FileCheck2,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+
+// =========================================================================
+// AUTH HERO SHOWCASE: PRO UI EDITORIAL BRAND COMPONENT
+// =========================================================================
+interface AuthHeroShowcaseProps {
+  type: 'login' | 'signup';
+}
+
+const AuthHeroShowcase: React.FC<AuthHeroShowcaseProps> = ({ type }) => {
+  const isLogin = type === 'login';
+  const heroImage = isLogin ? '/assets/login-hero.jpg' : '/assets/signup-hero.jpg';
+
+  return (
+    <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-[#070D1D] flex-col justify-between p-6 xl:p-8 shrink-0 border-r border-slate-800/80 select-none">
+      {/* Background Decorative Mesh & Radial Lights */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Micro-dot matrix texture */}
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px]" />
+        
+        {/* Atmospheric Glow Orbs */}
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 left-1/3 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      </div>
+
+      {/* 1. TOP HEADER: Institutional Brand & Accreditation */}
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Modern Academic Shield Emblem with Glow */}
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25 ring-1 ring-white/20 shrink-0">
+            <GraduationCap className="w-5 h-5 text-white" />
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-black text-xl text-white tracking-tight leading-none">
+                School<span className="text-blue-400">OS</span>
+              </span>
+              
+              {/* Ghana Flag Badge */}
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white border border-white/15 backdrop-blur-md">
+                <span className="w-3.5 h-2.5 rounded-sm overflow-hidden flex flex-col shrink-0 ring-1 ring-black/20">
+                  <span className="h-1/3 bg-red-600 w-full" />
+                  <span className="h-1/3 bg-amber-400 w-full flex items-center justify-center">
+                    <span className="w-1 h-1 bg-black rounded-full" />
+                  </span>
+                  <span className="h-1/3 bg-emerald-600 w-full" />
+                </span>
+                <span>Ghana</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-400 font-medium mt-1">
+              Basic & Junior High Operating System
+            </p>
+          </div>
+        </div>
+
+        {/* Accreditation Pill */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-white/15 text-[11px] text-white font-medium backdrop-blur-md shadow-lg shadow-black/30">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+          </span>
+          <span className="tracking-wide font-semibold text-slate-200">
+            {isLogin ? 'GES Compliant' : 'GES Aligned'}
+          </span>
+        </div>
+      </div>
+
+      {/* 2. CENTERPIECE: Editorial Framed Stage with Live Product Widget */}
+      <div className="relative z-10 my-auto py-2 space-y-4 xl:space-y-5">
+        {/* Framed Image Showcase */}
+        <div className="relative w-full h-44 xl:h-52 2xl:h-60 rounded-2xl overflow-hidden border border-white/15 shadow-2xl shadow-black/60 group">
+          <img
+            src={heroImage}
+            alt="Ghanaian school pupils"
+            className="w-full h-full object-cover object-[center_20%] filter brightness-[0.98] contrast-[1.04] saturate-[1.05] transition-transform duration-700 group-hover:scale-105"
+          />
+          {/* Subtle vignette inside the frame */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/20" />
+          
+          {/* Top Location Pill on Image */}
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/65 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-white shadow-md">
+            <MapPin className="w-3 h-3 text-amber-400" />
+            <span>{isLogin ? 'Greater Accra • Standardized Basic & JHS' : 'All 16 Regions • Basic 1 – JHS 3'}</span>
+          </div>
+
+          {/* Floating Live Assessment Engine / Social Proof Widget */}
+          <div className="absolute bottom-3 inset-x-3 p-2.5 rounded-xl bg-slate-950/85 backdrop-blur-md border border-white/20 shadow-xl flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-white tracking-tight truncate">
+                    {isLogin ? 'Term 2 Continuous Assessment' : 'Instant Institutional Onboarding'}
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Live
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-300 truncate">
+                  {isLogin
+                    ? '30% Class SBA + 70% Terminal Exam Automated'
+                    : '420+ Schools Active Across Ghana'}
+                </p>
+              </div>
+            </div>
+            <div className="hidden sm:flex items-center gap-1 text-[10px] text-emerald-300 font-bold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30 shrink-0">
+              <Sparkles className="w-3 h-3" />
+              <span>GES Ready</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Editorial Headline & Value Statement */}
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-400/20 text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+            <Sparkles className="w-3 h-3 text-amber-300" />
+            <span>National EdTech Infrastructure</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl xl:text-3xl font-black text-white tracking-tight leading-tight">
+            {isLogin ? (
+              <>
+                Modernizing Basic & JHS Education{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-200 to-emerald-300">
+                  Across Ghana.
+                </span>
+              </>
+            ) : (
+              <>
+                Empower Your School With{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-sky-300">
+                  Digital Precision.
+                </span>
+              </>
+            )}
+          </h1>
+          <p className="text-xs text-slate-300 max-w-md font-medium leading-relaxed">
+            {isLogin
+              ? 'Standardized continuous assessment (30/70 SBA), automated BECE stanine reports, and instant fee reconciliation.'
+              : 'Student enrollment, continuous assessment marksheets, and real-time mobile money reconciliations.'}
+          </p>
+        </div>
+
+        {/* 3 Bento Micro-Feature Cards */}
+        <div className="grid grid-cols-3 gap-2">
+          {isLogin ? (
+            <>
+              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300">
+                <div className="w-6 h-6 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300 mb-1.5">
+                  <BookOpen className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-[11px] font-bold text-white tracking-tight leading-snug">30 / 70 CA</p>
+                <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">SBA Marksheets</p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300">
+                <div className="w-6 h-6 rounded-lg bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 mb-1.5">
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-[11px] font-bold text-white tracking-tight leading-snug">BECE Stanine</p>
+                <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">Grade 1-9 Ranks</p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300">
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 mb-1.5">
+                  <CreditCard className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-[11px] font-bold text-white tracking-tight leading-snug">Instant MoMo</p>
+                <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">MTN & Telecel</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300">
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 mb-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-[11px] font-bold text-white tracking-tight leading-snug">GES Standard</p>
+                <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">NaCCA Approved</p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300">
+                <div className="w-6 h-6 rounded-lg bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300 mb-1.5">
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-[11px] font-bold text-white tracking-tight leading-snug">Terminal Cards</p>
+                <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">1-Click PDF</p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300">
+                <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-300 mb-1.5">
+                  <CreditCard className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-[11px] font-bold text-white tracking-tight leading-snug">Zero Setup Fee</p>
+                <p className="text-[9px] text-slate-400 mt-0.5 leading-tight">Instant Start</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Headteacher Testimonial Endorsement Quote */}
+        <div className="px-3 py-2 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-slate-950 text-[10px] shrink-0 shadow-md">
+            {isLogin ? 'KM' : 'MT'}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] text-slate-300 italic truncate">
+              {isLogin
+                ? '"Terminal report compilation that took 2 weeks now compiles in 5 minutes."'
+                : '"The smoothest school management onboarding we have experienced."'}
+            </p>
+            <p className="text-[9px] text-slate-400 font-medium truncate">
+              <span className="text-slate-200 font-semibold">{isLogin ? 'K. Mensah' : 'Sister Mary Theresa'}</span> •{' '}
+              {isLogin ? 'Headmaster, Accra Metro JHS' : 'Principal, Kumasi Basic'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. DISCREET INSTITUTIONAL & SECURITY FOOTER */}
+      <div className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="text-slate-300 font-medium">Data Protection Act (Act 843)</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-slate-400">
+          <Lock className="w-3 h-3 text-slate-400" />
+          <span>256-Bit SSL</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const AuthScreens: React.FC = () => {
   const { authScreen, setAuthScreen, setUserRole, setCurrentSchool } = useApp();
@@ -209,90 +446,15 @@ export const AuthScreens: React.FC = () => {
       {authScreen === 'login' && (
         <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
           {/* Left Hero Column: Authentic Editorial Brand Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
-            {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
-            <img
-              src="/assets/login-hero.jpg"
-              alt="Joyful Ghanaian school pupils smiling happily together in classroom"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
-            />
-
-            {/* Subtle Aesthetic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/85 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-950/30 via-transparent to-amber-950/15 pointer-events-none" />
-
-            {/* Top Institutional Header */}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-md ring-1 ring-white/20 shrink-0">
-                  SOS
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-lg text-white tracking-tight leading-none drop-shadow">
-                      SchoolOS
-                    </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white border border-white/25 backdrop-blur-sm">
-                      Ghana
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-white/80 font-medium mt-1 drop-shadow-sm">
-                    Basic & Junior High Operating System
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/45 border border-white/20 text-[11px] text-white font-medium backdrop-blur-md shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
-                <span>GES Compliant</span>
-              </div>
-            </div>
-
-            {/* Bottom Content: Simple, Clear, Uncongested */}
-            <div className="relative z-10 space-y-4">
-              <div className="space-y-1.5">
-                <h1 className="text-2xl sm:text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
-                  Modernizing Basic & JHS Education Across Ghana.
-                </h1>
-                <p className="text-xs sm:text-sm text-white/90 max-w-md font-medium drop-shadow leading-relaxed">
-                  Standardized continuous assessment, automated terminal reports, and instant fee reconciliation.
-                </p>
-              </div>
-
-              {/* 3 Simple Minimalist Feature Badges */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/15 text-white shadow-sm font-semibold">
-                  <BookOpen className="w-3.5 h-3.5 text-cyan-300" />
-                  <span>30 / 70 CA</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/15 text-white shadow-sm font-semibold">
-                  <FileCheck2 className="w-3.5 h-3.5 text-purple-300" />
-                  <span>BECE Stanine</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/15 text-white shadow-sm font-semibold">
-                  <CreditCard className="w-3.5 h-3.5 text-emerald-300" />
-                  <span>Instant MoMo</span>
-                </div>
-              </div>
-
-              {/* Discreet Institutional Footer */}
-              <div className="pt-2 border-t border-white/15 flex items-center justify-between text-[11px] text-white/70">
-                <span>Ghana Data Protection Act (Act 843)</span>
-                <div className="flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-white/70" />
-                  <span>256-Bit SSL</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AuthHeroShowcase type="login" />
 
           {/* Right Column: Clean, Authoritative Institutional Sign-In Form */}
           <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-20 py-8 bg-white">
             {/* Top Bar with Sign In / Register Switcher */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="lg:hidden w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  SOS
+                <div className="lg:hidden w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-sm ring-1 ring-blue-500/20">
+                  <GraduationCap className="w-4 h-4 text-white" />
                 </div>
                 <span className="font-bold text-slate-900 text-sm">
                   SchoolOS Portal
@@ -459,79 +621,7 @@ export const AuthScreens: React.FC = () => {
       {authScreen === 'signup' && (
         <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
           {/* Left Column: Exclusive Institutional Registration Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
-            {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
-            <img
-              src="/assets/signup-hero.jpg"
-              alt="Joyful Ghanaian pupils raising hands and singing in blue school uniforms"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
-            />
-
-            {/* Subtle Aesthetic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/85 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950/30 via-transparent to-teal-950/15 pointer-events-none" />
-
-            {/* Top Brand Lockup */}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-xs shadow-md ring-1 ring-white/20 shrink-0">
-                  SOS
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-lg text-white tracking-tight leading-none drop-shadow">
-                      SchoolOS
-                    </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white border border-white/25 backdrop-blur-sm">
-                      Onboarding
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-white/80 font-medium mt-1 drop-shadow-sm">
-                    Basic & Junior High Operating System
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/45 border border-white/20 text-[11px] text-white font-medium backdrop-blur-md shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
-                <span>Instant Setup</span>
-              </div>
-            </div>
-
-            {/* Bottom Content: Simple, Clear, Uncongested */}
-            <div className="relative z-10 space-y-4">
-              <div className="space-y-1.5">
-                <h1 className="text-2xl sm:text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
-                  Empower Your School With Digital Precision.
-                </h1>
-                <p className="text-xs sm:text-sm text-white/90 max-w-md font-medium drop-shadow leading-relaxed">
-                  Student enrollment, continuous assessment marksheets, and real-time fee reconciliations.
-                </p>
-              </div>
-
-              {/* 3 Simple Minimalist Feature Badges */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/15 text-white shadow-sm font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>GES Standard</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/15 text-white shadow-sm font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Terminal Reports</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/15 text-white shadow-sm font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>MoMo Payments</span>
-                </div>
-              </div>
-
-              {/* Bottom Security Compliance Notice */}
-              <div className="pt-2 border-t border-white/15 flex items-center justify-between text-[11px] text-white/70">
-                <span>Ghana Data Protection Act (Act 843)</span>
-                <span>Zero Setup Fees</span>
-              </div>
-            </div>
-          </div>
+          <AuthHeroShowcase type="signup" />
 
           {/* Right Column: Structured Two-Step Registration Form */}
           <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-18 py-8 bg-white">
