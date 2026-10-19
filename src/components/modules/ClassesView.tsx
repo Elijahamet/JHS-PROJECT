@@ -13,6 +13,8 @@ import {
   Settings,
   Sparkles,
   AlertTriangle,
+  UserPlus,
+  GraduationCap,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -23,6 +25,10 @@ import { ManageClassModal } from '../modals/ManageClassModal';
 export const ClassesView: React.FC = () => {
   const {
     classes,
+    students,
+    openAddStudentForClass,
+    seedStandardGhanaianClasses,
+    setIsAddStudentOpen,
     setCurrentNav,
     setIsAddClassOpen,
     teachers,
@@ -57,6 +63,7 @@ export const ClassesView: React.FC = () => {
 
   // Calculate live stream statistics
   const totalStreams = classes.length;
+  const totalPupils = students.length;
   const kgStreams = classes.filter((c) => c.stage === 'Kindergarten').length;
   const primaryStreams = classes.filter((c) => c.stage === 'Primary').length;
   const jhsStreams = classes.filter((c) => c.stage === 'JHS').length;
@@ -97,7 +104,25 @@ export const ClassesView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {classes.length === 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              icon={Sparkles}
+              onClick={seedStandardGhanaianClasses}
+            >
+              Seed Standard Classes
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={UserPlus}
+            onClick={() => setIsAddStudentOpen(true)}
+          >
+            Enroll Student
+          </Button>
           <Button
             size="sm"
             variant="primary"
@@ -110,13 +135,21 @@ export const ClassesView: React.FC = () => {
       </div>
 
       {/* Quick Stream KPI Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-7 gap-3">
         <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
           <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">
             Total Streams
           </span>
           <span className="text-lg font-bold text-slate-900">{totalStreams}</span>
           <span className="text-[10px] text-slate-500 block">Classrooms</span>
+        </div>
+
+        <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
+          <span className="text-[10px] uppercase font-bold text-indigo-500 block mb-0.5">
+            Total Pupils
+          </span>
+          <span className="text-lg font-bold text-indigo-700">{totalPupils}</span>
+          <span className="text-[10px] text-slate-500 block">Enrolled Students</span>
         </div>
 
         <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs">
@@ -249,16 +282,34 @@ export const ClassesView: React.FC = () => {
           <p className="text-xs text-slate-500 max-w-md mx-auto mb-6 leading-relaxed">
             {searchTerm || selectedStage !== 'ALL' || teacherFilter !== 'ALL'
               ? 'Try adjusting your search criteria or filter options to locate class streams.'
-              : 'No mock or default classes exist. Click below to create your first academic stream, assign a class teacher, and configure curriculum subjects.'}
+              : 'You can initialize standard Ghanaian curriculum classes (KG 1–2, Basic 1–6, JHS 1–3) in one click, enroll a student with a custom class, or create a custom stream.'}
           </p>
-          <Button
-            size="sm"
-            variant="primary"
-            icon={Plus}
-            onClick={() => setIsAddClassOpen(true)}
-          >
-            Create First Class Stream
-          </Button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              icon={Sparkles}
+              onClick={seedStandardGhanaianClasses}
+            >
+              Initialize Standard Ghanaian Classes
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={UserPlus}
+              onClick={() => setIsAddStudentOpen(true)}
+            >
+              Enroll Student
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              icon={Plus}
+              onClick={() => setIsAddClassOpen(true)}
+            >
+              Create First Class Stream
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -266,9 +317,17 @@ export const ClassesView: React.FC = () => {
           const isEditingTeacher = editingTeacherClassId === cls.id;
           const isUnassigned =
             !cls.classTeacherName || cls.classTeacherName === 'Unassigned';
+
+          // Dynamically compute students assigned to this class
+          const classStudents = students.filter(
+            (s) =>
+              s.classId === cls.id ||
+              (s.className && s.className.toLowerCase().trim() === cls.name.toLowerCase().trim())
+          );
+          const currentPupilCount = Math.max(cls.studentCount || 0, classStudents.length);
           const fillPercentage = Math.min(
             100,
-            Math.round((cls.studentCount / (cls.capacity || 1)) * 100)
+            Math.round((currentPupilCount / (cls.capacity || 1)) * 100)
           );
 
           return (
@@ -381,9 +440,9 @@ export const ClassesView: React.FC = () => {
                   {/* Student Capacity Occupancy Bar */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500">Class Enrollment:</span>
+                      <span className="text-slate-500 font-medium">Class Enrollment:</span>
                       <span className="font-semibold text-slate-900">
-                        {cls.studentCount} / {cls.capacity} Students ({fillPercentage}%)
+                        {currentPupilCount} / {cls.capacity} Students ({fillPercentage}%)
                       </span>
                     </div>
                     <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
@@ -437,16 +496,68 @@ export const ClassesView: React.FC = () => {
                     )}
                   </div>
                 </div>
+
+                {/* Enrolled Pupils Preview */}
+                <div className="pt-3 border-t border-slate-100">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                      Enrolled Pupils ({classStudents.length})
+                    </span>
+                    <button
+                      onClick={() => handleViewRoster(cls.name)}
+                      className="text-[10px] text-blue-600 hover:underline font-semibold"
+                    >
+                      Full Roster →
+                    </button>
+                  </div>
+                  {classStudents.length === 0 ? (
+                    <div className="flex items-center justify-between py-1 px-2 rounded bg-slate-50 text-[11px] text-slate-500">
+                      <span>No pupils enrolled yet</span>
+                      <button
+                        onClick={() => openAddStudentForClass(cls.name)}
+                        className="text-indigo-600 hover:underline font-medium"
+                      >
+                        + Enroll Pupil
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-1">
+                      {classStudents.slice(0, 4).map((st) => (
+                        <span
+                          key={st.id}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] rounded-md font-medium border border-blue-100"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                          {st.firstName} {st.lastName}
+                        </span>
+                      ))}
+                      {classStudents.length > 4 && (
+                        <span className="px-1.5 py-0.5 text-slate-500 text-[10px] font-medium bg-slate-100 rounded-md">
+                          +{classStudents.length - 4} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Card Footer Actions */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs mt-3">
-                <button
-                  onClick={() => handleViewRoster(cls.name)}
-                  className="text-blue-600 font-semibold hover:underline flex items-center gap-1"
-                >
-                  View Class Roster →
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleViewRoster(cls.name)}
+                    className="text-blue-600 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    View Roster →
+                  </button>
+                  <span className="text-slate-200">|</span>
+                  <button
+                    onClick={() => openAddStudentForClass(cls.name)}
+                    className="text-indigo-600 font-medium hover:underline flex items-center gap-1"
+                  >
+                    <UserPlus className="w-3 h-3" /> Enroll
+                  </button>
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleGoToAttendance}

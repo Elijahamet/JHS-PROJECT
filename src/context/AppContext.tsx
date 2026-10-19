@@ -23,6 +23,7 @@ import {
   ReportCardStatus,
   AcademicStage,
 } from '../types';
+import { detectAcademicStage, getSubjectsForStage } from '../utils/curriculum';
 import {
   mockCurrentSchool,
   mockSchoolsList,
@@ -134,6 +135,10 @@ interface AppContextType {
   // Modals
   isAddStudentOpen: boolean;
   setIsAddStudentOpen: (open: boolean) => void;
+  enrollTargetClass: { id: string; name: string } | null;
+  setEnrollTargetClass: (val: { id: string; name: string } | null) => void;
+  openAddStudentForClass: (cls?: { id: string; name: string } | string) => void;
+  seedStandardGhanaianClasses: () => void;
   isAddClassOpen: boolean;
   setIsAddClassOpen: (open: boolean) => void;
   isAddTeacherOpen: boolean;
@@ -363,6 +368,57 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Modals
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [enrollTargetClass, setEnrollTargetClass] = useState<{ id: string; name: string } | null>(null);
+
+  const openAddStudentForClass = (cls?: { id: string; name: string } | string) => {
+    if (typeof cls === 'string') {
+      const found = classes.find((c) => c.id === cls || c.name.toLowerCase() === cls.toLowerCase());
+      setEnrollTargetClass(found ? { id: found.id, name: found.name } : { id: '', name: cls });
+    } else if (cls) {
+      setEnrollTargetClass(cls);
+    } else {
+      setEnrollTargetClass(null);
+    }
+    setIsAddStudentOpen(true);
+  };
+
+  const seedStandardGhanaianClasses = () => {
+    const STANDARD_CLASSES = [
+      { name: 'Basic 1', code: 'B1', stage: 'Primary' as const, roomNumber: 'Block A - 101', capacity: 35 },
+      { name: 'Basic 2', code: 'B2', stage: 'Primary' as const, roomNumber: 'Block A - 102', capacity: 35 },
+      { name: 'Basic 3', code: 'B3', stage: 'Primary' as const, roomNumber: 'Block A - 103', capacity: 35 },
+      { name: 'Basic 4', code: 'B4', stage: 'Primary' as const, roomNumber: 'Block B - 201', capacity: 35 },
+      { name: 'Basic 5', code: 'B5', stage: 'Primary' as const, roomNumber: 'Block B - 202', capacity: 35 },
+      { name: 'Basic 6', code: 'B6', stage: 'Primary' as const, roomNumber: 'Block B - 203', capacity: 35 },
+      { name: 'JHS 1', code: 'JHS1', stage: 'JHS' as const, roomNumber: 'Block C - 301', capacity: 40 },
+      { name: 'JHS 2', code: 'JHS2', stage: 'JHS' as const, roomNumber: 'Block C - 302', capacity: 40 },
+      { name: 'JHS 3', code: 'JHS3', stage: 'JHS' as const, roomNumber: 'Block C - 303', capacity: 40 },
+    ];
+
+    setClasses((prev) => {
+      const existingNames = new Set(prev.map((c) => c.name.toLowerCase()));
+      const toAdd: ClassRoom[] = [];
+      STANDARD_CLASSES.forEach((sc, idx) => {
+        if (!existingNames.has(sc.name.toLowerCase())) {
+          toAdd.push({
+            id: `cls_std_${idx}_${Date.now()}`,
+            name: sc.name,
+            code: sc.code,
+            stage: sc.stage,
+            classTeacherId: '',
+            classTeacherName: 'Unassigned',
+            studentCount: students.filter((s) => s.className?.toLowerCase() === sc.name.toLowerCase()).length,
+            capacity: sc.capacity,
+            roomNumber: sc.roomNumber,
+            averageAttendance: 0,
+            subjects: getSubjectsForStage(sc.stage),
+          });
+        }
+      });
+      return [...prev, ...toAdd];
+    });
+  };
+
   const [isAddClassOpen, setIsAddClassOpen] = useState(false);
   const [isAddTeacherOpen, setIsAddTeacherOpen] = useState(false);
   const [isAddTransportOpen, setIsAddTransportOpen] = useState(false);
@@ -486,6 +542,72 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ]);
     }
 
+    // =========================================================================
+    // RESOLVE CLASS ASSIGNMENT & AUTOMATICALLY PLACE INTO CLASS STREAM
+    // =========================================================================
+    const rawClassName = (studentData.className || '').trim();
+    let targetClassId = studentData.classId || '';
+    let targetClassName = rawClassName;
+
+    // Check if class exists in current classes by ID or case-insensitive name
+    let matchedClass = classes.find(
+      (c) => (targetClassId && c.id === targetClassId) ||
+             (rawClassName && c.name.toLowerCase() === rawClassName.toLowerCase())
+    );
+
+    let resolvedStage = studentData.stage || 'Primary';
+    let finalClassId = targetClassId;
+    let finalClassName = targetClassName;
+
+    if (matchedClass) {
+      finalClassId = matchedClass.id;
+      finalClassName = matchedClass.name;
+      resolvedStage = matchedClass.stage;
+
+      // Increment studentCount of the matched class
+      setClasses((prevClasses) =>
+        prevClasses.map((cls) =>
+          cls.id === matchedClass!.id
+            ? { ...cls, studentCount: cls.studentCount + 1 }
+            : cls
+        )
+      );
+    } else {
+      // Class does not exist yet! Automatically create it so it shows on Classes & Subjects page
+      finalClassName = rawClassName || (classes.length > 0 ? classes[0].name : 'Basic 1');
+      resolvedStage = detectAcademicStage(finalClassName);
+      finalClassId = `cls_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+      const newClassRoom: ClassRoom = {
+        id: finalClassId,
+        name: finalClassName,
+        code: finalClassName.replace(/\s+/g, '').toUpperCase(),
+        stage: resolvedStage,
+        classTeacherId: '',
+        classTeacherName: 'Unassigned',
+        studentCount: 1,
+        capacity: resolvedStage === 'Kindergarten' ? 25 : resolvedStage === 'Primary' ? 35 : 40,
+        roomNumber: `Block ${resolvedStage === 'JHS' ? 'C' : resolvedStage === 'Primary' ? 'B' : 'A'} - ${classes.length + 101}`,
+        averageAttendance: 100,
+        subjects: getSubjectsForStage(resolvedStage),
+      };
+
+      setClasses((prevClasses) => [...prevClasses, newClassRoom]);
+
+      setNotifications((prev) => [
+        {
+          id: `notif_${Date.now()}_cls_auto`,
+          title: `Class Stream Created: ${finalClassName}`,
+          message: `${finalClassName} was automatically created on Classes & Subjects with standard GES curriculum and enrolled ${studentFullName}.`,
+          type: 'system',
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          linkTo: 'classes',
+        },
+        ...prev,
+      ]);
+    }
+
     const newStudent: Student = {
       id: newId,
       studentId: studentCode,
@@ -493,16 +615,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       lastName: studentData.lastName || 'Student',
       gender: studentData.gender || 'Male',
       dateOfBirth: studentData.dateOfBirth || '2012-01-01',
-      classId: studentData.classId || classes[0]?.id || '',
-      className: studentData.className || classes[0]?.name || '',
-      stage: studentData.stage || (
-        classes.find((c) => c.id === studentData.classId || c.name === studentData.className)?.stage ||
-        (studentData.className?.toUpperCase().startsWith('KG') || studentData.className?.toUpperCase().startsWith('NUR') || studentData.className?.toUpperCase().startsWith('CR')
-          ? 'Kindergarten'
-          : studentData.className?.startsWith('JHS')
-          ? 'JHS'
-          : 'Primary')
-      ),
+      classId: finalClassId,
+      className: finalClassName,
+      stage: resolvedStage,
       admissionDate: new Date().toISOString().split('T')[0],
       admissionYear: '2025',
       status: 'Active',
@@ -524,18 +639,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       lastGradeAverage: 0,
     };
 
-    setStudents([newStudent, ...students]);
-
-    // Update class studentCount
-    if (newStudent.classId || newStudent.className) {
-      setClasses((prevClasses) =>
-        prevClasses.map((cls) =>
-          cls.id === newStudent.classId || cls.name === newStudent.className
-            ? { ...cls, studentCount: cls.studentCount + 1 }
-            : cls
-        )
-      );
-    }
+    setStudents((prev) => [newStudent, ...prev]);
+    setEnrollTargetClass(null);
   };
 
   const addTeacher = (teacherData: Partial<Teacher>) => {
@@ -1330,6 +1435,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateReportCardData,
         isAddStudentOpen,
         setIsAddStudentOpen,
+        enrollTargetClass,
+        setEnrollTargetClass,
+        openAddStudentForClass,
+        seedStandardGhanaianClasses,
         isAddClassOpen,
         setIsAddClassOpen,
         isAddTeacherOpen,
