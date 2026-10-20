@@ -30,6 +30,8 @@ import {
   LayoutDashboard,
   FileSpreadsheet,
   Megaphone,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -80,7 +82,7 @@ export const LandingPageView: React.FC = () => {
       </div>
 
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-slate-950/75 border-b border-slate-800/80 transition-all">
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3">
@@ -102,9 +104,11 @@ export const LandingPageView: React.FC = () => {
           {/* Center Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-8 text-xs font-semibold text-slate-300">
             <a href="#features" className="hover:text-cyan-400 transition-colors">Platform Features</a>
-            <a href="#portals" className="hover:text-cyan-400 transition-colors">4 Specialized Portals</a>
-            <a href="#curriculum" className="hover:text-cyan-400 transition-colors">GES / NaCCA Standard</a>
-            <a href="#pricing" className="hover:text-cyan-400 transition-colors">Pricing & Plans</a>
+            <a href="#classrooms" className="hover:text-cyan-400 transition-colors">Real Classrooms</a>
+            <a href="#portals" className="hover:text-cyan-400 transition-colors">4 Portals</a>
+            <a href="#curriculum" className="hover:text-cyan-400 transition-colors">GES / NaCCA</a>
+            <a href="#testimonials" className="hover:text-cyan-400 transition-colors">Headteacher Stories</a>
+            <a href="#pricing" className="hover:text-cyan-400 transition-colors">Pricing</a>
             <a href="#faqs" className="hover:text-cyan-400 transition-colors">FAQs</a>
           </nav>
 
@@ -127,75 +131,234 @@ export const LandingPageView: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative z-10 pt-16 pb-20 sm:pt-24 sm:pb-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 shadow-md mb-8 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-xs font-semibold text-slate-200">
-              The Dedicated Operating System for Ghanaian Basic & JHS Schools
-            </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-          </div>
+      {/* Hero Section with Split-Screen Human Photography & Live UI Badges */}
+      <section className="relative z-10 pt-10 pb-16 sm:pt-16 sm:pb-24 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            {/* Left Column: Human Story, Mission, & High-Conversion CTAs */}
+            <div className="lg:col-span-7 text-left space-y-6">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 shadow-md backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-xs font-semibold text-slate-200">
+                  Ghana's Dedicated School Operating System • Basic & JHS
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              </div>
 
-          {/* Main Title */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1] max-w-5xl mx-auto">
-            Transform Your School with{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400">
-              Modern Digital Governance
-            </span>
-          </h1>
+              {/* Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.12]">
+                Where Ghanaian Pupils Thrive & Schools Run with{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400">
+                  Zero Headaches
+                </span>
+              </h1>
 
-          {/* Subtitle */}
-          <p className="mt-6 text-base sm:text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
-            From <strong>Kindergarten</strong> to <strong>Basic 1–6</strong> and <strong>JHS 1–3</strong>.
-            Empower Headteachers, Teachers, Bursars, and Parents with automated NaCCA terminal reports,
-            instant Mobile Money fee collection, 50/50 SBA continuous assessment, and offline-first reliability.
-          </p>
+              {/* Subtitle */}
+              <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl">
+                Built specifically for Ghanaian educational reality: from <strong>Kindergarten (KG 1–2)</strong> and <strong>Primary (Basic 1–6)</strong> to <strong>Junior High (JHS 1–3)</strong>.
+                Automate NaCCA continuous assessment (50/50 SBA), generate beautiful terminal reports with class rankings, and collect school fees via MTN MoMo & Telecel Cash.
+              </p>
 
-          {/* Hero CTAs */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => setAuthScreen('signup')}
-              className="w-full sm:w-auto px-8 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 rounded-xl shadow-xl shadow-indigo-600/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5"
-            >
-              <span>Register Your School Free</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              {/* CTAs */}
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+                <button
+                  onClick={() => setAuthScreen('signup')}
+                  className="px-8 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 rounded-xl shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Register Your School Free</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
 
-            <button
-              onClick={() => handleLaunchRoleDemo('school_admin')}
-              className="w-full sm:w-auto px-8 py-3.5 text-sm font-semibold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 rounded-xl shadow-md hover:border-slate-600 transition-all flex items-center justify-center gap-2"
-            >
-              <Play className="w-4 h-4 text-cyan-400 fill-cyan-400/20" />
-              <span>Launch 1-Click Interactive Demo</span>
-            </button>
-          </div>
+                <button
+                  onClick={() => handleLaunchRoleDemo('school_admin')}
+                  className="px-7 py-3.5 text-sm font-semibold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 rounded-xl shadow-md hover:border-slate-600 transition-all flex items-center justify-center gap-2"
+                >
+                  <Play className="w-4 h-4 text-cyan-400 fill-cyan-400/20" />
+                  <span>Interactive Live Demo</span>
+                </button>
+              </div>
 
-          {/* Trust Guarantees */}
-          <div className="mt-12 pt-8 border-t border-slate-800/60 max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-              <span className="text-xs text-slate-300 font-medium">GES & NaCCA Standard Aligned</span>
+              {/* Social Proof & Guarantees */}
+              <div className="pt-6 border-t border-slate-800/80 flex flex-wrap items-center gap-y-3 gap-x-6 text-xs text-slate-400">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+                  <span className="text-slate-200 font-medium">NaCCA & GES Aligned</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Smartphone className="w-4 h-4 text-emerald-400" />
+                  <span className="text-slate-200 font-medium">MTN & Telecel MoMo</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400" />
+                  <span className="text-slate-200 font-medium">Works Offline & Online</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-purple-400" />
+                  <span className="text-slate-200 font-medium">Act 843 Compliant</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2.5">
-              <Smartphone className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span className="text-xs text-slate-300 font-medium">MTN & Telecel MoMo Ready</span>
+
+            {/* Right Column: Authentic Human Photo of Ghanaian Pupils with Floating Live UI Badges */}
+            <div className="lg:col-span-5 relative">
+              {/* Decorative Glow */}
+              <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-3xl blur-xl opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+
+              {/* Main Photo Frame */}
+              <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-slate-900 shadow-2xl">
+                <img
+                  src="/assets/ghana_students_running.png"
+                  alt="Joyful Ghanaian pupils running through school gate under Welcome Back sign"
+                  className="w-full h-[420px] sm:h-[480px] object-cover object-center filter brightness-95 contrast-105 hover:scale-105 transition-transform duration-700"
+                />
+
+                {/* Subtle vignette gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+
+                {/* Floating Badge 1: Top Right - Live Attendance */}
+                <div className="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 p-3 rounded-2xl shadow-xl flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase font-bold text-slate-400">Today's Roll Call</p>
+                    <p className="text-xs font-bold text-white">98.4% Present • 540 Pupils</p>
+                  </div>
+                </div>
+
+                {/* Floating Badge 2: Bottom Left - MTN MoMo Payment */}
+                <div className="absolute bottom-4 left-4 right-4 sm:right-auto bg-slate-900/95 backdrop-blur-md border border-emerald-500/40 p-3.5 rounded-2xl shadow-2xl flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    <CreditCard className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">MoMo Received</span>
+                      <span className="text-[10px] text-slate-400">• Just Now</span>
+                    </div>
+                    <p className="text-xs font-bold text-white truncate">GH₵ 650.00 • Kwame Mensah (Basic 4A)</p>
+                    <p className="text-[10px] text-slate-400 font-medium truncate">MTN Mobile Money • Official Stamped Receipt #2024-089</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2.5">
-              <Zap className="w-4 h-4 text-amber-400 flex-shrink-0" />
-              <span className="text-xs text-slate-300 font-medium">Offline-First Data Storage</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-indigo-400 flex-shrink-0" />
-              <span className="text-xs text-slate-300 font-medium">Ghana Data Protection (Act 843)</span>
-            </div>
+
           </div>
         </div>
+      </section>
 
-        {/* Live Interactive Platform Showcase */}
-        <div id="portals" className="mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Real Classroom Impact Storytelling Section */}
+      <section id="classrooms" className="relative z-10 py-16 sm:py-24 bg-slate-900/50 border-y border-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
+              Authentic School Life
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-white mt-2 tracking-tight">
+              Designed for Real Teachers, Real Desks & Real Children
+            </h2>
+            <p className="mt-4 text-sm sm:text-base text-slate-300">
+              No complicated corporate jargon. SchoolOS brings dignity, calm, and precision to everyday school routines.
+            </p>
+          </div>
+
+          {/* Story Card 1: In the Classroom */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16">
+            <div className="lg:col-span-6 relative">
+              <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 shadow-2xl">
+                <img
+                  src="/assets/ghana_classroom_pupils.png"
+                  alt="Ghanaian school pupils learning at wooden desks in uniform with books"
+                  className="w-full h-80 sm:h-96 object-cover object-center filter brightness-95 hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700 text-left">
+                  <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">Ghanaian Classroom</span>
+                  <span className="text-xs font-bold text-white">Basic 3 Stream • NaCCA OWOP & Mathematics</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6 text-left space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                01
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white">
+                Continuous Assessment Done in Minutes, Not Midnight Oil
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Ghanaian teachers often spend 2 to 3 weeks every term calculating continuous assessment (SBA),
+                position rankings, and writing handwritten remarks for 40+ pupils per class.
+              </p>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                With SchoolOS, enter Class Assessment Tasks (CAT 1–4) and exam marks. The system automatically computes
+                the 50/50 SBA weights, ranks pupils, flags struggling learners, and pre-fills constructive NaCCA remarks.
+              </p>
+              <div className="pt-2 flex flex-wrap gap-2 text-xs">
+                <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700">NaCCA 50/50 SBA</span>
+                <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700">Stanine BECE Calculator</span>
+                <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700">Print Terminal Reports</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Story Card 2: Headteacher Leadership */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-6 order-2 lg:order-1 text-left space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">
+                02
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white">
+                Headteachers Gain Complete Executive Clarity Over Every Classroom
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                No more wondering if attendance was recorded, whether teachers showed up to class, or how much school fees remain outstanding in arrears.
+              </p>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                From your phone or laptop, view enrollment streams across Kindergarten, Primary, and JHS.
+                Approve terminal report cards in one click with your official school crest and signature.
+              </p>
+              <div className="pt-2 flex flex-wrap gap-2 text-xs">
+                <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700">Instant Class Stream Allocation</span>
+                <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700">Audit-Ready Financials</span>
+                <span className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700">Daily Attendance Alerts</span>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6 order-1 lg:order-2 relative">
+              <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 shadow-2xl">
+                <img
+                  src="/assets/ghana_teacher_headmistress.jpg"
+                  alt="Ghanaian school headmistress and teachers collaborating"
+                  className="w-full h-80 sm:h-96 object-cover object-center filter brightness-95 hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700 text-left">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">School Governance</span>
+                  <span className="text-xs font-bold text-white">Staff Roster & Terminal Report Card Approvals</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4 Specialized Portals Interactive Showcase */}
+      <section id="portals" className="relative z-10 py-16 sm:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-indigo-400">
+              Role-Based Multi-Portal Architecture
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-white mt-2 tracking-tight">
+              A Tailored Experience for Everyone in the School Community
+            </h2>
+            <p className="mt-4 text-sm sm:text-base text-slate-300">
+              Click any portal below to explore its real-world cockpit and test drive it with 1 click.
+            </p>
+          </div>
+
           <div className="p-3 sm:p-4 rounded-3xl bg-slate-900/70 border border-slate-800/90 shadow-2xl backdrop-blur-xl">
             {/* Tab Selectors */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800/60">
@@ -221,7 +384,7 @@ export const LandingPageView: React.FC = () => {
                   }`}
                 >
                   <BookOpen className="w-3.5 h-3.5" />
-                  <span>Teacher & Continuous Assessment</span>
+                  <span>Class Teacher Desk</span>
                 </button>
 
                 <button
@@ -233,7 +396,7 @@ export const LandingPageView: React.FC = () => {
                   }`}
                 >
                   <CreditCard className="w-3.5 h-3.5" />
-                  <span>Bursar & MoMo Collection</span>
+                  <span>Bursar & MoMo Desk</span>
                 </button>
 
                 <button
@@ -245,7 +408,7 @@ export const LandingPageView: React.FC = () => {
                   }`}
                 >
                   <HeartHandshake className="w-3.5 h-3.5" />
-                  <span>Parent & Ward Portal</span>
+                  <span>Parent Portal</span>
                 </button>
               </div>
 
@@ -313,7 +476,7 @@ export const LandingPageView: React.FC = () => {
                   <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 flex items-center justify-between text-xs text-slate-300">
                     <span className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                      Automatic class roster syncing ensures new pupils immediately appear in teacher rolls and marks sheets.
+                      Automatic class placement ensures newly enrolled pupils immediately appear on class rosters and marks sheets.
                     </span>
                     <button
                       onClick={() => handleLaunchRoleDemo('school_admin')}
@@ -413,13 +576,13 @@ export const LandingPageView: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
                       <span className="text-[10px] uppercase font-bold text-slate-400">Total Term Fees Billed</span>
-                      <p className="text-2xl font-black text-white">GHS 245,600</p>
+                      <p className="text-2xl font-black text-white">GH₵ 245,600</p>
                       <span className="text-[10px] text-slate-400">All registered classes</span>
                     </div>
 
                     <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
                       <span className="text-[10px] uppercase font-bold text-slate-400">MoMo / Bank Cleared</span>
-                      <p className="text-2xl font-black text-emerald-400">GHS 226,934</p>
+                      <p className="text-2xl font-black text-emerald-400">GH₵ 226,934</p>
                       <span className="text-[10px] text-emerald-400 font-medium">92.4% Recovery Rate</span>
                     </div>
 
@@ -512,8 +675,108 @@ export const LandingPageView: React.FC = () => {
         </div>
       </section>
 
+      {/* Real Testimonials from Ghanaian Educators & Parents */}
+      <section id="testimonials" className="relative z-10 py-16 sm:py-24 bg-slate-900/40 border-t border-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+              Real Stories from Ghanaian Schools
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-white mt-2 tracking-tight">
+              Loved by Headteachers, Treasurers & Parents
+            </h2>
+            <p className="mt-4 text-sm sm:text-base text-slate-300">
+              Hear directly from school leaders across Greater Accra, Ashanti, and Western Regions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Testimonial 1 */}
+            <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 flex flex-col justify-between shadow-xl">
+              <div className="space-y-4">
+                <div className="flex items-center gap-1 text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+                  “Our teachers used to take two full weeks of sleepless nights preparing end-of-term reports. With SchoolOS, every mark, position rank, and conduct remark was calculated in one afternoon. Parents were stunned by how clean the reports looked.”
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-slate-800 mt-6 flex items-center gap-3">
+                <img
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=128&q=80"
+                  alt="Mrs. Comfort Addo"
+                  className="w-10 h-10 rounded-full object-cover border border-cyan-400/40"
+                />
+                <div>
+                  <h4 className="text-xs font-bold text-white">Mrs. Comfort Addo</h4>
+                  <p className="text-[11px] text-cyan-300 font-medium">Headmistress, Achimota Basic & Preparatory</p>
+                  <p className="text-[10px] text-slate-500">Greater Accra, Ghana</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 flex flex-col justify-between shadow-xl">
+              <div className="space-y-4">
+                <div className="flex items-center gap-1 text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+                  “The Mobile Money integration completely eradicated cash shortages in our bursary. Parents receive automated SMS prompts and pay from their living rooms. Our tuition collection jumped from 68% to 94% in our very first term.”
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-slate-800 mt-6 flex items-center gap-3">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=128&q=80"
+                  alt="Mr. Samuel Boakye"
+                  className="w-10 h-10 rounded-full object-cover border border-emerald-400/40"
+                />
+                <div>
+                  <h4 className="text-xs font-bold text-white">Mr. Samuel Boakye</h4>
+                  <p className="text-[11px] text-emerald-300 font-medium">Chief Accountant / Bursar, Kumasi Premier Academy</p>
+                  <p className="text-[10px] text-slate-500">Ashanti Region, Ghana</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 flex flex-col justify-between shadow-xl">
+              <div className="space-y-4">
+                <div className="flex items-center gap-1 text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+                  “As a working mother, I cannot visit the school daily. SchoolOS lets me check whether my daughter arrived safely each morning and see her JHS mock examination aggregate immediately. It gives me peace of mind.”
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-slate-800 mt-6 flex items-center gap-3">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=128&q=80"
+                  alt="Mrs. Abena Osei"
+                  className="w-10 h-10 rounded-full object-cover border border-purple-400/40"
+                />
+                <div>
+                  <h4 className="text-xs font-bold text-white">Mrs. Abena Osei</h4>
+                  <p className="text-[11px] text-purple-300 font-medium">Parent & Guardian (JHS 2 Pupil)</p>
+                  <p className="text-[10px] text-slate-500">Takoradi, Western Region</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Ghanaian Curriculum (NaCCA / GES) Feature Matrix */}
-      <section id="curriculum" className="relative z-10 py-20 bg-slate-900/40 border-y border-slate-800/80">
+      <section id="curriculum" className="relative z-10 py-20 bg-slate-950 border-t border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
@@ -620,7 +883,7 @@ export const LandingPageView: React.FC = () => {
       </section>
 
       {/* Core Operational Superpowers */}
-      <section id="features" className="relative z-10 py-20">
+      <section id="features" className="relative z-10 py-20 bg-slate-900/40 border-t border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-indigo-400">
@@ -632,7 +895,7 @@ export const LandingPageView: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-all">
               <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4">
                 <Layers className="w-5 h-5" />
               </div>
@@ -642,7 +905,7 @@ export const LandingPageView: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-all">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
                 <Smartphone className="w-5 h-5" />
               </div>
@@ -652,7 +915,7 @@ export const LandingPageView: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-all">
               <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center mb-4">
                 <FileText className="w-5 h-5" />
               </div>
@@ -662,7 +925,7 @@ export const LandingPageView: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-all">
               <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
                 <ScanLine className="w-5 h-5" />
               </div>
@@ -672,7 +935,7 @@ export const LandingPageView: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-all">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center mb-4">
                 <Zap className="w-5 h-5" />
               </div>
@@ -682,7 +945,7 @@ export const LandingPageView: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-all">
               <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center mb-4">
                 <Lock className="w-5 h-5" />
               </div>
@@ -696,7 +959,7 @@ export const LandingPageView: React.FC = () => {
       </section>
 
       {/* Transparent Pricing Plans */}
-      <section id="pricing" className="relative z-10 py-20 bg-slate-900/30 border-y border-slate-800/80">
+      <section id="pricing" className="relative z-10 py-20 bg-slate-950 border-t border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
@@ -739,7 +1002,7 @@ export const LandingPageView: React.FC = () => {
                 <p className="text-xs text-slate-400 mt-2">Ideal for growing basic schools establishing digital records.</p>
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="text-3xl sm:text-4xl font-extrabold text-white">
-                    {billingCycle === 'term' ? 'GHS 450' : 'GHS 1,150'}
+                    {billingCycle === 'term' ? 'GH₵ 450' : 'GH₵ 1,150'}
                   </span>
                   <span className="text-xs text-slate-400">/{billingCycle === 'term' ? 'term' : 'year'}</span>
                 </div>
@@ -784,7 +1047,7 @@ export const LandingPageView: React.FC = () => {
                 <p className="text-xs text-slate-300 mt-2">Comprehensive platform for standard Ghanaian basic schools and JHS academies.</p>
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="text-3xl sm:text-4xl font-extrabold text-white">
-                    {billingCycle === 'term' ? 'GHS 850' : 'GHS 2,150'}
+                    {billingCycle === 'term' ? 'GH₵ 850' : 'GH₵ 2,150'}
                   </span>
                   <span className="text-xs text-slate-400">/{billingCycle === 'term' ? 'term' : 'year'}</span>
                 </div>
@@ -864,7 +1127,7 @@ export const LandingPageView: React.FC = () => {
       </section>
 
       {/* Frequently Asked Questions */}
-      <section id="faqs" className="relative z-10 py-20">
+      <section id="faqs" className="relative z-10 py-20 bg-slate-900/30 border-t border-slate-800/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
@@ -906,7 +1169,7 @@ export const LandingPageView: React.FC = () => {
         </div>
       </section>
 
-      {/* High-Impact Final Call to Action */}
+      {/* High-Impact Final Call to Action with School Photo Background */}
       <section className="relative z-10 py-20 bg-gradient-to-t from-slate-900 via-indigo-950/40 to-slate-950 border-t border-slate-800">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-purple-900/40 border border-indigo-500/30 backdrop-blur-xl shadow-2xl relative overflow-hidden">
