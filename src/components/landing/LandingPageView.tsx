@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   GraduationCap,
   Building2,
@@ -29,6 +29,10 @@ import {
   FileSpreadsheet,
   Megaphone,
   CheckCircle,
+  Sparkles,
+  ArrowDown,
+  ChevronRight,
+  ArrowUp,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -38,6 +42,84 @@ export const LandingPageView: React.FC = () => {
   const [activePortalTab, setActivePortalTab] = useState<'admin' | 'teacher' | 'bursar' | 'parent'>('admin');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [billingCycle, setBillingCycle] = useState<'term' | 'annual'>('term');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Defined 7 distinct page slides
+  const pages = [
+    { id: 'page-1', title: 'Overview & Hero', number: '01' },
+    { id: 'page-2', title: 'Classroom Life', number: '02' },
+    { id: 'page-3', title: '4 Specialized Portals', number: '03' },
+    { id: 'page-4', title: 'NaCCA & GES Standards', number: '04' },
+    { id: 'page-5', title: 'Educator Reviews', number: '05' },
+    { id: 'page-6', title: 'Plans & Pricing', number: '06' },
+    { id: 'page-7', title: 'FAQs & Support', number: '07' },
+  ];
+
+  // Smooth scroll to target page
+  const scrollToPage = (pageIndex: number) => {
+    const pageId = `page-${pageIndex}`;
+    const element = document.getElementById(pageId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setCurrentPage(pageIndex);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < pages.length) {
+      scrollToPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      scrollToPage(currentPage - 1);
+    }
+  };
+
+  // Observe scroll position to update current page indicator
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollPos = container.scrollTop + container.clientHeight / 3;
+      pages.forEach((page, idx) => {
+        const el = document.getElementById(page.id);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            setCurrentPage(idx + 1);
+          }
+        }
+      });
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Keyboard navigation support: ArrowDown/ArrowUp, PageDown/PageUp
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault();
+        handleNextPage();
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        handlePrevPage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPage]);
 
   // Launch live interactive demo into specific persona
   const handleLaunchRoleDemo = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
@@ -69,72 +151,179 @@ export const LandingPageView: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
-      {/* Top Banner */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 text-center font-medium border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-          <span>Built for Ghanaian Basic Schools & Junior High Schools • Aligned with GES & NaCCA Standards</span>
+    <div
+      ref={containerRef}
+      className="page-snap-container bg-white text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white relative"
+    >
+      {/* =========================================================================
+          FLOATING RIGHT-SIDE PAGE DOCK (Page After Page Indicator & Controls)
+          ========================================================================= */}
+      <aside
+        aria-label="Page navigation"
+        className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center gap-2.5 p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl transition-all duration-300"
+      >
+        {/* Page Counter Badge */}
+        <div className="text-[10px] font-black tracking-widest text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200 uppercase">
+          0{currentPage} / 0{pages.length}
         </div>
+
+        {/* Previous Page Button */}
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          title="Previous Page (Up Arrow)"
+          className={`p-1.5 rounded-lg transition-colors ${
+            currentPage === 1
+              ? 'text-slate-300 cursor-not-allowed'
+              : 'text-slate-600 hover:text-blue-600 hover:bg-slate-100'
+          }`}
+        >
+          <ChevronUp className="w-4 h-4" />
+        </button>
+
+        {/* Dot Indicators for Each Page */}
+        <div className="flex flex-col gap-2 my-1">
+          {pages.map((p, idx) => {
+            const pageNum = idx + 1;
+            const isActive = currentPage === pageNum;
+            return (
+              <button
+                key={p.id}
+                onClick={() => scrollToPage(pageNum)}
+                title={`Jump to Page ${p.number}: ${p.title}`}
+                className="group relative flex items-center justify-center p-1"
+              >
+                {/* Dot */}
+                <span
+                  className={`block rounded-full transition-all duration-300 ${
+                    isActive
+                      ? 'w-3 h-7 bg-blue-600 shadow-md shadow-blue-500/40'
+                      : 'w-2.5 h-2.5 bg-slate-300 group-hover:bg-slate-400 group-hover:scale-125'
+                  }`}
+                />
+
+                {/* Tooltip Label on Hover */}
+                <span className="absolute right-8 px-2.5 py-1 bg-slate-900 text-white text-[11px] font-semibold rounded-md shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  {p.number}. {p.title}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Next Page Button */}
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === pages.length}
+          title="Next Page (Down Arrow)"
+          className={`p-1.5 rounded-lg transition-colors ${
+            currentPage === pages.length
+              ? 'text-slate-300 cursor-not-allowed'
+              : 'text-slate-600 hover:text-blue-600 hover:bg-slate-100'
+          }`}
+        >
+          <ChevronDown className="w-4 h-4" />
+        </button>
+      </aside>
+
+      {/* Floating Bottom Page Bar for Mobile / Tablet */}
+      <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-2xl border border-slate-700 flex items-center gap-3 text-xs font-semibold">
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className={`p-1 rounded ${currentPage === 1 ? 'opacity-30' : 'hover:text-blue-400'}`}
+        >
+          <ChevronUp className="w-4 h-4" />
+        </button>
+        <span className="text-[11px] font-bold tracking-wider">
+          PAGE 0{currentPage} / 0{pages.length}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === pages.length}
+          className={`p-1 rounded ${currentPage === pages.length ? 'opacity-30' : 'hover:text-blue-400'}`}
+        >
+          <ChevronDown className="w-4 h-4" />
+        </button>
       </div>
 
-      {/* Main Navigation Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Brand Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-600/20">
-              <span>S</span>
-              <span className="text-cyan-300">OS</span>
+      {/* =========================================================================
+          PAGE 1: OVERVIEW & HERO
+          ========================================================================= */}
+      <section
+        id="page-1"
+        className="page-snap-section min-h-screen flex flex-col justify-between bg-gradient-to-b from-slate-50 via-white to-white relative overflow-hidden"
+      >
+        {/* Subtle Ambient Glow Behind Content */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-100/40 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        {/* Top Header Group */}
+        <div>
+          {/* Top Banner */}
+          <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 text-center font-medium border-b border-slate-800">
+            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Built for Ghanaian Basic Schools & Junior High Schools • Aligned with GES & NaCCA Standards</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-xl text-slate-900 tracking-tight">SchoolOS</span>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-blue-50 text-blue-700 border border-blue-200">
-                  Ghana Basic & JHS
-                </span>
+          </div>
+
+          {/* Main Navigation Header */}
+          <header className="bg-white/95 backdrop-blur-md border-b border-slate-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+              {/* Brand Logo */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-600/20">
+                  <span>S</span>
+                  <span className="text-cyan-300">OS</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-xl text-slate-900 tracking-tight">SchoolOS</span>
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                      Ghana Basic & JHS
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-medium">Institutional Operating System</p>
+                </div>
               </div>
-              <p className="text-[11px] text-slate-500 font-medium">Institutional Operating System</p>
+
+              {/* Navigation Links (Smooth Jump to Pages) */}
+              <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600">
+                <button onClick={() => scrollToPage(1)} className="hover:text-blue-600 transition-colors">Overview</button>
+                <button onClick={() => scrollToPage(2)} className="hover:text-blue-600 transition-colors">Classroom Life</button>
+                <button onClick={() => scrollToPage(3)} className="hover:text-blue-600 transition-colors">4 Portals</button>
+                <button onClick={() => scrollToPage(4)} className="hover:text-blue-600 transition-colors">NaCCA & GES</button>
+                <button onClick={() => scrollToPage(5)} className="hover:text-blue-600 transition-colors">Testimonials</button>
+                <button onClick={() => scrollToPage(6)} className="hover:text-blue-600 transition-colors">Pricing</button>
+                <button onClick={() => scrollToPage(7)} className="hover:text-blue-600 transition-colors">FAQs</button>
+              </nav>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setAuthScreen('login')}
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg transition-colors shadow-2xs"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setAuthScreen('signup')}
+                  className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5"
+                >
+                  <span>Register School</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-          </div>
-
-          {/* Navigation Links (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-8 text-xs font-semibold text-slate-600">
-            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-            <a href="#classrooms" className="hover:text-blue-600 transition-colors">Classroom Life</a>
-            <a href="#portals" className="hover:text-blue-600 transition-colors">4 Specialized Portals</a>
-            <a href="#curriculum" className="hover:text-blue-600 transition-colors">NaCCA & GES</a>
-            <a href="#testimonials" className="hover:text-blue-600 transition-colors">Testimonials</a>
-            <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-            <a href="#faqs" className="hover:text-blue-600 transition-colors">FAQs</a>
-          </nav>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setAuthScreen('login')}
-              className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg transition-colors shadow-2xs"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setAuthScreen('signup')}
-              className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5"
-            >
-              <span>Register School</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          </header>
         </div>
-      </header>
 
-      {/* Hero Section: Clean Editorial Split Screen (ZERO text on pictures) */}
-      <section className="pt-12 pb-16 sm:pt-16 sm:pb-20 bg-gradient-to-b from-slate-50 via-white to-white border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        {/* Hero Body */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 my-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             
-            {/* Left Column: Clear Human Value Proposition */}
-            <div className="lg:col-span-7 text-left space-y-6">
+            {/* Left Column: Human Value Proposition */}
+            <div className="lg:col-span-7 text-left space-y-6 animate-fade-in-up">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-blue-600" />
@@ -172,7 +361,7 @@ export const LandingPageView: React.FC = () => {
               </div>
 
               {/* Feature Highlights */}
-              <div className="pt-6 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-600">
+              <div className="pt-4 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-600">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span className="font-medium">NaCCA 50/50 SBA</span>
@@ -192,58 +381,86 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Clean, Framed Authentic Photo (NO text overlaid on top) */}
-            <div className="lg:col-span-5">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100">
+            {/* Right Column: Clean, Framed Authentic Photo (ZERO text on top) */}
+            <div className="lg:col-span-5 animate-fade-in-scale">
+              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100 transition-all duration-300 hover:shadow-2xl">
                 <img
                   src="/assets/ghana_students_hero.jpg"
                   alt="Ghanaian basic school pupils in uniform walking together on school campus"
-                  className="w-full h-[400px] sm:h-[480px] object-cover object-center"
+                  className="w-full h-[380px] sm:h-[440px] object-cover object-center"
                 />
               </div>
             </div>
 
           </div>
         </div>
-      </section>
 
-      {/* Clean Metric Strip */}
-      <section className="bg-slate-50 py-10 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="space-y-1">
-              <p className="text-3xl font-black text-slate-900 tracking-tight">180+</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Ghanaian Schools</p>
+        {/* Page 1 Bottom: Metric Strip & Next Page Arrow */}
+        <div className="bg-slate-50 border-t border-slate-200 py-6 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 text-center flex-1">
+              <div>
+                <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">180+</p>
+                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Ghanaian Schools</p>
+              </div>
+              <div>
+                <p className="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight">45,000+</p>
+                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Enrolled Pupils</p>
+              </div>
+              <div>
+                <p className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight">99.4%</p>
+                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Fee Collection</p>
+              </div>
+              <div>
+                <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">1 Click</p>
+                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Terminal Reports</p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-black text-blue-600 tracking-tight">45,000+</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Enrolled Pupils</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-black text-emerald-600 tracking-tight">99.4%</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Fee Collection Rate</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-black text-slate-900 tracking-tight">1 Click</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Terminal Report Generation</p>
-            </div>
+
+            {/* Next Page Prompt */}
+            <button
+              onClick={() => scrollToPage(2)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+            >
+              <span>Next: Classroom Life</span>
+              <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Classroom Life: Clean Editorial Split (Picture Cleanly Beside Content) */}
-      <section id="classrooms" className="py-20 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+      {/* =========================================================================
+          PAGE 2: CLASSROOM & ACADEMIC LIFE
+          ========================================================================= */}
+      <section
+        id="page-2"
+        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-white border-b border-slate-200 relative overflow-hidden"
+      >
+        {/* Subtle Ambient Glow */}
+        <div className="absolute top-1/3 right-10 w-96 h-96 bg-indigo-50/60 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full space-y-12 sm:space-y-16">
           
+          {/* Page Title Header */}
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Page 02 • Academic & Governance Excellence</span>
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
+              Designed for the daily realities of Ghanaian classrooms
+            </h2>
+          </div>
+
           {/* Block 1: Real Pupils in Classroom */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Clean Framed Photo - NO text on top */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Clean Framed Photo - ZERO text on top */}
             <div className="lg:col-span-6">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100">
+              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100 transition-all duration-300 hover:shadow-xl">
                 <img
                   src="/assets/ghana_classroom_crisp.jpg"
                   alt="Ghanaian school pupils sitting at wooden desks studying mathematics in classroom"
-                  className="w-full h-80 sm:h-96 object-cover object-center"
+                  className="w-full h-72 sm:h-84 object-cover object-center"
                 />
               </div>
             </div>
@@ -254,9 +471,9 @@ export const LandingPageView: React.FC = () => {
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Academic Assessment</span>
               </div>
-              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Continuous assessment and marks computed in minutes.
-              </h2>
+              </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Ghanaian teachers often spend two to three weeks every term manually calculating continuous assessment (SBA),
                 position rankings, and writing handwritten remarks for 40+ pupils per class.
@@ -267,19 +484,19 @@ export const LandingPageView: React.FC = () => {
               </p>
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700 font-medium">
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600" />
+                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span>NaCCA 50/50 SBA Scheme</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600" />
+                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span>Stanine BECE Calculator</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600" />
+                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span>Automatic Position Rankings</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600" />
+                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span>Print-Ready Terminal Reports</span>
                 </div>
               </div>
@@ -287,16 +504,16 @@ export const LandingPageView: React.FC = () => {
           </div>
 
           {/* Block 2: School Leadership & Governance */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Description Column */}
             <div className="lg:col-span-6 order-2 lg:order-1 space-y-4 text-left">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider">
                 <Building2 className="w-3.5 h-3.5" />
                 <span>Institutional Governance</span>
               </div>
-              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Headteachers gain complete clarity over every class stream.
-              </h2>
+              </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 No more guessing whether roll call was taken, whether teachers arrived on time, or how much school fees remain outstanding in arrears.
               </p>
@@ -306,55 +523,74 @@ export const LandingPageView: React.FC = () => {
               </p>
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700 font-medium">
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>Instant Class Stream Setup</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>Daily Attendance Logs</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>Staff Class Teacher Appointments</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>Audit-Ready Bursary Reports</span>
                 </div>
               </div>
             </div>
 
-            {/* Clean Framed Photo - NO text on top */}
+            {/* Clean Framed Photo - ZERO text on top */}
             <div className="lg:col-span-6 order-1 lg:order-2">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100">
+              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100 transition-all duration-300 hover:shadow-xl">
                 <img
                   src="/assets/ghana_headmistress_crisp.jpg"
                   alt="Ghanaian school headmistress in administrative office"
-                  className="w-full h-80 sm:h-96 object-cover object-center"
+                  className="w-full h-72 sm:h-84 object-cover object-center"
                 />
               </div>
             </div>
           </div>
 
         </div>
+
+        {/* Page 2 Bottom Bar */}
+        <div className="pt-6 pb-2 text-center">
+          <button
+            onClick={() => scrollToPage(3)}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+          >
+            <span>Next: Specialized Portals</span>
+            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+        </div>
       </section>
 
-      {/* 4 Specialized Portals Showcase */}
-      <section id="portals" className="py-20 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-              Role-Based Architecture
+      {/* =========================================================================
+          PAGE 3: 4 SPECIALIZED PORTALS SHOWCASE
+          ========================================================================= */}
+      <section
+        id="page-3"
+        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-slate-50 border-b border-slate-200 relative overflow-hidden"
+      >
+        {/* Subtle Ambient Glow */}
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
+          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider border border-blue-200">
+              <span>Page 03 • Role-Based Architecture</span>
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
               A dedicated portal for every stakeholder
             </h2>
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-slate-600">
               Select any role below to preview its specialized workbench and launch an interactive live test drive.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-4 sm:p-6 space-y-6">
             {/* Tab Buttons */}
             <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-200">
               <div className="flex flex-wrap items-center gap-2">
@@ -427,7 +663,7 @@ export const LandingPageView: React.FC = () => {
             {/* Portal Content Details */}
             <div className="p-4 sm:p-6 bg-slate-50/70 rounded-xl border border-slate-200/80">
               {activePortalTab === 'admin' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-fade-in">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">Headteacher & Board Administration</h3>
                     <p className="text-xs text-slate-500 mt-0.5">Full governance over academic streams, teacher allocations, pupil bio-data, and institutional reporting.</p>
@@ -458,7 +694,7 @@ export const LandingPageView: React.FC = () => {
               )}
 
               {activePortalTab === 'teacher' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-fade-in">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">Form Master & Teacher Workbench</h3>
                     <p className="text-xs text-slate-500 mt-0.5">Continuous assessment markbooks, optical test paper scanner, 1-click roll call, and terminal report comments.</p>
@@ -493,7 +729,7 @@ export const LandingPageView: React.FC = () => {
               )}
 
               {activePortalTab === 'bursar' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-fade-in">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">Bursary & Financial Collection Desk</h3>
                     <p className="text-xs text-slate-500 mt-0.5">Tuition fees, feeding programme ledger, instant Mobile Money receipts, and automated defaulter reminders.</p>
@@ -519,7 +755,7 @@ export const LandingPageView: React.FC = () => {
               )}
 
               {activePortalTab === 'parent' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-fade-in">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">Parent & Guardian Mobile Portal</h3>
                     <p className="text-xs text-slate-500 mt-0.5">Instant terminal report card PDF downloads, daily attendance status, and direct Mobile Money fee payment.</p>
@@ -555,26 +791,45 @@ export const LandingPageView: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Page 3 Bottom Bar */}
+        <div className="pt-6 pb-2 text-center">
+          <button
+            onClick={() => scrollToPage(4)}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+          >
+            <span>Next: NaCCA & GES Standards</span>
+            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+        </div>
       </section>
 
-      {/* GES & NaCCA 3-Stage Curriculum Standards */}
-      <section id="curriculum" className="py-20 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-              National Curriculum Compliance
+      {/* =========================================================================
+          PAGE 4: GES & NaCCA 3-STAGE CURRICULUM STANDARDS
+          ========================================================================= */}
+      <section
+        id="page-4"
+        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-white border-b border-slate-200 relative overflow-hidden"
+      >
+        {/* Subtle Ambient Glow */}
+        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-amber-50/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
+              <span>Page 04 • National Curriculum Compliance</span>
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
               Aligned with Ghanaian NaCCA Standards
             </h2>
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-slate-600">
               Pre-loaded with official GES subject lists, continuous assessment weights, and terminal evaluation criteria.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {/* Stage 1: KG */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-amber-300">
               <span className="inline-block px-3 py-1 rounded-md bg-amber-100 text-amber-800 text-xs font-bold">
                 Kindergarten (KG 1–2)
               </span>
@@ -603,7 +858,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Stage 2: Primary */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-blue-300">
               <span className="inline-block px-3 py-1 rounded-md bg-blue-100 text-blue-800 text-xs font-bold">
                 Primary (Basic 1–6)
               </span>
@@ -632,7 +887,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Stage 3: JHS */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-300">
               <span className="inline-block px-3 py-1 rounded-md bg-indigo-100 text-indigo-800 text-xs font-bold">
                 Junior High (JHS 1–3)
               </span>
@@ -661,26 +916,45 @@ export const LandingPageView: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Page 4 Bottom Bar */}
+        <div className="pt-6 pb-2 text-center">
+          <button
+            onClick={() => scrollToPage(5)}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+          >
+            <span>Next: Educator Reviews</span>
+            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+        </div>
       </section>
 
-      {/* Real Testimonials from Ghanaian Educators & Parents */}
-      <section id="testimonials" className="py-20 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
-              Institutional Feedback
+      {/* =========================================================================
+          PAGE 5: REAL TESTIMONIALS FROM GHANAIAN EDUCATORS & PARENTS
+          ========================================================================= */}
+      <section
+        id="page-5"
+        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-slate-50 border-b border-slate-200 relative overflow-hidden"
+      >
+        {/* Subtle Ambient Glow */}
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-emerald-50/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider border border-emerald-200">
+              <span>Page 05 • Institutional Feedback</span>
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
               What Ghanaian educators say about SchoolOS
             </h2>
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-slate-600">
               Real results from headteachers, accountants, and parents across the country.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {/* Testimonial 1 */}
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
               <div className="space-y-3">
                 <div className="flex items-center gap-1 text-amber-500">
                   {[...Array(5)].map((_, i) => (
@@ -707,7 +981,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Testimonial 2 */}
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
               <div className="space-y-3">
                 <div className="flex items-center gap-1 text-amber-500">
                   {[...Array(5)].map((_, i) => (
@@ -734,7 +1008,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Testimonial 3 */}
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
               <div className="space-y-3">
                 <div className="flex items-center gap-1 text-amber-500">
                   {[...Array(5)].map((_, i) => (
@@ -761,24 +1035,43 @@ export const LandingPageView: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Page 5 Bottom Bar */}
+        <div className="pt-6 pb-2 text-center">
+          <button
+            onClick={() => scrollToPage(6)}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+          >
+            <span>Next: Plans & Pricing</span>
+            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+        </div>
       </section>
 
-      {/* Transparent Institutional Pricing */}
-      <section id="pricing" className="py-20 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-              Clear Pricing
+      {/* =========================================================================
+          PAGE 6: TRANSPARENT INSTITUTIONAL PRICING
+          ========================================================================= */}
+      <section
+        id="page-6"
+        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-white border-b border-slate-200 relative overflow-hidden"
+      >
+        {/* Subtle Ambient Glow */}
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-blue-50/70 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
+          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
+              <span>Page 06 • Clear Pricing</span>
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
               Predictable plans for every Ghanaian school
             </h2>
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-slate-600">
               Transparent institutional pricing with zero hidden fees and free onboarding training for your staff.
             </p>
 
             {/* Toggle */}
-            <div className="mt-6 inline-flex items-center p-1 rounded-lg bg-slate-100 border border-slate-200 text-xs">
+            <div className="mt-5 inline-flex items-center p-1 rounded-lg bg-slate-100 border border-slate-200 text-xs">
               <button
                 onClick={() => setBillingCycle('term')}
                 className={`px-4 py-1.5 rounded-md font-bold transition-all ${
@@ -798,21 +1091,21 @@ export const LandingPageView: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {/* Starter */}
-            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="p-7 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Community Starter</span>
                 <h3 className="text-xl font-bold text-slate-900 mt-1">Kindergarten & Primary</h3>
                 <p className="text-xs text-slate-500 mt-1">For growing basic schools establishing digital records.</p>
-                <div className="mt-6 flex items-baseline gap-1">
+                <div className="mt-5 flex items-baseline gap-1">
                   <span className="text-3xl font-black text-slate-900">
                     {billingCycle === 'term' ? 'GH₵ 450' : 'GH₵ 1,150'}
                   </span>
                   <span className="text-xs text-slate-500">/{billingCycle === 'term' ? 'term' : 'year'}</span>
                 </div>
 
-                <ul className="mt-6 space-y-3 text-xs text-slate-600">
+                <ul className="mt-5 space-y-2.5 text-xs text-slate-600">
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                     <span>Up to 250 enrolled pupils</span>
@@ -834,14 +1127,14 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="mt-8 w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors"
+                className="mt-6 w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors"
               >
                 Get Started
               </button>
             </div>
 
             {/* Professional (Featured) */}
-            <div className="p-8 rounded-2xl bg-slate-900 text-white shadow-xl relative flex flex-col justify-between border-2 border-blue-500">
+            <div className="p-7 rounded-2xl bg-slate-900 text-white shadow-xl relative flex flex-col justify-between border-2 border-blue-500 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-600 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
                 Recommended for JHS
               </div>
@@ -850,14 +1143,14 @@ export const LandingPageView: React.FC = () => {
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Professional Suite</span>
                 <h3 className="text-xl font-bold text-white mt-1">Complete Basic & JHS</h3>
                 <p className="text-xs text-slate-300 mt-1">Full-featured platform for Ghanaian basic and junior high schools.</p>
-                <div className="mt-6 flex items-baseline gap-1">
+                <div className="mt-5 flex items-baseline gap-1">
                   <span className="text-3xl font-black text-white">
                     {billingCycle === 'term' ? 'GH₵ 850' : 'GH₵ 2,150'}
                   </span>
                   <span className="text-xs text-slate-400">/{billingCycle === 'term' ? 'term' : 'year'}</span>
                 </div>
 
-                <ul className="mt-6 space-y-3 text-xs text-slate-300">
+                <ul className="mt-5 space-y-2.5 text-xs text-slate-300">
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
                     <span>Up to 750 enrolled pupils</span>
@@ -883,24 +1176,24 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="mt-8 w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow transition-all"
+                className="mt-6 w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow transition-all"
               >
                 Register Your School
               </button>
             </div>
 
             {/* Enterprise */}
-            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="p-7 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Enterprise</span>
                 <h3 className="text-xl font-bold text-slate-900 mt-1">Multi-Campus & Mission</h3>
                 <p className="text-xs text-slate-500 mt-1">For mission units, trusts, and multi-campus school systems.</p>
-                <div className="mt-6 flex items-baseline gap-1">
+                <div className="mt-5 flex items-baseline gap-1">
                   <span className="text-3xl font-black text-slate-900">Custom</span>
                   <span className="text-xs text-slate-500">/ volume discount</span>
                 </div>
 
-                <ul className="mt-6 space-y-3 text-xs text-slate-600">
+                <ul className="mt-5 space-y-2.5 text-xs text-slate-600">
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                     <span>Unlimited students & streams</span>
@@ -922,27 +1215,46 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="mt-8 w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors"
+                className="mt-6 w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors"
               >
                 Contact Us
               </button>
             </div>
           </div>
         </div>
+
+        {/* Page 6 Bottom Bar */}
+        <div className="pt-6 pb-2 text-center">
+          <button
+            onClick={() => scrollToPage(7)}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+          >
+            <span>Next: FAQs & Support</span>
+            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+        </div>
       </section>
 
-      {/* Frequently Asked Questions */}
-      <section id="faqs" className="py-20 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-              Clear Answers
+      {/* =========================================================================
+          PAGE 7: FREQUENTLY ASKED QUESTIONS & INSTITUTIONAL FOOTER
+          ========================================================================= */}
+      <section
+        id="page-7"
+        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-slate-50 relative overflow-hidden"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full space-y-12">
+          
+          {/* FAQ Header */}
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider border border-blue-200">
+              <span>Page 07 • Clear Answers</span>
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">
               Frequently Asked Questions
             </h2>
           </div>
 
+          {/* FAQ Accordion */}
           <div className="space-y-3">
             {faqs.map((faq, index) => {
               const isOpen = openFaq === index;
@@ -963,7 +1275,7 @@ export const LandingPageView: React.FC = () => {
                     )}
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100">
+                    <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100 animate-fade-in">
                       {faq.a}
                     </div>
                   )}
@@ -971,103 +1283,112 @@ export const LandingPageView: React.FC = () => {
               );
             })}
           </div>
-        </div>
-      </section>
 
-      {/* Final Call to Action */}
-      <section className="py-20 bg-slate-900 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Ready to upgrade your school operations?
-          </h2>
-          <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Join over 180 forward-thinking Ghanaian schools. Register in under 3 minutes with zero paperwork.
-          </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          {/* Final Call to Action Block */}
+          <div className="rounded-2xl bg-slate-900 text-white p-8 sm:p-10 text-center space-y-5 shadow-xl relative overflow-hidden border border-slate-800">
+            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              Ready to upgrade your school operations?
+            </h3>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+              Join over 180 forward-thinking Ghanaian schools. Register in under 3 minutes with zero paperwork.
+            </p>
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+              <button
+                onClick={() => setAuthScreen('signup')}
+                className="w-full sm:w-auto px-7 py-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              >
+                <span>Register Your School Free</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleLaunchRoleDemo('school_admin')}
+                className="w-full sm:w-auto px-7 py-3 text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all"
+              >
+                Test Drive Demo
+              </button>
+            </div>
+          </div>
+
+          {/* Back to Top Quick Action */}
+          <div className="text-center pt-2">
             <button
-              onClick={() => setAuthScreen('signup')}
-              className="w-full sm:w-auto px-8 py-3.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              onClick={() => scrollToPage(1)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 transition-all shadow-2xs group"
             >
-              <span>Register Your School Free</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleLaunchRoleDemo('school_admin')}
-              className="w-full sm:w-auto px-8 py-3.5 text-sm font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all"
-            >
-              Test Drive Demo
+              <ArrowUp className="w-3.5 h-3.5 text-blue-600 group-hover:-translate-y-0.5 transition-transform" />
+              <span>Back to Top (Page 01)</span>
             </button>
           </div>
         </div>
-      </section>
 
-      {/* Professional Institutional Footer */}
-      <footer className="bg-slate-950 border-t border-slate-800 py-12 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
-            {/* Col 1: Brand */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
-                  SOS
+        {/* Institutional Footer */}
+        <footer className="mt-12 bg-slate-950 border-t border-slate-800 py-8 text-xs text-slate-400">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-slate-800 text-[11px]">
+              {/* Col 1 */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-[10px]">
+                    SOS
+                  </div>
+                  <span className="font-extrabold text-white text-xs">SchoolOS Ghana</span>
                 </div>
-                <span className="font-extrabold text-white text-sm">SchoolOS Ghana</span>
+                <p className="text-slate-400 leading-relaxed">
+                  Institutional OS for Ghanaian Basic & JHS. Compliant with GES, NaCCA, and Act 843.
+                </p>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
-                The institutional operating system for Ghanaian Kindergarten, Primary, and Junior High Schools. Compliant with GES, NaCCA, and the Data Protection Act (Act 843).
-              </p>
+
+              {/* Col 2 */}
+              <div>
+                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] mb-2">Specialized Portals</h5>
+                <ul className="space-y-1.5 text-slate-400">
+                  <li><button onClick={() => handleLaunchRoleDemo('school_admin')} className="hover:text-white transition-colors">Headteacher Cockpit</button></li>
+                  <li><button onClick={() => handleLaunchRoleDemo('teacher')} className="hover:text-white transition-colors">Teacher Workbench</button></li>
+                  <li><button onClick={() => handleLaunchRoleDemo('accountant')} className="hover:text-white transition-colors">Bursary Desk</button></li>
+                  <li><button onClick={() => handleLaunchRoleDemo('parent')} className="hover:text-white transition-colors">Parent Portal</button></li>
+                </ul>
+              </div>
+
+              {/* Col 3 */}
+              <div>
+                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] mb-2">Curriculum Stages</h5>
+                <ul className="space-y-1.5 text-slate-400">
+                  <li><span>Kindergarten (KG 1–2)</span></li>
+                  <li><span>Primary (Basic 1–6)</span></li>
+                  <li><span>Junior High (JHS 1–3)</span></li>
+                  <li><span>BECE 50/50 Continuous Assessment</span></li>
+                </ul>
+              </div>
+
+              {/* Col 4 */}
+              <div className="space-y-1.5">
+                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] mb-2">Support & Office</h5>
+                <p className="flex items-center gap-1.5 text-slate-300">
+                  <MapPin className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                  <span>Ridge & Airport City, Accra, Ghana</span>
+                </p>
+                <p className="flex items-center gap-1.5 text-slate-300">
+                  <Phone className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                  <span>+233 (0) 24 000 0000</span>
+                </p>
+                <p className="flex items-center gap-1.5 text-slate-300">
+                  <Mail className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                  <span>support@schoolos.edu.gh</span>
+                </p>
+              </div>
             </div>
 
-            {/* Col 2: Portals */}
-            <div>
-              <h5 className="font-bold text-white uppercase tracking-wider text-[11px] mb-3">Portals</h5>
-              <ul className="space-y-2 text-slate-400">
-                <li><button onClick={() => handleLaunchRoleDemo('school_admin')} className="hover:text-white transition-colors">Headteacher Cockpit</button></li>
-                <li><button onClick={() => handleLaunchRoleDemo('teacher')} className="hover:text-white transition-colors">Teacher Workbench</button></li>
-                <li><button onClick={() => handleLaunchRoleDemo('accountant')} className="hover:text-white transition-colors">Bursary & MoMo Desk</button></li>
-                <li><button onClick={() => handleLaunchRoleDemo('parent')} className="hover:text-white transition-colors">Parent Portal</button></li>
-              </ul>
-            </div>
-
-            {/* Col 3: Academic Stages */}
-            <div>
-              <h5 className="font-bold text-white uppercase tracking-wider text-[11px] mb-3">Academic Stages</h5>
-              <ul className="space-y-2 text-slate-400">
-                <li><span>Kindergarten (KG 1–2)</span></li>
-                <li><span>Primary (Basic 1–6)</span></li>
-                <li><span>Junior High School (JHS 1–3)</span></li>
-                <li><span>BECE 50/50 Continuous Assessment</span></li>
-              </ul>
-            </div>
-
-            {/* Col 4: Contact */}
-            <div className="space-y-2">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[11px] mb-3">Support & Offices</h5>
-              <p className="flex items-center gap-2 text-slate-300">
-                <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                <span>Airport City & Ridge, Accra, Ghana</span>
-              </p>
-              <p className="flex items-center gap-2 text-slate-300">
-                <Phone className="w-3.5 h-3.5 text-blue-400" />
-                <span>+233 (0) 24 000 0000 / 020 000 0000</span>
-              </p>
-              <p className="flex items-center gap-2 text-slate-300">
-                <Mail className="w-3.5 h-3.5 text-blue-400" />
-                <span>support@schoolos.edu.gh</span>
-              </p>
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-500">
+              <p>© {new Date().getFullYear()} SchoolOS Ghana. All rights reserved.</p>
+              <div className="flex items-center gap-4">
+                <button onClick={() => setAuthScreen('login')} className="hover:text-slate-300">Sign In</button>
+                <button onClick={() => setAuthScreen('signup')} className="hover:text-slate-300">Register School</button>
+                <span>GES & NaCCA Framework</span>
+              </div>
             </div>
           </div>
-
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-            <p>© {new Date().getFullYear()} SchoolOS Ghana. All rights reserved.</p>
-            <div className="flex items-center gap-6">
-              <button onClick={() => setAuthScreen('login')} className="hover:text-slate-300">Sign In</button>
-              <button onClick={() => setAuthScreen('signup')} className="hover:text-slate-300">Register School</button>
-              <span>Ghana Education Service Standards</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </section>
     </div>
   );
 };
