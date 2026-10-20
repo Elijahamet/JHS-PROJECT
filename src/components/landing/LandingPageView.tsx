@@ -196,8 +196,8 @@ export const LandingPageView: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100">
                 <img
-                  src="/assets/ghana_students_running.png"
-                  alt="Ghanaian school pupils entering their school gate in uniform"
+                  src="/assets/ghana_students_hero.jpg"
+                  alt="Ghanaian basic school pupils in uniform walking together on school campus"
                   className="w-full h-[400px] sm:h-[480px] object-cover object-center"
                 />
               </div>
@@ -241,8 +241,8 @@ export const LandingPageView: React.FC = () => {
             <div className="lg:col-span-6">
               <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100">
                 <img
-                  src="/assets/ghana_classroom_pupils.png"
-                  alt="Ghanaian school pupils sitting at wooden desks studying with exercise books"
+                  src="/assets/ghana_classroom_crisp.jpg"
+                  alt="Ghanaian school pupils sitting at wooden desks studying mathematics in classroom"
                   className="w-full h-80 sm:h-96 object-cover object-center"
                 />
               </div>
@@ -328,8 +328,8 @@ export const LandingPageView: React.FC = () => {
             <div className="lg:col-span-6 order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100">
                 <img
-                  src="/assets/ghana_teacher_headmistress.jpg"
-                  alt="Ghanaian school headmistress and educators collaborating"
+                  src="/assets/ghana_headmistress_crisp.jpg"
+                  alt="Ghanaian school headmistress in administrative office"
                   className="w-full h-80 sm:h-96 object-cover object-center"
                 />
               </div>
@@ -694,13 +694,13 @@ export const LandingPageView: React.FC = () => {
 
               <div className="pt-4 border-t border-slate-100 mt-6 flex items-center gap-3">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=128&q=80"
-                  alt="Mrs. Comfort Addo"
+                  src="/assets/ghana_headmistress_crisp.jpg"
+                  alt="Mrs. Elizabeth A. Appiah"
                   className="w-10 h-10 rounded-full object-cover border border-slate-200"
                 />
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900">Mrs. Comfort Addo</h4>
-                  <p className="text-[11px] text-blue-600 font-medium">Headmistress, Achimota Basic & Preparatory</p>
+                  <h4 className="text-xs font-bold text-slate-900">Mrs. Elizabeth A. Appiah</h4>
+                  <p className="text-[11px] text-blue-600 font-medium">Headmistress, Accra Basic School</p>
                   <p className="text-[10px] text-slate-400">Greater Accra, Ghana</p>
                 </div>
               </div>
