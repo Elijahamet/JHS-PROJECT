@@ -19,23 +19,17 @@ import {
   Twitter,
   Facebook,
   Youtube,
-  Search,
-  Bell,
-  ChevronDown,
   TrendingUp,
-  Clock,
   Sparkles,
-  Smartphone,
-  CheckCircle2,
-  X,
-  ExternalLink,
+  Phone,
+  Mail,
+  MapPin,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const LandingPageView: React.FC = () => {
   const { setAuthScreen, setUserRole } = useApp();
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'admin' | 'parent'>('admin');
 
   // Smooth scrolling helper
   const scrollTo = (id: string) => {
@@ -56,91 +50,101 @@ export const LandingPageView: React.FC = () => {
       {/* =========================================================================
           1. HEADER / NAVIGATION
           ========================================================================= */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <div
             onClick={() => scrollTo('hero')}
             className="flex items-center gap-2.5 cursor-pointer select-none group"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#0B2545] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-[#0B2545] flex items-center justify-center text-white shadow-sm group-hover:scale-110 group-hover:rotate-[-4deg] transition-all duration-300">
               <GraduationCap className="w-5 h-5" />
             </div>
-            <span className="font-extrabold text-2xl text-[#0B2545] tracking-tight">
+            <span className="font-extrabold text-2xl text-[#0B2545] tracking-tight group-hover:text-blue-900 transition-colors">
               SchoolOS
             </span>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links with Hover Underline Animations */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
             <button
               onClick={() => scrollTo('hero')}
-              className="hover:text-[#0B2545] transition-colors"
+              className="relative hover:text-[#0B2545] transition-colors py-1 group"
             >
-              Home
+              <span>Home</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('features')}
-              className="hover:text-[#0B2545] transition-colors"
+              className="relative hover:text-[#0B2545] transition-colors py-1 group"
             >
-              Features
+              <span>Features</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('solutions')}
-              className="hover:text-[#0B2545] transition-colors"
+              className="relative hover:text-[#0B2545] transition-colors py-1 group"
             >
-              Solutions
+              <span>Solutions</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('how-it-works')}
-              className="hover:text-[#0B2545] transition-colors"
+              className="relative hover:text-[#0B2545] transition-colors py-1 group"
             >
-              How It Works
+              <span>How It Works</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('pricing')}
-              className="hover:text-[#0B2545] transition-colors"
+              className="relative hover:text-[#0B2545] transition-colors py-1 group"
             >
-              Pricing
+              <span>Pricing</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('contact')}
-              className="hover:text-[#0B2545] transition-colors"
+              className="relative hover:text-[#0B2545] transition-colors py-1 group"
             >
-              Contact
+              <span>Contact</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
             </button>
           </nav>
 
-          {/* Action Buttons */}
+          {/* Action Buttons: Sign In + Sign Up */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setAuthScreen('login')}
-              className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#0B2545] transition-colors"
+              className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#0B2545] hover:bg-slate-50 rounded-xl transition-all"
             >
               Sign In
             </button>
             <button
-              onClick={() => setIsDemoModalOpen(true)}
-              className="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-sm hover:shadow transition-all"
+              onClick={() => setAuthScreen('signup')}
+              className="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
-              Book a Demo
+              Sign Up
             </button>
           </div>
         </div>
       </header>
 
       {/* =========================================================================
-          2. HERO SECTION
+          2. HERO SECTION WITH FLOATING DASHBOARD & ANIMATIONS
           ========================================================================= */}
       <section id="hero" className="relative pt-10 pb-20 lg:pt-16 lg:pb-28 overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Subtle Ambient Glowing Aura in Background */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-100/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
             {/* Left Column: Headlines & Call to Actions */}
-            <div className="lg:col-span-6 space-y-6 text-left">
-              <span className="inline-block text-xs font-extrabold text-[#2563EB] tracking-wider uppercase">
-                SCHOOL MANAGEMENT SOFTWARE
-              </span>
+            <div className="lg:col-span-6 space-y-6 text-left animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-[#2563EB] text-xs font-extrabold tracking-wider uppercase shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                <span>SCHOOL MANAGEMENT SOFTWARE</span>
+              </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-[#0B2545] tracking-tight leading-[1.12]">
                 The operating system for modern schools.
@@ -150,53 +154,59 @@ export const LandingPageView: React.FC = () => {
                 SchoolOS helps private schools manage students, fees, attendance, communication and more — all in one place. Save time, reduce workload and create a better learning experience for everyone.
               </p>
 
-              {/* Action Buttons */}
+              {/* Action Buttons: Sign Up + Explore Features */}
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <button
-                  onClick={() => setIsDemoModalOpen(true)}
-                  className="px-7 py-3.5 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  onClick={() => setAuthScreen('signup')}
+                  className="px-7 py-3.5 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center gap-2 group"
                 >
-                  <span>Book a Demo</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Sign Up</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
                 </button>
                 <button
                   onClick={() => scrollTo('features')}
-                  className="px-7 py-3.5 text-sm font-semibold text-slate-700 hover:text-[#0B2545] bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+                  className="px-7 py-3.5 text-sm font-semibold text-slate-700 hover:text-[#0B2545] bg-white border border-slate-300 rounded-xl hover:bg-slate-50 hover:shadow-sm active:scale-95 transition-all duration-200"
                 >
                   Explore Features
                 </button>
               </div>
 
-              {/* 3 Value Propositions */}
+              {/* 3 Value Propositions with Micro-Animations */}
               <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-6 sm:gap-8 text-xs text-slate-600 font-semibold">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-[#0B2545]" />
+                <div className="flex items-center gap-2 group cursor-default">
+                  <div className="p-1 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-[#2563EB] transition-colors">
+                    <Shield className="w-4 h-4 text-[#0B2545] group-hover:text-[#2563EB] transition-colors" />
+                  </div>
                   <span>Secure & Reliable</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#0B2545]" />
+                <div className="flex items-center gap-2 group cursor-default">
+                  <div className="p-1 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-[#2563EB] transition-colors">
+                    <User className="w-4 h-4 text-[#0B2545] group-hover:text-[#2563EB] transition-colors" />
+                  </div>
                   <span>Easy to Use</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4 text-[#0B2545]" />
+                <div className="flex items-center gap-2 group cursor-default">
+                  <div className="p-1 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-[#2563EB] transition-colors">
+                    <GraduationCap className="w-4 h-4 text-[#0B2545] group-hover:text-[#2563EB] transition-colors" />
+                  </div>
                   <span>Built for Ghanaian Schools</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Hero Visual with Real Pupils & Overlapping Live Dashboard UI */}
+            {/* Right Column: Hero Visual with Real Pupils & Floating Live Dashboard UI */}
             <div className="lg:col-span-6 relative">
-              {/* Authentic Photo of Ghanaian Pupils */}
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 max-w-md ml-auto">
+              {/* Authentic Photo of Ghanaian Pupils with Zoom Effect on Hover */}
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 max-w-md ml-auto group">
                 <img
                   src="/assets/ghana_students_hero.jpg"
                   alt="Ghanaian school pupils smiling together in classroom"
-                  className="w-full h-84 sm:h-96 object-cover object-center"
+                  className="w-full h-84 sm:h-96 object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
 
-              {/* Overlapping Realistic Desktop Dashboard Mockup */}
-              <div className="mt-[-110px] sm:mt-[-140px] mr-auto lg:mr-8 max-w-xl rounded-2xl bg-white border border-slate-200 shadow-[0_25px_50px_-12px_rgba(11,37,69,0.22)] overflow-hidden text-xs relative z-10 transition-all duration-300 hover:shadow-[0_30px_60px_-12px_rgba(11,37,69,0.28)]">
+              {/* Overlapping Realistic Desktop Dashboard Mockup with Floating Animation */}
+              <div className="mt-[-110px] sm:mt-[-140px] mr-auto lg:mr-8 max-w-xl rounded-2xl bg-white border border-slate-200 shadow-[0_25px_50px_-12px_rgba(11,37,69,0.22)] overflow-hidden text-xs relative z-10 animate-float-slow hover:[animation-play-state:paused] transition-all duration-300">
                 {/* Dashboard Frame Header */}
                 <div className="bg-[#0B2545] text-white px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
                   <div className="flex items-center gap-2">
@@ -205,7 +215,8 @@ export const LandingPageView: React.FC = () => {
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                     <span className="font-bold text-[11px] ml-2 tracking-tight">SchoolOS Administration</span>
                   </div>
-                  <span className="text-[10px] text-slate-300 font-medium bg-white/10 px-2 py-0.5 rounded">
+                  <span className="text-[10px] text-slate-300 font-medium bg-white/10 px-2 py-0.5 rounded flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                     Bright Future Academy
                   </span>
                 </div>
@@ -214,17 +225,17 @@ export const LandingPageView: React.FC = () => {
                 <div className="flex bg-slate-50">
                   {/* Miniature Sidebar */}
                   <div className="w-36 bg-[#0B2545] text-slate-300 p-3 space-y-1 shrink-0 hidden sm:block">
-                    <div className="px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1.5">
+                    <div className="px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1.5 shadow-sm">
                       <TrendingUp className="w-3 h-3" />
                       <span>Dashboard</span>
                     </div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Students</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Teachers</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Attendance</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Results & SBA</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Fees Ledger</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Transport</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white text-[10px]">Settings</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Students</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Teachers</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Attendance</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Results & SBA</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Fees Ledger</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Transport</div>
+                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Settings</div>
                   </div>
 
                   {/* Miniature Content Area */}
@@ -240,21 +251,21 @@ export const LandingPageView: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Stat Cards Row */}
+                    {/* Stat Cards Row with Hover Lift */}
                     <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
                         <p className="text-[9px] text-slate-500 font-semibold">Students</p>
                         <p className="font-black text-[#0B2545] text-sm mt-0.5">428</p>
                       </div>
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
                         <p className="text-[9px] text-slate-500 font-semibold">Teachers</p>
                         <p className="font-black text-[#0B2545] text-sm mt-0.5">36</p>
                       </div>
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
                         <p className="text-[9px] text-slate-500 font-semibold">Classes</p>
                         <p className="font-black text-[#0B2545] text-sm mt-0.5">18</p>
                       </div>
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
                         <p className="text-[9px] text-slate-500 font-semibold">Attendance</p>
                         <p className="font-black text-emerald-600 text-sm mt-0.5">94%</p>
                       </div>
@@ -263,7 +274,7 @@ export const LandingPageView: React.FC = () => {
                     {/* Financial Overview & Recent Payments */}
                     <div className="grid grid-cols-2 gap-2 text-[10px]">
                       {/* Attendance & Finance Card */}
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5">
+                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5 hover:shadow-sm transition-shadow">
                         <p className="font-bold text-slate-800 text-[11px]">Financial Overview</p>
                         <div className="space-y-0.5">
                           <p className="text-emerald-700 font-extrabold text-xs">GH₵ 48,750</p>
@@ -276,7 +287,7 @@ export const LandingPageView: React.FC = () => {
                       </div>
 
                       {/* Recent Payment Table Snapshot */}
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5">
+                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5 hover:shadow-sm transition-shadow">
                         <p className="font-bold text-slate-800 text-[11px]">Recent Payments</p>
                         <div className="space-y-1 text-[9px]">
                           <div className="flex justify-between items-center">
@@ -321,15 +332,15 @@ export const LandingPageView: React.FC = () => {
             </p>
           </div>
 
-          {/* 4 Cards Grid */}
+          {/* 4 Cards Grid with Smooth Hover Lift & Icon Animations */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Card 1 */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <FileEdit className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
                 Manual record keeping
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
@@ -338,11 +349,11 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Card 2 */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <MessageSquare className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
                 Lost communication
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
@@ -351,11 +362,11 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Card 3 */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <CreditCard className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
                 Fee collection struggles
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
@@ -364,11 +375,11 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Card 4 */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <Eye className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
                 Poor visibility
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
@@ -399,92 +410,92 @@ export const LandingPageView: React.FC = () => {
             </p>
           </div>
 
-          {/* 8 Features Grid (4 x 2) */}
+          {/* 8 Features Grid (4 x 2) with Interactive Card Effects */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* 1. Student Management */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Student Management</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Student Management</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Keep detailed student records and profiles.
               </p>
             </div>
 
             {/* 2. Attendance */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <CalendarCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Attendance</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Attendance</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Track attendance in real-time and improve accountability.
               </p>
             </div>
 
             {/* 3. Results & Reports */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <Award className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Results & Reports</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Results & Reports</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Manage grades, generate report cards and track performance.
               </p>
             </div>
 
             {/* 4. School Fees */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <CreditCard className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">School Fees</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">School Fees</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Handle tuition, registration and other fees with ease.
               </p>
             </div>
 
             {/* 5. Feeding Fees */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <Utensils className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Feeding Fees</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Feeding Fees</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Manage meal plans and feeding fee collection.
               </p>
             </div>
 
             {/* 6. Transport */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <Bus className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Transport</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Transport</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Coordinate buses, routes and pickup locations.
               </p>
             </div>
 
             {/* 7. Admissions */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <FilePlus className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Admissions</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Admissions</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Simplify the application and enrollment process.
               </p>
             </div>
 
             {/* 8. Communication */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60">
+            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 <MessageSquare className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Communication</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Communication</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Keep parents informed with announcements and updates.
               </p>
@@ -504,11 +515,11 @@ export const LandingPageView: React.FC = () => {
             
             {/* Left Photo: Ghanaian Pupil in Uniform Holding Books */}
             <div className="lg:col-span-4 flex justify-center">
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 max-w-sm">
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 max-w-sm group">
                 <img
                   src="/assets/ghana_students_running.png"
                   alt="Ghanaian school pupil in uniform holding textbooks"
-                  className="w-full h-[420px] object-cover object-top"
+                  className="w-full h-[420px] object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
             </div>
@@ -525,28 +536,28 @@ export const LandingPageView: React.FC = () => {
                 Get a clear overview of your school's performance, finances, attendance and more — all from a modern, easy-to-use dashboard.
               </p>
 
-              {/* Bullet Points */}
+              {/* Bullet Points with Hover Glow */}
               <ul className="space-y-3 text-xs sm:text-sm text-slate-700 font-medium pt-2">
-                <li className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 group">
+                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Beautiful and intuitive interface</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 group">
+                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Works on desktop, tablet and mobile</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 group">
+                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Role-based access for different users</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 group">
+                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Real-time updates and notifications</span>
@@ -556,7 +567,7 @@ export const LandingPageView: React.FC = () => {
               <div className="pt-3">
                 <button
                   onClick={() => setIsDemoModalOpen(true)}
-                  className="px-7 py-3 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-md hover:shadow-lg transition-all"
+                  className="px-7 py-3 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
                 >
                   View Demo
                 </button>
@@ -565,18 +576,21 @@ export const LandingPageView: React.FC = () => {
 
             {/* Right: Dual Device Previews (Desktop Analytics + Mobile Smartphone) */}
             <div className="lg:col-span-4 flex items-center justify-center relative">
-              {/* Desktop Dashboard Card */}
-              <div className="w-60 sm:w-68 rounded-2xl bg-white border border-slate-200 shadow-xl p-4 space-y-2.5 opacity-90 hidden sm:block">
+              {/* Desktop Dashboard Card with Subtle Inverse Float */}
+              <div className="w-60 sm:w-68 rounded-2xl bg-white border border-slate-200 shadow-xl p-4 space-y-2.5 opacity-90 hidden sm:block animate-float-reverse">
                 <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[11px] font-bold text-slate-700">
                   <span>Class Performance</span>
-                  <span className="text-emerald-600 text-[10px]">● Active</span>
+                  <span className="text-emerald-600 text-[10px] flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    Live
+                  </span>
                 </div>
                 <div className="h-20 bg-slate-50 rounded-xl border border-slate-100 p-2 flex items-end justify-between gap-1.5">
-                  <div className="w-3.5 bg-blue-400 rounded-t h-[55%]"></div>
-                  <div className="w-3.5 bg-blue-500 rounded-t h-[70%]"></div>
-                  <div className="w-3.5 bg-blue-600 rounded-t h-[88%]"></div>
-                  <div className="w-3.5 bg-[#0B2545] rounded-t h-[80%]"></div>
-                  <div className="w-3.5 bg-emerald-500 rounded-t h-[95%]"></div>
+                  <div className="w-3.5 bg-blue-400 rounded-t h-[55%] transition-all hover:h-[70%]"></div>
+                  <div className="w-3.5 bg-blue-500 rounded-t h-[70%] transition-all hover:h-[80%]"></div>
+                  <div className="w-3.5 bg-blue-600 rounded-t h-[88%] transition-all hover:h-[95%]"></div>
+                  <div className="w-3.5 bg-[#0B2545] rounded-t h-[80%] transition-all hover:h-[90%]"></div>
+                  <div className="w-3.5 bg-emerald-500 rounded-t h-[95%] transition-all hover:h-full"></div>
                 </div>
                 <div className="space-y-1.5 text-[10px] text-slate-500 pt-1">
                   <div className="flex justify-between">
@@ -590,15 +604,15 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Mobile Phone Device Mockup */}
-              <div className="w-56 sm:w-60 -ml-12 sm:-ml-16 rounded-[2.5rem] bg-white border-4 border-slate-900 shadow-2xl p-3.5 space-y-3 z-10 ring-8 ring-slate-100">
+              {/* Mobile Phone Device Mockup with Float Animation */}
+              <div className="w-56 sm:w-60 -ml-12 sm:-ml-16 rounded-[2.5rem] bg-white border-4 border-slate-900 shadow-2xl p-3.5 space-y-3 z-10 ring-8 ring-slate-100 animate-float-slow">
                 <div className="w-14 h-1.5 bg-slate-900 rounded-full mx-auto mb-1"></div>
                 <div className="flex justify-between items-center text-[10px] text-slate-400 px-1">
                   <span className="font-extrabold text-[#0B2545]">SchoolOS Mobile</span>
                   <span>9:41 AM</span>
                 </div>
                 
-                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1 hover:bg-slate-100 transition-colors">
                   <p className="text-[10px] text-slate-500 font-medium">Good morning, Parent</p>
                   <p className="font-extrabold text-[#0B2545] text-xs">Kwame Mensah</p>
                   <p className="text-[10px] text-slate-500">Class: Basic 5a</p>
@@ -624,10 +638,10 @@ export const LandingPageView: React.FC = () => {
                 </div>
 
                 <div className="pt-1.5 border-t border-slate-100 flex justify-around text-[10px] text-slate-400 font-bold">
-                  <span className="text-blue-600">Home</span>
-                  <span>Results</span>
-                  <span>Fees</span>
-                  <span>More</span>
+                  <span className="text-blue-600 cursor-pointer">Home</span>
+                  <span className="hover:text-slate-700 cursor-pointer">Results</span>
+                  <span className="hover:text-slate-700 cursor-pointer">Fees</span>
+                  <span className="hover:text-slate-700 cursor-pointer">More</span>
                 </div>
               </div>
             </div>
@@ -654,37 +668,37 @@ export const LandingPageView: React.FC = () => {
             </p>
           </div>
 
-          {/* 3 Steps with Connector */}
+          {/* 3 Steps with Hover Effects */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
             
-            {/* Step 1 */}
-            <div className="text-center space-y-4 p-6 rounded-2xl bg-white border border-slate-200/70 shadow-sm">
-              <div className="w-14 h-14 rounded-full bg-blue-50 text-[#2563EB] border-2 border-blue-200 flex items-center justify-center font-black text-lg mx-auto shadow-sm">
+            {/* Step 1: Sign Up */}
+            <div className="group text-center space-y-4 p-7 rounded-2xl bg-white border border-slate-200/70 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="w-14 h-14 rounded-full bg-blue-50 text-[#2563EB] border-2 border-blue-200 flex items-center justify-center font-black text-lg mx-auto shadow-sm group-hover:scale-110 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 1
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Book a Demo</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Sign Up</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Schedule a demo with our team to see SchoolOS in action and discuss your school's needs.
+                Register your school account in seconds to begin setting up your institution.
               </p>
             </div>
 
-            {/* Step 2 */}
-            <div className="text-center space-y-4 p-6 rounded-2xl bg-white border border-slate-200/70 shadow-sm">
-              <div className="w-14 h-14 rounded-full bg-blue-50 text-[#2563EB] border-2 border-blue-200 flex items-center justify-center font-black text-lg mx-auto shadow-sm">
+            {/* Step 2: Set Up Your School */}
+            <div className="group text-center space-y-4 p-7 rounded-2xl bg-white border border-slate-200/70 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="w-14 h-14 rounded-full bg-blue-50 text-[#2563EB] border-2 border-blue-200 flex items-center justify-center font-black text-lg mx-auto shadow-sm group-hover:scale-110 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 2
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Set Up Your School</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Set Up Your School</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 We'll help you configure your school, import your data and set up your preferences.
               </p>
             </div>
 
-            {/* Step 3 */}
-            <div className="text-center space-y-4 p-6 rounded-2xl bg-white border border-slate-200/70 shadow-sm">
-              <div className="w-14 h-14 rounded-full bg-blue-50 text-[#2563EB] border-2 border-blue-200 flex items-center justify-center font-black text-lg mx-auto shadow-sm">
+            {/* Step 3: Start Managing */}
+            <div className="group text-center space-y-4 p-7 rounded-2xl bg-white border border-slate-200/70 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+              <div className="w-14 h-14 rounded-full bg-blue-50 text-[#2563EB] border-2 border-blue-200 flex items-center justify-center font-black text-lg mx-auto shadow-sm group-hover:scale-110 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
                 3
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545]">Start Managing</h3>
+              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Start Managing</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Your team gets access and you start enjoying a more organized, efficient school.
               </p>
@@ -713,11 +727,11 @@ export const LandingPageView: React.FC = () => {
             </p>
           </div>
 
-          {/* Pricing Grid */}
+          {/* Pricing Grid with Elevated Cards and Smooth Hover Interactions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
             
             {/* Card 1: Basic */}
-            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-6">
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-bold text-[#0B2545]">Basic</h3>
@@ -751,14 +765,14 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="w-full py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-xs sm:text-sm font-bold text-slate-800 transition-colors"
+                className="w-full py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 text-xs sm:text-sm font-bold text-slate-800 active:scale-95 transition-all"
               >
-                Get Started
+                Sign Up Free
               </button>
             </div>
 
             {/* Card 2: Professional (Featured with 'Most Popular') */}
-            <div className="p-8 rounded-2xl bg-white border-2 border-[#0B2545] shadow-xl relative flex flex-col justify-between space-y-6">
+            <div className="p-8 rounded-2xl bg-white border-2 border-[#0B2545] shadow-xl hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 relative flex flex-col justify-between space-y-6">
               <div className="absolute -top-3.5 right-6 px-3.5 py-1 bg-[#0B2545] text-white rounded-full text-[10px] font-black uppercase tracking-wider shadow">
                 Most Popular
               </div>
@@ -800,14 +814,14 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="w-full py-3 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-xs sm:text-sm font-bold text-white shadow transition-all"
+                className="w-full py-3 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-xs sm:text-sm font-bold text-white shadow-md hover:shadow-lg active:scale-95 transition-all"
               >
-                Get Started
+                Sign Up
               </button>
             </div>
 
             {/* Card 3: Enterprise */}
-            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-6">
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-bold text-[#0B2545]">Enterprise</h3>
@@ -845,7 +859,7 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => setIsDemoModalOpen(true)}
-                className="w-full py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-xs sm:text-sm font-bold text-slate-800 transition-colors"
+                className="w-full py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 text-xs sm:text-sm font-bold text-slate-800 active:scale-95 transition-all"
               >
                 Contact Sales
               </button>
@@ -857,10 +871,10 @@ export const LandingPageView: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          8. DARK NAVY CTA BANNER
+          8. DARK NAVY CTA BANNER (WITH SIGN UP BUTTON)
           ========================================================================= */}
-      <section className="bg-[#0B2545] text-white py-16 border-t border-slate-800 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-r from-[#0A2240] via-[#0B2545] to-[#071A31] text-white py-16 border-t border-slate-800 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             {/* Left Copy */}
@@ -868,19 +882,20 @@ export const LandingPageView: React.FC = () => {
               <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
                 Ready to transform your school?
               </h2>
-              <p className="text-slate-300 text-sm sm:text-base max-w-lg leading-relaxed">
+              <p className="text-slate-300 text-sm sm:text-base max-w-lg leading-relaxed font-normal">
                 Join the growing number of schools using SchoolOS to save time, reduce costs and improve learning outcomes.
               </p>
               <div className="pt-3 flex flex-wrap items-center gap-4">
                 <button
-                  onClick={() => setIsDemoModalOpen(true)}
-                  className="px-7 py-3 rounded-xl bg-white text-[#0B2545] font-bold text-sm hover:bg-slate-100 transition-colors shadow-sm"
+                  onClick={() => setAuthScreen('signup')}
+                  className="px-8 py-3.5 rounded-xl bg-white text-[#0B2545] font-bold text-sm hover:bg-slate-100 hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all shadow-md flex items-center gap-2 group"
                 >
-                  Book a Demo
+                  <span>Sign Up</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => scrollTo('contact')}
-                  className="px-7 py-3 rounded-xl bg-transparent border border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+                  className="px-7 py-3.5 rounded-xl bg-transparent border border-white/40 text-white font-semibold text-sm hover:bg-white/10 hover:border-white transition-all active:scale-95"
                 >
                   Contact Us
                 </button>
@@ -889,11 +904,11 @@ export const LandingPageView: React.FC = () => {
 
             {/* Right Photo Strip & Slogan */}
             <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-end gap-6">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 max-w-xs">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 max-w-xs group">
                 <img
                   src="/assets/ghana_students_hero.jpg"
                   alt="Ghanaian school pupils"
-                  className="w-full h-40 object-cover object-center"
+                  className="w-full h-40 object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="text-left space-y-2.5">
@@ -901,7 +916,7 @@ export const LandingPageView: React.FC = () => {
                   Better systems.<br />Brighter futures.
                 </p>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-white text-[#0B2545] flex items-center justify-center font-black text-xs">
+                  <div className="w-6 h-6 rounded-lg bg-white text-[#0B2545] flex items-center justify-center font-black text-xs shadow-sm">
                     <GraduationCap className="w-4 h-4" />
                   </div>
                   <span className="font-extrabold text-base text-white">SchoolOS</span>
@@ -923,7 +938,7 @@ export const LandingPageView: React.FC = () => {
             {/* Logo & Description */}
             <div className="space-y-1.5 max-w-sm">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-white text-[#0B2545] flex items-center justify-center font-black text-xs">
+                <div className="w-7 h-7 rounded-lg bg-white text-[#0B2545] flex items-center justify-center font-black text-xs shadow-sm">
                   <GraduationCap className="w-4 h-4" />
                 </div>
                 <span className="font-extrabold text-white text-lg">SchoolOS</span>
@@ -945,10 +960,10 @@ export const LandingPageView: React.FC = () => {
 
             {/* Social Icons */}
             <div className="flex items-center gap-4 text-slate-400">
-              <a href="#linkedin" title="LinkedIn" className="hover:text-white transition-colors"><Linkedin className="w-4 h-4" /></a>
-              <a href="#twitter" title="Twitter" className="hover:text-white transition-colors"><Twitter className="w-4 h-4" /></a>
-              <a href="#facebook" title="Facebook" className="hover:text-white transition-colors"><Facebook className="w-4 h-4" /></a>
-              <a href="#youtube" title="YouTube" className="hover:text-white transition-colors"><Youtube className="w-4 h-4" /></a>
+              <a href="#linkedin" title="LinkedIn" className="hover:text-white hover:scale-110 transition-all"><Linkedin className="w-4 h-4" /></a>
+              <a href="#twitter" title="Twitter" className="hover:text-white hover:scale-110 transition-all"><Twitter className="w-4 h-4" /></a>
+              <a href="#facebook" title="Facebook" className="hover:text-white hover:scale-110 transition-all"><Facebook className="w-4 h-4" /></a>
+              <a href="#youtube" title="YouTube" className="hover:text-white hover:scale-110 transition-all"><Youtube className="w-4 h-4" /></a>
             </div>
           </div>
 
@@ -965,11 +980,11 @@ export const LandingPageView: React.FC = () => {
       </footer>
 
       {/* =========================================================================
-          DEMO / ROLE MODAL (For 'Book a Demo' & 'View Demo' Triggers)
+          DEMO / ROLE MODAL (For 'View Demo' Triggers)
           ========================================================================= */}
       {isDemoModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-5 animate-fade-in">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-5 animate-fade-in-scale">
             <div className="flex justify-between items-center pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-[#0B2545] text-white flex items-center justify-center">
@@ -979,7 +994,7 @@ export const LandingPageView: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsDemoModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1"
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 rounded-lg hover:bg-slate-100 transition-colors"
               >
                 ✕
               </button>
@@ -992,7 +1007,7 @@ export const LandingPageView: React.FC = () => {
             <div className="space-y-2.5">
               <button
                 onClick={() => handleLaunchRoleDemo('school_admin')}
-                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group shadow-2xs hover:shadow-xs"
               >
                 <div>
                   <p className="font-bold text-xs text-[#0B2545]">Headteacher / Administrator</p>
@@ -1003,7 +1018,7 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => handleLaunchRoleDemo('teacher')}
-                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group shadow-2xs hover:shadow-xs"
               >
                 <div>
                   <p className="font-bold text-xs text-[#0B2545]">Class Teacher / Form Master</p>
@@ -1014,7 +1029,7 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => handleLaunchRoleDemo('accountant')}
-                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group shadow-2xs hover:shadow-xs"
               >
                 <div>
                   <p className="font-bold text-xs text-[#0B2545]">Bursar & Finance Desk</p>
@@ -1025,7 +1040,7 @@ export const LandingPageView: React.FC = () => {
 
               <button
                 onClick={() => handleLaunchRoleDemo('parent')}
-                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group shadow-2xs hover:shadow-xs"
               >
                 <div>
                   <p className="font-bold text-xs text-[#0B2545]">Parent & Guardian</p>

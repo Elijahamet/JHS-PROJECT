@@ -82,6 +82,24 @@
   }
 }
 
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(0.5deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -94,12 +112,22 @@
   animation: floatSlow 6s ease-in-out infinite;
 }
 
+.animate-float-reverse {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
 .animate-bounce-subtle {
   animation: bounceSubtle 2s ease-in-out infinite;
 }
 
 .animate-pulse-glow {
   animation: pulseGlow 7s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
 }
 
 /* Scroll snap utilities */
