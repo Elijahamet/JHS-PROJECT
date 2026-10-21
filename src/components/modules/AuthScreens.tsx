@@ -186,6 +186,7 @@ export const AuthScreens: React.FC = () => {
       id: 'school_admin' as const,
       title: 'School Admin',
       subtitle: 'Headteacher & Board',
+      description: 'Administration & Policy',
       icon: Shield,
       badge: 'Executive',
       color: 'blue',
@@ -194,6 +195,7 @@ export const AuthScreens: React.FC = () => {
       id: 'teacher' as const,
       title: 'Teaching Staff',
       subtitle: 'Form Masters & Faculty',
+      description: 'Marking & Attendance',
       icon: BookOpen,
       badge: 'Academic',
       color: 'indigo',
@@ -202,6 +204,7 @@ export const AuthScreens: React.FC = () => {
       id: 'accountant' as const,
       title: 'Bursary & Finance',
       subtitle: 'Fees & Accounts',
+      description: 'Billing & Ledgers',
       icon: CreditCard,
       badge: 'Bursar',
       color: 'emerald',
@@ -210,6 +213,7 @@ export const AuthScreens: React.FC = () => {
       id: 'parent' as const,
       title: 'Parent & Guardian',
       subtitle: 'Student Portal & Fees',
+      description: 'Progress & Ward Fees',
       icon: Users,
       badge: 'Family',
       color: 'purple',
@@ -304,17 +308,17 @@ export const AuthScreens: React.FC = () => {
           </div>
 
           {/* Right Column: Clean, Authoritative Institutional Sign-In Form */}
-          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-20 py-8 bg-white">
+          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-18 py-6 sm:py-8 bg-white">
             {/* Top Bar with Sign In / Register Switcher & Back to Home */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <button
                 type="button"
                 onClick={() => setAuthScreen('landing')}
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-semibold transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all"
                 title="Return to SchoolOS Landing Page"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Home</span>
+                <span>Back to Home</span>
               </button>
 
               <div className="flex items-center gap-2 text-xs">
@@ -322,31 +326,40 @@ export const AuthScreens: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setAuthScreen('signup')}
-                  className="font-bold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
+                  className="inline-flex items-center gap-1 font-bold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors px-2 py-1 rounded-md hover:bg-blue-50"
                 >
-                  Register School
+                  <span>Register School</span>
+                  <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
             </div>
 
             {/* Main Form Center Box */}
-            <div className="w-full max-w-md mx-auto my-auto py-6 space-y-6">
-              {/* Header Title */}
+            <div className="w-full max-w-md mx-auto my-auto py-5 sm:py-6 space-y-5 sm:space-y-6">
+              {/* Header Title with Official Accreditation Pill */}
               <div>
-                <h2 className="text-2xl font-black text-[#0B2545] tracking-tight">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200/80 text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span>GES Verified Institutional Portal</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-[#0B2545] tracking-tight">
                   Sign In to School Portal
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Access your designated operational cockpit, gradebook, or parent dashboard.
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Select your portal role to access your designated operational cockpit, gradebook, or parent dashboard.
                 </p>
               </div>
 
-              {/* Professional Segmented Role Switcher */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-slate-700">
-                  Select Your Portal Role:
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+              {/* Spacious, Non-Truncated 2x2 Role Selector */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    Select Your Portal Role:
+                  </label>
+                  <span className="text-[10px] text-slate-400 font-medium">Click to switch</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
                   {portalRoles.map((role) => {
                     const Icon = role.icon;
                     const isSelected = selectedPortalRole === role.id;
@@ -355,26 +368,66 @@ export const AuthScreens: React.FC = () => {
                         key={role.id}
                         type="button"
                         onClick={() => handleSelectPortalRole(role.id)}
-                        className={`py-2 px-2 rounded-lg text-left transition-all flex flex-col justify-between gap-1 ${
+                        className={`relative p-3 rounded-xl text-left transition-all duration-150 flex flex-col justify-between border group ${
                           isSelected
-                            ? 'bg-white text-[#0B2545] shadow-sm border border-slate-200/80 ring-1 ring-[#0B2545]/30'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                            ? 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/30 border-[#0B2545] shadow-sm ring-2 ring-[#0B2545]/20'
+                            : 'bg-white border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/70 text-slate-700'
                         }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#0B2545]' : 'text-slate-400'}`} />
-                          <span className={`text-[9px] font-bold uppercase tracking-wider px-1 rounded ${
-                            isSelected ? 'bg-blue-50 text-[#2563EB]' : 'text-slate-400'
-                          }`}>
+                        <div className="flex items-center justify-between w-full mb-2">
+                          <div
+                            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                              isSelected
+                                ? 'bg-[#0B2545] text-white shadow-xs'
+                                : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200/70'
+                            }`}
+                          >
+                            <Icon className="w-3.5 h-3.5" />
+                          </div>
+                          <span
+                            className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                              isSelected
+                                ? 'bg-[#0B2545]/10 text-[#0B2545] font-extrabold'
+                                : 'bg-slate-100 text-slate-500'
+                            }`}
+                          >
                             {role.badge}
                           </span>
                         </div>
-                        <span className="text-[11px] font-bold truncate">
-                          {role.title}
-                        </span>
+
+                        <div>
+                          <div className={`text-xs font-bold leading-tight ${isSelected ? 'text-[#0B2545]' : 'text-slate-900'}`}>
+                            {role.title}
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">
+                            {role.description}
+                          </div>
+                        </div>
+
+                        {isSelected && (
+                          <div className="absolute top-2.5 right-2.5">
+                            <span className="flex h-2 w-2 relative">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0B2545]" />
+                            </span>
+                          </div>
+                        )}
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Role Switcher Demo Credential Helper Banner */}
+                <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span className="truncate">
+                      Demo loaded for <strong className="text-slate-900">{portalRoles.find((r) => r.id === selectedPortalRole)?.title}</strong>
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
+                    Ready
+                  </span>
                 </div>
               </div>
 
@@ -382,18 +435,18 @@ export const AuthScreens: React.FC = () => {
               <form onSubmit={handleLogin} className="space-y-4">
                 {/* Email / Username Input */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 mb-1.5">
                     Official Work Email or Staff ID
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
                       type="email"
                       required
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       placeholder="e.g. admin@brightfutureacademy.edu.gh"
-                      className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-slate-100 transition-all font-medium"
+                      className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -401,31 +454,32 @@ export const AuthScreens: React.FC = () => {
                 {/* Password Input */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-semibold text-slate-700">
+                    <label className="block text-xs font-bold text-slate-800">
                       Account Password
                     </label>
                     <button
                       type="button"
                       onClick={() => setAuthScreen('forgot_password')}
-                      className="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
+                      className="text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
                     >
                       Forgot password?
                     </button>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
                       type={showLoginPassword ? 'text' : 'password'}
                       required
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="Enter your security password"
-                      className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-slate-100 transition-all font-medium"
+                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600 transition-colors p-0.5"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1"
+                      title={showLoginPassword ? 'Hide password' : 'Show password'}
                     >
                       {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -434,33 +488,40 @@ export const AuthScreens: React.FC = () => {
 
                 {/* Remember Me Checkbox */}
                 <div className="flex items-center justify-between pt-0.5">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <label className="flex items-center gap-2.5 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-[#0B2545] focus:ring-[#0B2545]"
+                      className="w-4 h-4 rounded border-slate-300 text-[#0B2545] focus:ring-[#0B2545] cursor-pointer"
                     />
                     <span className="text-xs text-slate-600 font-medium">
                       Keep me authenticated on this device
                     </span>
                   </label>
+                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>256-bit SSL</span>
+                  </span>
                 </div>
 
                 {/* Submit Sign In Button */}
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+                  className="w-full py-3 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group active:scale-[0.99]"
                 >
                   <span>Sign In as {portalRoles.find((r) => r.id === selectedPortalRole)?.title}</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </form>
             </div>
 
             {/* Bottom Support & Legal Links */}
             <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-2">
-              <p>Ghana Education Service (GES) Accredited Platform</p>
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Ghana Education Service (GES) Accredited Platform</span>
+              </div>
               <div className="flex items-center gap-4 text-slate-500 font-medium">
                 <a href="#help" className="hover:text-slate-900 transition-colors">Help Desk</a>
                 <span>•</span>
