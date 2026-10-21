@@ -194,123 +194,26 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Hero Visual with Real Pupils & Floating Live Dashboard UI */}
-            <div className="lg:col-span-6 relative w-full pt-2">
-              {/* Authentic Photo of Ghanaian Pupils - perfectly contained and responsive */}
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 w-full relative group">
+            {/* Right Column: Hero Visual with Real Pupils */}
+            <div className="lg:col-span-6 relative w-full flex items-center justify-center">
+              {/* Authentic Photo of Ghanaian Pupils */}
+              <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 bg-slate-100 w-full relative group">
                 <img
-                  src="/assets/login-hero.jpg"
-                  alt="Ghanaian school pupils smiling together in classroom"
-                  className="w-full h-72 sm:h-88 md:h-96 lg:h-[410px] object-cover object-[center_18%] group-hover:scale-105 transition-transform duration-700 ease-out"
+                  src="/assets/ghana_students_hero.jpg"
+                  alt="Ghanaian school pupils smiling together in school courtyard"
+                  className="w-full h-80 sm:h-96 lg:h-[460px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent pointer-events-none" />
 
-                {/* Live Session Pill in Top-Right */}
-                <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 shadow-md flex items-center gap-2 text-[11px] font-bold text-[#0B2545]">
+                {/* Floating Live Badge Top-Right */}
+                <div className="absolute top-4 right-4 z-10 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-lg flex items-center gap-2 text-xs font-bold text-[#0B2545] animate-float-slow">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                  <span>Active Term Session</span>
-                </div>
-              </div>
-
-              {/* Overlapping Realistic Desktop Dashboard Mockup with Floating Animation */}
-              <div className="relative -mt-20 sm:-mt-28 mx-auto w-[94%] sm:w-[92%] rounded-2xl bg-white border border-slate-200 shadow-[0_20px_50px_rgba(11,37,69,0.22)] overflow-hidden text-xs z-20 animate-float-slow hover:[animation-play-state:paused] transition-all duration-300">
-                {/* Dashboard Frame Header */}
-                <div className="bg-[#0B2545] text-white px-3.5 py-2.5 flex items-center justify-between border-b border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-rose-400"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-                    <span className="font-bold text-[11px] ml-1.5 tracking-tight">SchoolOS Administration</span>
-                  </div>
-                  <span className="text-[10px] text-slate-300 font-medium bg-white/10 px-2 py-0.5 rounded flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    Bright Future Academy
-                  </span>
+                  <span>99.4% Attendance Today</span>
                 </div>
 
-                {/* Dashboard Inner Layout */}
-                <div className="flex bg-slate-50">
-                  {/* Miniature Sidebar */}
-                  <div className="w-32 bg-[#0B2545] text-slate-300 p-2.5 space-y-1 shrink-0 hidden sm:block">
-                    <div className="px-2 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1.5 shadow-sm">
-                      <TrendingUp className="w-3 h-3" />
-                      <span>Dashboard</span>
-                    </div>
-                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Students</div>
-                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Teachers</div>
-                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Attendance</div>
-                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Results & SBA</div>
-                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Fees Ledger</div>
-                  </div>
-
-                  {/* Miniature Content Area */}
-                  <div className="flex-1 p-3 sm:p-3.5 space-y-2.5 bg-slate-50/70">
-                    {/* Greeting & Header */}
-                    <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
-                      <div>
-                        <p className="font-black text-[#0B2545] text-xs sm:text-sm">Good morning, Admin.</p>
-                        <p className="text-[9px] sm:text-[10px] text-slate-500">Here's what's happening today.</p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-blue-100 text-[#0B2545] font-bold text-[10px] flex items-center justify-center">
-                        AD
-                      </div>
-                    </div>
-
-                    {/* Stat Cards Row with Hover Lift */}
-                    <div className="grid grid-cols-4 gap-1.5 text-center">
-                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
-                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Students</p>
-                        <p className="font-black text-[#0B2545] text-xs sm:text-sm mt-0.5">428</p>
-                      </div>
-                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
-                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Teachers</p>
-                        <p className="font-black text-[#0B2545] text-xs sm:text-sm mt-0.5">36</p>
-                      </div>
-                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
-                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Classes</p>
-                        <p className="font-black text-[#0B2545] text-xs sm:text-sm mt-0.5">18</p>
-                      </div>
-                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
-                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Attendance</p>
-                        <p className="font-black text-emerald-600 text-xs sm:text-sm mt-0.5">94%</p>
-                      </div>
-                    </div>
-
-                    {/* Financial Overview & Recent Payments */}
-                    <div className="grid grid-cols-2 gap-2 text-[9px] sm:text-[10px]">
-                      {/* Attendance & Finance Card */}
-                      <div className="p-2 rounded-lg bg-white border border-slate-200 shadow-2xs space-y-1">
-                        <p className="font-bold text-slate-800 text-[10px]">Financial Overview</p>
-                        <div className="space-y-0.5">
-                          <p className="text-emerald-700 font-extrabold text-xs">GH₵ 48,750</p>
-                          <p className="text-[8px] text-slate-500">Total Fees (Term 1)</p>
-                        </div>
-                        <div className="pt-0.5 border-t border-slate-100 flex justify-between text-[8px]">
-                          <span className="text-slate-500">Outstanding:</span>
-                          <span className="font-bold text-rose-600">GH₵ 12,350</span>
-                        </div>
-                      </div>
-
-                      {/* Recent Payment Table Snapshot */}
-                      <div className="p-2 rounded-lg bg-white border border-slate-200 shadow-2xs space-y-1">
-                        <p className="font-bold text-slate-800 text-[10px]">Recent Payments</p>
-                        <div className="space-y-1 text-[8px]">
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium text-slate-700">Akua Boateng</span>
-                            <span className="px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold">Paid</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium text-slate-700">Kwame Mensah</span>
-                            <span className="px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold">Paid</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium text-slate-700">Abena Osei</span>
-                            <span className="px-1 py-0.2 rounded bg-amber-50 text-amber-700 font-bold">Pending</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                {/* Floating School Identity Bottom-Left */}
+                <div className="absolute bottom-4 left-4 z-10 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-lg flex items-center gap-2 text-xs font-bold text-[#0B2545] animate-float-reverse">
+                  <GraduationCap className="w-4 h-4 text-[#2563EB]" />
+                  <span>Accra Basic School</span>
                 </div>
               </div>
             </div>
