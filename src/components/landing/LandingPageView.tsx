@@ -409,13 +409,17 @@ export const LandingPageView: React.FC = () => {
       {/* =========================================================================
           5. SECTION: SEE IT IN ACTION
           ========================================================================= */}
-      <section id="solutions" className="py-20 md:py-28 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="solutions" className="py-20 md:py-28 bg-[#0B2545] text-white relative overflow-hidden border-t border-slate-800">
+        {/* Subtle glowing ambient lights in background */}
+        <div className="absolute top-1/3 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             {/* Left Photo: Ghanaian Pupil in Uniform Holding Books */}
             <div className="lg:col-span-4 flex justify-center w-full">
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 w-full max-w-[280px] sm:max-w-xs group bg-slate-100">
+              <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/10 w-full max-w-[280px] sm:max-w-xs group bg-slate-900">
                 <img
                   src="/assets/ghana_pupil_books.jpg"
                   alt="Ghanaian primary school pupil smiling with textbooks"
@@ -426,38 +430,38 @@ export const LandingPageView: React.FC = () => {
 
             {/* Center: Details & Feature Checklist */}
             <div className="lg:col-span-4 space-y-5 text-left w-full">
-              <span className="text-xs font-extrabold text-[#2563EB] tracking-wider uppercase">
+              <span className="text-xs font-extrabold text-blue-400 tracking-wider uppercase">
                 SEE IT IN ACTION
               </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-[#0B2545] tracking-tight leading-tight">
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
                 A complete view of your school
               </h2>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <p className="text-sm text-slate-300 leading-relaxed font-normal">
                 Get a clear overview of your school's performance, finances, attendance and more — all from a modern, easy-to-use dashboard.
               </p>
 
               {/* Bullet Points with Hover Glow */}
-              <ul className="space-y-3 text-xs sm:text-sm text-slate-700 font-medium pt-2">
+              <ul className="space-y-3.5 text-xs sm:text-sm text-slate-200 font-medium pt-2">
                 <li className="flex items-center gap-3 group">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
+                  <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Beautiful and intuitive interface</span>
                 </li>
                 <li className="flex items-center gap-3 group">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
+                  <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Works on desktop, tablet and mobile</span>
                 </li>
                 <li className="flex items-center gap-3 group">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
+                  <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Role-based access for different users</span>
                 </li>
                 <li className="flex items-center gap-3 group">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 group-hover:bg-[#0B2545] group-hover:text-white transition-colors">
+                  <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <span>Real-time updates and notifications</span>
@@ -467,7 +471,7 @@ export const LandingPageView: React.FC = () => {
               <div className="pt-3">
                 <button
                   onClick={() => setIsDemoModalOpen(true)}
-                  className="px-7 py-3 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+                  className="px-7 py-3 text-sm font-bold text-[#0B2545] bg-white hover:bg-slate-100 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
                 >
                   View Demo
                 </button>
@@ -477,35 +481,35 @@ export const LandingPageView: React.FC = () => {
             {/* Right: Dual Device Previews (Desktop Analytics + Mobile Smartphone) */}
             <div className="lg:col-span-4 flex items-center justify-center relative w-full overflow-hidden sm:overflow-visible py-4">
               {/* Desktop Dashboard Card with Subtle Inverse Float */}
-              <div className="w-48 sm:w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-3.5 space-y-2 opacity-95 hidden sm:block animate-float-reverse shrink-0">
-                <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[11px] font-bold text-slate-700">
+              <div className="w-48 sm:w-56 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl p-3.5 space-y-2 opacity-95 hidden sm:block animate-float-reverse shrink-0">
+                <div className="flex items-center justify-between pb-1.5 border-b border-white/10 text-[11px] font-bold text-white">
                   <span>Class Performance</span>
-                  <span className="text-emerald-600 text-[10px] flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span className="text-emerald-400 text-[10px] flex items-center gap-1 font-semibold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                     Live
                   </span>
                 </div>
-                <div className="h-16 bg-slate-50 rounded-xl border border-slate-100 p-2 flex items-end justify-between gap-1.5">
+                <div className="h-16 bg-white/5 rounded-xl border border-white/10 p-2 flex items-end justify-between gap-1.5">
                   <div className="w-3 bg-blue-400 rounded-t h-[55%] transition-all hover:h-[70%]"></div>
                   <div className="w-3 bg-blue-500 rounded-t h-[70%] transition-all hover:h-[80%]"></div>
                   <div className="w-3 bg-blue-600 rounded-t h-[88%] transition-all hover:h-[95%]"></div>
-                  <div className="w-3 bg-[#0B2545] rounded-t h-[80%] transition-all hover:h-[90%]"></div>
-                  <div className="w-3 bg-emerald-500 rounded-t h-[95%] transition-all hover:h-full"></div>
+                  <div className="w-3 bg-blue-300 rounded-t h-[80%] transition-all hover:h-[90%]"></div>
+                  <div className="w-3 bg-emerald-400 rounded-t h-[95%] transition-all hover:h-full"></div>
                 </div>
-                <div className="space-y-1 text-[9px] text-slate-500 pt-1">
+                <div className="space-y-1 text-[9px] text-slate-300 pt-1">
                   <div className="flex justify-between">
                     <span>Average Attendance</span>
-                    <span className="font-extrabold text-[#0B2545]">96.4%</span>
+                    <span className="font-extrabold text-white">96.4%</span>
                   </div>
                   <div className="flex justify-between">
                     <span>MoMo Fee Recovery</span>
-                    <span className="font-extrabold text-emerald-600">92.8%</span>
+                    <span className="font-extrabold text-emerald-400">92.8%</span>
                   </div>
                 </div>
               </div>
 
               {/* Mobile Phone Device Mockup with Float Animation */}
-              <div className="w-52 sm:w-56 -ml-8 sm:-ml-12 rounded-[2.2rem] bg-white border-4 border-slate-900 shadow-2xl p-3 space-y-2.5 z-10 ring-4 sm:ring-8 ring-slate-100 animate-float-slow shrink-0">
+              <div className="w-52 sm:w-56 -ml-8 sm:-ml-12 rounded-[2.2rem] bg-white border-4 border-slate-900 shadow-2xl p-3 space-y-2.5 z-10 ring-4 sm:ring-8 ring-white/10 animate-float-slow shrink-0 text-slate-900">
                 <div className="w-12 h-1 bg-slate-900 rounded-full mx-auto mb-1"></div>
                 <div className="flex justify-between items-center text-[9px] text-slate-400 px-1">
                   <span className="font-extrabold text-[#0B2545]">SchoolOS Mobile</span>
