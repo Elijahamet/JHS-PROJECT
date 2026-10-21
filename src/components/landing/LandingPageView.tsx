@@ -196,12 +196,12 @@ export const LandingPageView: React.FC = () => {
 
             {/* Right Column: Hero Visual with Real Pupils */}
             <div className="lg:col-span-6 relative w-full flex items-center justify-center">
-              {/* Authentic Photo of Ghanaian Pupils */}
-              <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 bg-slate-100 w-full relative group">
+              {/* Authentic Photo of Ghanaian Pupils - Sized Elegantly */}
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 w-full max-w-sm sm:max-w-md lg:max-w-[440px] relative group">
                 <img
                   src="/assets/ghana_students_hero.jpg"
                   alt="Ghanaian school pupils smiling together in school courtyard"
-                  className="w-full h-80 sm:h-96 lg:h-[460px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  className="w-full h-64 sm:h-76 lg:h-[350px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
             </div>
