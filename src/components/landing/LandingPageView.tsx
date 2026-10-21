@@ -203,18 +203,6 @@ export const LandingPageView: React.FC = () => {
                   alt="Ghanaian school pupils smiling together in school courtyard"
                   className="w-full h-80 sm:h-96 lg:h-[460px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-
-                {/* Floating Live Badge Top-Right */}
-                <div className="absolute top-4 right-4 z-10 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-lg flex items-center gap-2 text-xs font-bold text-[#0B2545] animate-float-slow">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                  <span>99.4% Attendance Today</span>
-                </div>
-
-                {/* Floating School Identity Bottom-Left */}
-                <div className="absolute bottom-4 left-4 z-10 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-lg flex items-center gap-2 text-xs font-bold text-[#0B2545] animate-float-reverse">
-                  <GraduationCap className="w-4 h-4 text-[#2563EB]" />
-                  <span>Accra Basic School</span>
-                </div>
               </div>
             </div>
 
