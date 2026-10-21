@@ -6,7 +6,6 @@ import {
   LogOut,
   Calendar,
   MessageSquare,
-  Globe,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -205,21 +204,12 @@ export const Header: React.FC = () => {
           </div>
 
           <button
-            onClick={() => setAuthScreen('landing')}
-            title="View SchoolOS Landing Page"
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
-          >
-            <Globe className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden lg:inline">Landing Page</span>
-          </button>
-
-          <button
             onClick={() => setAuthScreen('login')}
             title="Log Out of Platform"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-xl transition-all shadow-2xs active:scale-[0.98]"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Log Out</span>
+            <span>Log Out</span>
           </button>
         </div>
       </div>
