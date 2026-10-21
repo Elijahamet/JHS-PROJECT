@@ -217,7 +217,7 @@ export const AuthScreens: React.FC = () => {
   ];
 
   return (
-    <div className="h-screen w-screen max-h-screen overflow-hidden bg-slate-900 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="h-screen w-screen max-h-screen overflow-hidden bg-slate-900 text-slate-900 flex flex-col font-sans selection:bg-[#0B2545] selection:text-white">
       {/* Top Ghana National Branding Bar */}
       <div className="h-1 w-full bg-gradient-to-r from-red-600 via-amber-400 to-emerald-600 shrink-0 z-20" />
 
@@ -227,7 +227,7 @@ export const AuthScreens: React.FC = () => {
       {authScreen === 'login' && (
         <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
           {/* Left Hero Column: Authentic Editorial Brand Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
             {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
             <img
               src="/assets/login-hero.jpg"
@@ -236,14 +236,13 @@ export const AuthScreens: React.FC = () => {
             />
 
             {/* Subtle Aesthetic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/85 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-950/30 via-transparent to-amber-950/15 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0B2545]/80 via-[#0B2545]/30 to-[#0B2545]/90 pointer-events-none" />
 
             {/* Top Institutional Header */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-md ring-1 ring-white/20 shrink-0">
-                  SOS
+                <div className="w-10 h-10 rounded-xl bg-white text-[#0B2545] flex items-center justify-center font-black text-xs shadow-md ring-1 ring-white/20 shrink-0">
+                  <GraduationCap className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -255,7 +254,7 @@ export const AuthScreens: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-white/80 font-medium mt-1 drop-shadow-sm">
-                    Basic & Junior High Operating System
+                    The Operating System for Modern Schools
                   </p>
                 </div>
               </div>
@@ -323,7 +322,7 @@ export const AuthScreens: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setAuthScreen('signup')}
-                  className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                  className="font-bold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
                 >
                   Register School
                 </button>
@@ -334,7 +333,7 @@ export const AuthScreens: React.FC = () => {
             <div className="w-full max-w-md mx-auto my-auto py-6 space-y-6">
               {/* Header Title */}
               <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl font-black text-[#0B2545] tracking-tight">
                   Sign In to School Portal
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
@@ -358,14 +357,14 @@ export const AuthScreens: React.FC = () => {
                         onClick={() => handleSelectPortalRole(role.id)}
                         className={`py-2 px-2 rounded-lg text-left transition-all flex flex-col justify-between gap-1 ${
                           isSelected
-                            ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80 ring-1 ring-blue-600/20'
+                            ? 'bg-white text-[#0B2545] shadow-sm border border-slate-200/80 ring-1 ring-[#0B2545]/30'
                             : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
+                          <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#0B2545]' : 'text-slate-400'}`} />
                           <span className={`text-[9px] font-bold uppercase tracking-wider px-1 rounded ${
-                            isSelected ? 'bg-blue-50 text-blue-700' : 'text-slate-400'
+                            isSelected ? 'bg-blue-50 text-[#2563EB]' : 'text-slate-400'
                           }`}>
                             {role.badge}
                           </span>
@@ -394,7 +393,7 @@ export const AuthScreens: React.FC = () => {
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       placeholder="e.g. admin@brightfutureacademy.edu.gh"
-                      className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                      className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-slate-100 transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -408,7 +407,7 @@ export const AuthScreens: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setAuthScreen('forgot_password')}
-                      className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                      className="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
                     >
                       Forgot password?
                     </button>
@@ -421,7 +420,7 @@ export const AuthScreens: React.FC = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="Enter your security password"
-                      className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                      className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-slate-100 transition-all font-medium"
                     />
                     <button
                       type="button"
@@ -440,7 +439,7 @@ export const AuthScreens: React.FC = () => {
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="w-4 h-4 rounded border-slate-300 text-[#0B2545] focus:ring-[#0B2545]"
                     />
                     <span className="text-xs text-slate-600 font-medium">
                       Keep me authenticated on this device
@@ -451,7 +450,7 @@ export const AuthScreens: React.FC = () => {
                 {/* Submit Sign In Button */}
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
                 >
                   <span>Sign In as {portalRoles.find((r) => r.id === selectedPortalRole)?.title}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -478,7 +477,7 @@ export const AuthScreens: React.FC = () => {
       {authScreen === 'signup' && (
         <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
           {/* Left Column: Exclusive Institutional Registration Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-slate-950 flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
             {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
             <img
               src="/assets/signup-hero.jpg"
@@ -487,14 +486,13 @@ export const AuthScreens: React.FC = () => {
             />
 
             {/* Subtle Aesthetic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/20 to-slate-950/85 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950/30 via-transparent to-teal-950/15 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0B2545]/80 via-[#0B2545]/30 to-[#0B2545]/90 pointer-events-none" />
 
             {/* Top Brand Lockup */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-xs shadow-md ring-1 ring-white/20 shrink-0">
-                  SOS
+                <div className="w-10 h-10 rounded-xl bg-white text-[#0B2545] flex items-center justify-center font-black text-xs shadow-md ring-1 ring-white/20 shrink-0">
+                  <GraduationCap className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -506,7 +504,7 @@ export const AuthScreens: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-white/80 font-medium mt-1 drop-shadow-sm">
-                    Basic & Junior High Operating System
+                    The Operating System for Modern Schools
                   </p>
                 </div>
               </div>
@@ -566,7 +564,7 @@ export const AuthScreens: React.FC = () => {
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Home</span>
                 </button>
-                <span className="font-bold text-slate-900 text-sm">
+                <span className="font-bold text-[#0B2545] text-sm">
                   School Registration
                 </span>
                 <span className="text-xs text-slate-400">• Step {signupStep} of 2</span>
@@ -577,7 +575,7 @@ export const AuthScreens: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setAuthScreen('login')}
-                  className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                  className="font-bold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
                 >
                   Sign In Here
                 </button>
@@ -587,7 +585,7 @@ export const AuthScreens: React.FC = () => {
             {/* Main Form Center Content */}
             <div className="w-full max-w-xl mx-auto my-auto py-4 space-y-5">
               <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl font-black text-[#0B2545] tracking-tight">
                   {signupStep === 1 ? 'Step 1: School Identity & Location' : 'Step 2: Administrator & Security Setup'}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
@@ -599,8 +597,8 @@ export const AuthScreens: React.FC = () => {
 
               {/* Progress Indicator */}
               <div className="flex items-center gap-2">
-                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
-                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 2 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 1 ? 'bg-[#0B2545]' : 'bg-slate-200'}`} />
+                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 2 ? 'bg-[#0B2545]' : 'bg-slate-200'}`} />
               </div>
 
               {/* Success Notification */}
@@ -715,7 +713,7 @@ export const AuthScreens: React.FC = () => {
 
                     <button
                       type="submit"
-                      className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 mt-4"
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 mt-4"
                     >
                       <span>Continue to Administrator Setup</span>
                       <ArrowRight className="w-4 h-4" />
@@ -868,12 +866,12 @@ export const AuthScreens: React.FC = () => {
                         required
                         checked={agreeTerms}
                         onChange={(e) => setAgreeTerms(e.target.checked)}
-                        className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0 mt-0.5"
+                        className="w-4 h-4 rounded border-slate-300 text-[#0B2545] focus:ring-[#0B2545] shrink-0 mt-0.5"
                       />
                       <span className="text-[11px] text-slate-600 leading-snug">
                         I verify that I am an authorized representative of this educational institution and agree to the{' '}
-                        <span className="text-blue-600 font-semibold underline">Terms of Service</span> and{' '}
-                        <span className="text-blue-600 font-semibold underline">Ghana Data Protection Standards</span>.
+                        <span className="text-[#2563EB] font-semibold underline">Terms of Service</span> and{' '}
+                        <span className="text-[#2563EB] font-semibold underline">Ghana Data Protection Standards</span>.
                       </span>
                     </label>
 
@@ -889,7 +887,7 @@ export const AuthScreens: React.FC = () => {
 
                       <button
                         type="submit"
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2"
                       >
                         <span>Create School Account & Launch</span>
                         <ArrowRight className="w-4 h-4" />
@@ -969,7 +967,7 @@ export const AuthScreens: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-semibold text-xs shadow-sm transition-colors"
                 >
                   Send Recovery Link
                 </button>
@@ -1050,7 +1048,7 @@ export const AuthScreens: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-all"
+                className="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-semibold text-xs shadow-sm transition-all"
               >
                 Update Password & Return to Portal
               </button>

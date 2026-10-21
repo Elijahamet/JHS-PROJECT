@@ -1,1236 +1,1009 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   GraduationCap,
-  Building2,
+  Shield,
+  User,
   Users,
-  CreditCard,
-  BookOpen,
-  ShieldCheck,
-  CheckCircle2,
-  ArrowRight,
-  Star,
-  Smartphone,
-  FileText,
-  ScanLine,
-  Zap,
   Check,
-  ChevronDown,
-  ChevronUp,
   CalendarCheck,
-  Receipt,
-  Lock,
-  Layers,
-  Phone,
-  Mail,
-  MapPin,
+  Award,
+  FileText,
+  CreditCard,
+  Utensils,
+  Bus,
+  MessageSquare,
+  FileEdit,
+  Eye,
+  AlertCircle,
+  FilePlus,
+  ArrowRight,
   Play,
-  HeartHandshake,
-  LayoutDashboard,
-  FileSpreadsheet,
-  Megaphone,
-  CheckCircle,
-  Sparkles,
-  ArrowDown,
+  Linkedin,
+  Twitter,
+  Facebook,
+  Youtube,
+  Lock,
   ChevronRight,
-  ArrowUp,
+  TrendingUp,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const LandingPageView: React.FC = () => {
-  const { setAuthScreen, setUserRole, currentSchool } = useApp();
+  const { setAuthScreen, setUserRole } = useApp();
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
-  const [activePortalTab, setActivePortalTab] = useState<'admin' | 'teacher' | 'bursar' | 'parent'>('admin');
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [billingCycle, setBillingCycle] = useState<'term' | 'annual'>('term');
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Smooth scroll to target page
-  const scrollToPage = (pageIndex: number) => {
-    const pageId = `page-${pageIndex}`;
-    const element = document.getElementById(pageId);
+  // Smooth scrolling helper
+  const scrollTo = (id: string) => {
+    const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
-  // Launch live interactive demo into specific persona
+  // Launch role demo
   const handleLaunchRoleDemo = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
     setUserRole(role);
     setAuthScreen('authenticated');
   };
 
-  const faqs = [
-    {
-      q: 'Is SchoolOS aligned with Ghana Education Service (GES) and NaCCA standards?',
-      a: 'Yes, completely. SchoolOS is designed specifically around the NaCCA curriculum framework for Kindergarten (KG 1–2), Primary (Basic 1–6), and Junior High School (JHS 1–3). It handles continuous assessment (50/50 SBA), calculates terminal exam totals, assigns Stanine grades (1 to 9), and generates standardized terminal report cards with position rankings.',
-    },
-    {
-      q: 'How does Mobile Money (MoMo) fee collection work?',
-      a: 'Parents can pay school tuition, feeding fees, and PTA dues directly from their phones using MTN Mobile Money, Telecel Cash, or AT Money. Payments deposit directly into the school account, an instant digital receipt is generated, and the bursar ledger updates automatically with zero cash handling.',
-    },
-    {
-      q: 'Can the school use SchoolOS when the internet is down?',
-      a: 'Yes. SchoolOS features an offline-first architecture. Teachers can record daily roll call, enter assessment marks, and view class rosters even without an internet connection. All data automatically synchronizes as soon as connectivity is restored.',
-    },
-    {
-      q: 'How are new students placed into their classes?',
-      a: 'When you enroll a student, you select their academic stage and class (e.g. Basic 3 or JHS 1). The student is automatically added to that class stream, the teacher roster updates, and the class appears immediately on the Classes & Subjects page.',
-    },
-    {
-      q: 'Can we print physical report cards and official receipts?',
-      a: 'Yes. SchoolOS generates clean, high-resolution printable report cards featuring your official school crest, headteacher signature, position ranks, and teacher conduct remarks. Official receipts include institutional stamps and unique reference numbers.',
-    },
-  ];
-
   return (
-    <div
-      ref={containerRef}
-      className="page-snap-container bg-white text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white relative"
-    >
-
-
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-[#0B2545] selection:text-white">
       {/* =========================================================================
-          PAGE 1: OVERVIEW & HERO
+          1. NAVIGATION HEADER
           ========================================================================= */}
-      <section
-        id="page-1"
-        className="page-snap-section min-h-screen flex flex-col justify-between bg-gradient-to-b from-slate-50 via-white to-white relative overflow-hidden"
-      >
-        {/* Subtle Ambient Glow Behind Content */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-100/40 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-
-        {/* Top Header Group */}
-        <div>
-          {/* Top Banner */}
-          <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 text-center font-medium border-b border-slate-800">
-            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Built for Ghanaian Basic Schools & Junior High Schools • Aligned with GES & NaCCA Standards</span>
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          {/* Brand Logo */}
+          <div
+            onClick={() => scrollTo('hero')}
+            className="flex items-center gap-2.5 cursor-pointer select-none"
+          >
+            <div className="w-8 h-8 rounded-lg bg-[#0B2545] flex items-center justify-center text-white shadow-xs">
+              <GraduationCap className="w-5 h-5" />
             </div>
+            <span className="font-extrabold text-2xl text-[#0B2545] tracking-tight">
+              SchoolOS
+            </span>
           </div>
 
-          {/* Main Navigation Header */}
-          <header className="bg-white/95 backdrop-blur-md border-b border-slate-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-              {/* Brand Logo */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-600/20">
-                  <span>S</span>
-                  <span className="text-cyan-300">OS</span>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-xl text-slate-900 tracking-tight">SchoolOS</span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-blue-50 text-blue-700 border border-blue-200">
-                      Ghana Basic & JHS
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 font-medium">Institutional Operating System</p>
-                </div>
-              </div>
-
-              {/* Navigation Links (Smooth Jump to Pages) */}
-              <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600">
-                <button onClick={() => scrollToPage(1)} className="hover:text-blue-600 transition-colors">Overview</button>
-                <button onClick={() => scrollToPage(2)} className="hover:text-blue-600 transition-colors">Classroom Life</button>
-                <button onClick={() => scrollToPage(3)} className="hover:text-blue-600 transition-colors">4 Portals</button>
-                <button onClick={() => scrollToPage(4)} className="hover:text-blue-600 transition-colors">NaCCA & GES</button>
-                <button onClick={() => scrollToPage(5)} className="hover:text-blue-600 transition-colors">Testimonials</button>
-                <button onClick={() => scrollToPage(6)} className="hover:text-blue-600 transition-colors">Pricing</button>
-                <button onClick={() => scrollToPage(7)} className="hover:text-blue-600 transition-colors">FAQs</button>
-              </nav>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setAuthScreen('login')}
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg transition-colors shadow-2xs"
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={() => setAuthScreen('signup')}
-                  className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5"
-                >
-                  <span>Register School</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </header>
-        </div>
-
-        {/* Hero Body */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 my-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            
-            {/* Left Column: Human Value Proposition */}
-            <div className="lg:col-span-7 text-left space-y-6 animate-fade-in-up">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold">
-                <span className="w-2 h-2 rounded-full bg-blue-600" />
-                <span>The Modern Operating System for Ghanaian Schools</span>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
-                A calmer, simpler way to run your school.
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl">
-                Built specifically for Ghanaian educational reality: from <strong>Kindergarten (KG 1–2)</strong> and <strong>Primary (Basic 1–6)</strong> to <strong>Junior High (JHS 1–3)</strong>.
-                Manage student enrollment, continuous assessment (50/50 SBA), terminal report cards with position rankings, and Mobile Money fee collection.
-              </p>
-
-              {/* Actions */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
-                <button
-                  onClick={() => setAuthScreen('signup')}
-                  className="px-7 py-3.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Register Your School Free</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={() => handleLaunchRoleDemo('school_admin')}
-                  className="px-6 py-3.5 text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl shadow-2xs transition-all flex items-center justify-center gap-2"
-                >
-                  <Play className="w-4 h-4 text-blue-600 fill-blue-600/20" />
-                  <span>Explore Live Demo</span>
-                </button>
-              </div>
-
-              {/* Feature Highlights */}
-              <div className="pt-4 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-600">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span className="font-medium">NaCCA 50/50 SBA</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span className="font-medium">MTN & Telecel MoMo</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span className="font-medium">Works Offline</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span className="font-medium">Act 843 Compliant</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Clean, Framed Authentic Photo (ZERO text on top) */}
-            <div className="lg:col-span-5 animate-fade-in-scale">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100 transition-all duration-300 hover:shadow-2xl">
-                <img
-                  src="/assets/ghana_students_hero.jpg"
-                  alt="Ghanaian basic school pupils in uniform walking together on school campus"
-                  className="w-full h-[380px] sm:h-[440px] object-cover object-center"
-                />
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Page 1 Bottom: Metric Strip & Next Page Arrow */}
-        <div className="bg-slate-50 border-t border-slate-200 py-6 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 text-center flex-1">
-              <div>
-                <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">180+</p>
-                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Ghanaian Schools</p>
-              </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight">45,000+</p>
-                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Enrolled Pupils</p>
-              </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight">99.4%</p>
-                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Fee Collection</p>
-              </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">1 Click</p>
-                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Terminal Reports</p>
-              </div>
-            </div>
-
-            {/* Next Page Prompt */}
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
             <button
-              onClick={() => scrollToPage(2)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
+              onClick={() => scrollTo('hero')}
+              className="hover:text-[#0B2545] transition-colors"
             >
-              <span>Next: Classroom Life</span>
-              <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
+              Home
+            </button>
+            <button
+              onClick={() => scrollTo('features')}
+              className="hover:text-[#0B2545] transition-colors"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => scrollTo('solutions')}
+              className="hover:text-[#0B2545] transition-colors"
+            >
+              Solutions
+            </button>
+            <button
+              onClick={() => scrollTo('how-it-works')}
+              className="hover:text-[#0B2545] transition-colors"
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => scrollTo('pricing')}
+              className="hover:text-[#0B2545] transition-colors"
+            >
+              Pricing
+            </button>
+            <button
+              onClick={() => scrollTo('contact')}
+              className="hover:text-[#0B2545] transition-colors"
+            >
+              Contact
+            </button>
+          </nav>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setAuthScreen('login')}
+              className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-[#0B2545] transition-colors"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setIsDemoModalOpen(true)}
+              className="px-5 py-2.5 text-xs font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-lg shadow-sm transition-all"
+            >
+              Book a Demo
             </button>
           </div>
         </div>
+      </header>
+
+      {/* =========================================================================
+          2. HERO SECTION
+          ========================================================================= */}
+      <section id="hero" className="relative pt-12 pb-16 lg:pt-16 lg:pb-24 overflow-hidden bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column: Headlines & Call to Actions */}
+            <div className="lg:col-span-6 space-y-6 text-left">
+              <span className="inline-block text-xs font-bold text-[#2563EB] tracking-wider uppercase">
+                SCHOOL MANAGEMENT SOFTWARE
+              </span>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-[#0B2545] tracking-tight leading-[1.12]">
+                The operating system for modern schools.
+              </h1>
+
+              <p className="text-base text-slate-600 leading-relaxed max-w-xl">
+                SchoolOS helps private schools manage students, fees, attendance, communication and more — all in one place. Save time, reduce workload and create a better learning experience for everyone.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-4">
+                <button
+                  onClick={() => setIsDemoModalOpen(true)}
+                  className="px-7 py-3 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-lg shadow-sm hover:shadow transition-all"
+                >
+                  Book a Demo
+                </button>
+                <button
+                  onClick={() => scrollTo('features')}
+                  className="px-6 py-3 text-sm font-semibold text-slate-700 hover:text-[#0B2545] bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Explore Features
+                </button>
+              </div>
+
+              {/* 3 Value Propositions */}
+              <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-6 sm:gap-8 text-xs text-slate-600 font-medium">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-slate-700" />
+                  <span>Secure & Reliable</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-slate-700" />
+                  <span>Easy to Use</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="w-4 h-4 text-slate-700" />
+                  <span>Built for Ghanaian Schools</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Hero Visual with Real Pupils & Overlapping Dashboard UI */}
+            <div className="lg:col-span-6 relative">
+              {/* Authentic Photo of Ghanaian Pupils */}
+              <div className="rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-slate-100 max-w-md ml-auto">
+                <img
+                  src="/assets/ghana_students_hero.jpg"
+                  alt="Ghanaian school pupils smiling together in classroom"
+                  className="w-full h-80 sm:h-96 object-cover object-center"
+                />
+              </div>
+
+              {/* Overlapping Realistic Desktop Dashboard Mockup */}
+              <div className="mt-[-90px] sm:mt-[-120px] mr-auto lg:mr-12 max-w-lg rounded-2xl bg-white border border-slate-200/90 shadow-2xl overflow-hidden text-xs relative z-10 transition-all hover:shadow-2xl">
+                {/* Dashboard Frame Header */}
+                <div className="bg-[#0B2545] text-white px-3.5 py-2.5 flex items-center justify-between border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-rose-400"></div>
+                    <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                    <span className="font-bold text-[11px] ml-1 tracking-tight">SchoolOS Administration</span>
+                  </div>
+                  <span className="text-[10px] text-slate-300 font-medium">Bright Future Academy</span>
+                </div>
+
+                {/* Dashboard Inner Layout */}
+                <div className="flex bg-slate-50">
+                  {/* Miniature Sidebar */}
+                  <div className="w-32 bg-[#0B2545] text-slate-300 p-2.5 space-y-1.5 shrink-0 hidden sm:block">
+                    <div className="px-2 py-1 rounded bg-blue-600/30 text-white font-bold text-[10px]">Dashboard</div>
+                    <div className="px-2 py-1 text-slate-400 text-[10px]">Students</div>
+                    <div className="px-2 py-1 text-slate-400 text-[10px]">Teachers</div>
+                    <div className="px-2 py-1 text-slate-400 text-[10px]">Attendance</div>
+                    <div className="px-2 py-1 text-slate-400 text-[10px]">Fees Ledger</div>
+                    <div className="px-2 py-1 text-slate-400 text-[10px]">Reports & Card</div>
+                  </div>
+
+                  {/* Miniature Content Area */}
+                  <div className="flex-1 p-3.5 space-y-3">
+                    {/* Greeting */}
+                    <div>
+                      <p className="font-extrabold text-slate-900 text-xs">Good morning, Admin.</p>
+                      <p className="text-[10px] text-slate-500">Here's what's happening today.</p>
+                    </div>
+
+                    {/* Stat Cards Row */}
+                    <div className="grid grid-cols-4 gap-1.5 text-center">
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200">
+                        <p className="text-[9px] text-slate-500 font-medium">Students</p>
+                        <p className="font-extrabold text-[#0B2545] text-xs">428</p>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200">
+                        <p className="text-[9px] text-slate-500 font-medium">Teachers</p>
+                        <p className="font-extrabold text-[#0B2545] text-xs">36</p>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200">
+                        <p className="text-[9px] text-slate-500 font-medium">Classes</p>
+                        <p className="font-extrabold text-[#0B2545] text-xs">18</p>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200">
+                        <p className="text-[9px] text-slate-500 font-medium">Attendance</p>
+                        <p className="font-extrabold text-emerald-600 text-xs">94%</p>
+                      </div>
+                    </div>
+
+                    {/* Financial & Attendance Snapshot */}
+                    <div className="grid grid-cols-2 gap-2 text-[10px]">
+                      <div className="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
+                        <p className="font-bold text-slate-700">Financial Overview</p>
+                        <p className="text-emerald-700 font-extrabold">GH₵ 48,750 <span className="text-[9px] text-slate-400 font-normal">Collected</span></p>
+                        <p className="text-slate-500 text-[9px]">GH₵ 12,350 Outstanding</p>
+                      </div>
+                      <div className="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
+                        <p className="font-bold text-slate-700">Recent Payment</p>
+                        <p className="font-semibold text-slate-800">Akua Boateng</p>
+                        <span className="inline-block px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold text-[9px]">
+                          GH₵ 1,500 • Paid
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
 
       {/* =========================================================================
-          PAGE 2: CLASSROOM & ACADEMIC LIFE
+          3. SECTION: THE CHALLENGE
           ========================================================================= */}
-      <section
-        id="page-2"
-        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-white border-b border-slate-200 relative overflow-hidden"
-      >
-        {/* Subtle Ambient Glow */}
-        <div className="absolute top-1/3 right-10 w-96 h-96 bg-indigo-50/60 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full space-y-12 sm:space-y-16">
+      <section className="py-16 md:py-24 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Page Title Header */}
-          <div className="text-center max-w-3xl mx-auto">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Page 02 • Academic & Governance Excellence</span>
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
+            <span className="text-xs font-bold text-[#2563EB] tracking-wider uppercase">
+              THE CHALLENGE
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
-              Designed for the daily realities of Ghanaian classrooms
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B2545] tracking-tight">
+              Running a school is complex.
             </h2>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              From student management to fee collection, communication and transport, schools face many daily challenges. SchoolOS brings everything together in one simple, powerful platform.
+            </p>
           </div>
 
-          {/* Block 1: Real Pupils in Classroom */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Clean Framed Photo - ZERO text on top */}
-            <div className="lg:col-span-6">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100 transition-all duration-300 hover:shadow-xl">
-                <img
-                  src="/assets/ghana_classroom_crisp.jpg"
-                  alt="Ghanaian school pupils sitting at wooden desks studying mathematics in classroom"
-                  className="w-full h-72 sm:h-84 object-cover object-center"
-                />
+          {/* 4 Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Card 1 */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-shadow space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <FileEdit className="w-5 h-5" />
               </div>
-            </div>
-
-            {/* Description Column */}
-            <div className="lg:col-span-6 space-y-4 text-left">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold uppercase tracking-wider">
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Academic Assessment</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Continuous assessment and marks computed in minutes.
+              <h3 className="text-base font-bold text-[#0B2545]">
+                Manual record keeping
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Ghanaian teachers often spend two to three weeks every term manually calculating continuous assessment (SBA),
-                position rankings, and writing handwritten remarks for 40+ pupils per class.
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Time-consuming and error-prone processes.
               </p>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                With SchoolOS, enter Class Assessment Tasks (CAT 1–4) and exam marks. The system automatically computes
-                the 50/50 SBA weights, ranks pupils, and pre-fills constructive NaCCA remarks.
-              </p>
-              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700 font-medium">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span>NaCCA 50/50 SBA Scheme</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span>Stanine BECE Calculator</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span>Automatic Position Rankings</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span>Print-Ready Terminal Reports</span>
-                </div>
-              </div>
             </div>
-          </div>
 
-          {/* Block 2: School Leadership & Governance */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Description Column */}
-            <div className="lg:col-span-6 order-2 lg:order-1 space-y-4 text-left">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider">
-                <Building2 className="w-3.5 h-3.5" />
-                <span>Institutional Governance</span>
+            {/* Card 2 */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-shadow space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <MessageSquare className="w-5 h-5" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Headteachers gain complete clarity over every class stream.
+              <h3 className="text-base font-bold text-[#0B2545]">
+                Lost communication
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                No more guessing whether roll call was taken, whether teachers arrived on time, or how much school fees remain outstanding in arrears.
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Important information gets missed or delayed.
               </p>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                From your phone or laptop, monitor class streams across Kindergarten, Primary, and Junior High.
-                Approve terminal report cards in one click with your official school crest and signature.
-              </p>
-              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700 font-medium">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Instant Class Stream Setup</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Daily Attendance Logs</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Staff Class Teacher Appointments</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Audit-Ready Bursary Reports</span>
-                </div>
-              </div>
             </div>
 
-            {/* Clean Framed Photo - ZERO text on top */}
-            <div className="lg:col-span-6 order-1 lg:order-2">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-100 transition-all duration-300 hover:shadow-xl">
+            {/* Card 3 */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-shadow space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">
+                Fee collection struggles
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Tracking school and feeding fees is difficult.
+              </p>
+            </div>
+
+            {/* Card 4 */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-shadow space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <Eye className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">
+                Poor visibility
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Hard to get real-time updates on attendance, performance and operations.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          4. SECTION: KEY FEATURES
+          ========================================================================= */}
+      <section id="features" className="py-16 md:py-24 bg-slate-50/60 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
+            <span className="text-xs font-bold text-[#2563EB] tracking-wider uppercase">
+              KEY FEATURES
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B2545] tracking-tight">
+              Everything you need in one platform
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              SchoolOS gives you the tools to manage your school efficiently, improve communication and focus on what matters most — education.
+            </p>
+          </div>
+
+          {/* 8 Features Grid (4 x 2) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* 1. Student Management */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <Users className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Student Management</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Keep detailed student records and profiles.
+              </p>
+            </div>
+
+            {/* 2. Attendance */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <CalendarCheck className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Attendance</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Track attendance in real-time and improve accountability.
+              </p>
+            </div>
+
+            {/* 3. Results & Reports */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <Award className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Results & Reports</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Manage grades, generate report cards and track performance.
+              </p>
+            </div>
+
+            {/* 4. School Fees */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">School Fees</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Handle tuition, registration and other fees with ease.
+              </p>
+            </div>
+
+            {/* 5. Feeding Fees */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <Utensils className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Feeding Fees</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Manage meal plans and feeding fee collection.
+              </p>
+            </div>
+
+            {/* 6. Transport */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <Bus className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Transport</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Coordinate buses, routes and pickup locations.
+              </p>
+            </div>
+
+            {/* 7. Admissions */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <FilePlus className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Admissions</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Simplify the application and enrollment process.
+              </p>
+            </div>
+
+            {/* 8. Communication */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                <MessageSquare className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-[#0B2545]">Communication</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Keep parents informed with announcements and updates.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          5. SECTION: SEE IT IN ACTION
+          ========================================================================= */}
+      <section id="solutions" className="py-16 md:py-24 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Photo: Ghanaian Pupil in Uniform Holding Books */}
+            <div className="lg:col-span-4 flex justify-center">
+              <div className="rounded-2xl overflow-hidden shadow-lg border border-slate-200/90 max-w-sm">
                 <img
-                  src="/assets/ghana_headmistress_crisp.jpg"
-                  alt="Ghanaian school headmistress in administrative office"
-                  className="w-full h-72 sm:h-84 object-cover object-center"
+                  src="/assets/ghana_students_running.png"
+                  alt="Ghanaian school pupil in uniform holding notebooks"
+                  className="w-full h-96 object-cover object-top"
                 />
               </div>
             </div>
-          </div>
 
-        </div>
-
-        {/* Page 2 Bottom Bar */}
-        <div className="pt-6 pb-2 text-center">
-          <button
-            onClick={() => scrollToPage(3)}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
-          >
-            <span>Next: Specialized Portals</span>
-            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
-          </button>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          PAGE 3: 4 SPECIALIZED PORTALS SHOWCASE
-          ========================================================================= */}
-      <section
-        id="page-3"
-        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-slate-50 border-b border-slate-200 relative overflow-hidden"
-      >
-        {/* Subtle Ambient Glow */}
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider border border-blue-200">
-              <span>Page 03 • Role-Based Architecture</span>
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
-              A dedicated portal for every stakeholder
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Select any role below to preview its specialized workbench and launch an interactive live test drive.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-4 sm:p-6 space-y-6">
-            {/* Tab Buttons */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-200">
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={() => setActivePortalTab('admin')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    activePortalTab === 'admin'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span>Headteacher Cockpit</span>
-                </button>
-
-                <button
-                  onClick={() => setActivePortalTab('teacher')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    activePortalTab === 'teacher'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <BookOpen className="w-4 h-4" />
-                  <span>Class Teacher Desk</span>
-                </button>
-
-                <button
-                  onClick={() => setActivePortalTab('bursar')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    activePortalTab === 'bursar'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Bursar & MoMo Desk</span>
-                </button>
-
-                <button
-                  onClick={() => setActivePortalTab('parent')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    activePortalTab === 'parent'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <HeartHandshake className="w-4 h-4" />
-                  <span>Parent Portal</span>
-                </button>
-              </div>
-
-              {/* Direct Demo Trigger */}
-              <button
-                onClick={() => {
-                  const roleMap = {
-                    admin: 'school_admin' as const,
-                    teacher: 'teacher' as const,
-                    bursar: 'accountant' as const,
-                    parent: 'parent' as const,
-                  };
-                  handleLaunchRoleDemo(roleMap[activePortalTab]);
-                }}
-                className="px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-bold transition-colors flex items-center gap-1.5"
-              >
-                <span>Live Test Drive →</span>
-              </button>
-            </div>
-
-            {/* Portal Content Details */}
-            <div className="p-4 sm:p-6 bg-slate-50/70 rounded-xl border border-slate-200/80">
-              {activePortalTab === 'admin' && (
-                <div className="space-y-6 animate-fade-in">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">Headteacher & Board Administration</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Full governance over academic streams, teacher allocations, pupil bio-data, and institutional reporting.</p>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-xs font-medium text-slate-500">Total Enrolled</p>
-                      <p className="text-2xl font-black text-slate-900 mt-1">540 Pupils</p>
-                      <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">KG 1 to JHS 3</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-xs font-medium text-slate-500">Active Streams</p>
-                      <p className="text-2xl font-black text-blue-600 mt-1">11 Streams</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">All Staffed</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-xs font-medium text-slate-500">Fee Recovery</p>
-                      <p className="text-2xl font-black text-emerald-600 mt-1">94.2%</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Via MoMo & Bank</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                      <p className="text-xs font-medium text-slate-500">Roll Call Today</p>
-                      <p className="text-2xl font-black text-slate-900 mt-1">98.4%</p>
-                      <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">On Schedule</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activePortalTab === 'teacher' && (
-                <div className="space-y-6 animate-fade-in">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">Form Master & Teacher Workbench</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Continuous assessment markbooks, optical test paper scanner, 1-click roll call, and terminal report comments.</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                      <p className="text-xs font-bold text-blue-600 flex items-center gap-1.5">
-                        <FileSpreadsheet className="w-4 h-4" /> 50/50 SBA Markbook
-                      </p>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Class Assessment Tasks (CAT 1–4) and terminal exams auto-weighted with Stanine rankings.
-                      </p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                      <p className="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
-                        <ScanLine className="w-4 h-4" /> AI Test Paper Scanner
-                      </p>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Photograph paper tests or bubble answer sheets to automatically grade and enter student marks.
-                      </p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                      <p className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
-                        <CalendarCheck className="w-4 h-4" /> Fast Morning Roll Call
-                      </p>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Take attendance in under 60 seconds with instant automated absentee alerts to parents.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activePortalTab === 'bursar' && (
-                <div className="space-y-6 animate-fade-in">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">Bursary & Financial Collection Desk</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Tuition fees, feeding programme ledger, instant Mobile Money receipts, and automated defaulter reminders.</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1">
-                      <p className="text-xs font-medium text-slate-500">Term Fees Billed</p>
-                      <p className="text-2xl font-black text-slate-900">GH₵ 245,600</p>
-                      <p className="text-[11px] text-slate-500">All registered classes</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1">
-                      <p className="text-xs font-medium text-slate-500">Cleared via MoMo & Bank</p>
-                      <p className="text-2xl font-black text-emerald-600">GH₵ 226,934</p>
-                      <p className="text-[11px] text-emerald-600 font-semibold">92.4% Recovery Rate</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1">
-                      <p className="text-xs font-medium text-slate-500">Outstanding Defaulters</p>
-                      <p className="text-2xl font-black text-rose-600">38 Pupils</p>
-                      <p className="text-[11px] text-slate-500">Automated SMS Reminders</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activePortalTab === 'parent' && (
-                <div className="space-y-6 animate-fade-in">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">Parent & Guardian Mobile Portal</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Instant terminal report card PDF downloads, daily attendance status, and direct Mobile Money fee payment.</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                      <p className="text-xs font-bold text-blue-600 flex items-center gap-1.5">
-                        <FileText className="w-4 h-4" /> Terminal Report Cards
-                      </p>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Download official terminal report cards directly on your phone as soon as the headteacher approves them.
-                      </p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                      <p className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
-                        <CreditCard className="w-4 h-4" /> 1-Click MoMo Pay
-                      </p>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Pay tuition balance directly via MTN MoMo, Telecel Cash, or Card with immediate digital receipt.
-                      </p>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                      <p className="text-xs font-bold text-purple-600 flex items-center gap-1.5">
-                        <Megaphone className="w-4 h-4" /> School Circulars
-                      </p>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Direct PTA notices, midterm break dates, and event reminders sent straight to your device.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Page 3 Bottom Bar */}
-        <div className="pt-6 pb-2 text-center">
-          <button
-            onClick={() => scrollToPage(4)}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
-          >
-            <span>Next: NaCCA & GES Standards</span>
-            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
-          </button>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          PAGE 4: GES & NaCCA 3-STAGE CURRICULUM STANDARDS
-          ========================================================================= */}
-      <section
-        id="page-4"
-        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-white border-b border-slate-200 relative overflow-hidden"
-      >
-        {/* Subtle Ambient Glow */}
-        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-amber-50/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
-              <span>Page 04 • National Curriculum Compliance</span>
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
-              Aligned with Ghanaian NaCCA Standards
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Pre-loaded with official GES subject lists, continuous assessment weights, and terminal evaluation criteria.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Stage 1: KG */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-amber-300">
-              <span className="inline-block px-3 py-1 rounded-md bg-amber-100 text-amber-800 text-xs font-bold">
-                Kindergarten (KG 1–2)
+            {/* Center: Details & Feature Checklist */}
+            <div className="lg:col-span-4 space-y-5 text-left">
+              <span className="text-xs font-bold text-[#2563EB] tracking-wider uppercase">
+                SEE IT IN ACTION
               </span>
-              <h3 className="text-lg font-bold text-slate-900">Early Childhood Development</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Foundational development focusing on literacy, numeracy, psycho-motor skills, and psychosocial growth.
+              <h2 className="text-3xl font-extrabold text-[#0B2545] tracking-tight leading-snug">
+                A complete view of your school
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Get a clear overview of your school's performance, finances, attendance and more — all from a modern, easy-to-use dashboard.
               </p>
-              <ul className="space-y-2 text-xs text-slate-700">
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                  <span>Language and Literacy</span>
+
+              {/* Bullet Points */}
+              <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
+                <li className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                  <span>Beautiful and intuitive interface</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                  <span>Numeracy & Reasoning</span>
+                <li className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                  <span>Works on desktop, tablet and mobile</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                  <span>Our World and Our People (OWOP)</span>
+                <li className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                  <span>Role-based access for different users</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                  <span>Creative Arts & Physical Development</span>
+                <li className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                  <span>Real-time updates and notifications</span>
                 </li>
               </ul>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setIsDemoModalOpen(true)}
+                  className="px-6 py-2.5 text-xs font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-lg shadow-sm transition-all"
+                >
+                  View Demo
+                </button>
+              </div>
             </div>
 
-            {/* Stage 2: Primary */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-blue-300">
-              <span className="inline-block px-3 py-1 rounded-md bg-blue-100 text-blue-800 text-xs font-bold">
-                Primary (Basic 1–6)
-              </span>
-              <h3 className="text-lg font-bold text-slate-900">Foundational Core Curriculum</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Standardized continuous assessment and terminal examinations across all primary educational levels.
-              </p>
-              <ul className="space-y-2 text-xs text-slate-700">
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                  <span>English Language & Reading</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                  <span>Mathematics & Natural Science</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                  <span>Ghanaian Language & Culture</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                  <span>Computing & History of Ghana</span>
-                </li>
-              </ul>
+            {/* Right: Dual Device Previews (Desktop + Smartphone) */}
+            <div className="lg:col-span-4 flex items-center justify-center relative">
+              {/* Desktop Dashboard Card */}
+              <div className="w-56 sm:w-64 rounded-xl bg-white border border-slate-200 shadow-md p-3 space-y-2 opacity-95 hidden sm:block">
+                <div className="flex items-center justify-between pb-1 border-b border-slate-100 text-[10px] font-bold text-slate-700">
+                  <span>Dashboard Preview</span>
+                  <span className="text-emerald-600">● Live</span>
+                </div>
+                <div className="h-16 bg-slate-50 rounded border border-slate-100 p-1 flex items-end justify-between gap-1">
+                  <div className="w-3 bg-blue-500 rounded-t h-[60%]"></div>
+                  <div className="w-3 bg-blue-500 rounded-t h-[75%]"></div>
+                  <div className="w-3 bg-blue-500 rounded-t h-[90%]"></div>
+                  <div className="w-3 bg-blue-600 rounded-t h-[80%]"></div>
+                  <div className="w-3 bg-blue-600 rounded-t h-[95%]"></div>
+                </div>
+                <div className="space-y-1 text-[9px] text-slate-500">
+                  <div className="flex justify-between">
+                    <span>Term Attendance</span>
+                    <span className="font-bold text-slate-700">96.4%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fees Recovery</span>
+                    <span className="font-bold text-emerald-600">92.8%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile Phone Device Mockup */}
+              <div className="w-52 sm:w-56 -ml-10 sm:-ml-12 rounded-[2rem] bg-white border-4 border-slate-800 shadow-2xl p-3 space-y-2.5 z-10">
+                <div className="w-12 h-1 bg-slate-800 rounded-full mx-auto mb-1"></div>
+                <div className="flex justify-between items-center text-[9px] text-slate-400">
+                  <span className="font-bold text-[#0B2545]">SchoolOS</span>
+                  <span>9:41 AM</span>
+                </div>
+                
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                  <p className="text-[9px] text-slate-500 font-medium">Good morning, Parent</p>
+                  <p className="font-bold text-[#0B2545] text-xs">Kwame Mensah</p>
+                  <p className="text-[9px] text-slate-500">Class: Basic 5a</p>
+                  <div className="flex items-center gap-1 text-[9px] text-emerald-600 font-bold mt-1">
+                    <Check className="w-3 h-3" />
+                    <span>Attendance: Present</span>
+                  </div>
+                </div>
+
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 space-y-1 text-[9px]">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Latest Result</span>
+                    <span className="font-bold text-[#0B2545]">88% Average</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Fees Balance</span>
+                    <span className="font-bold text-rose-600">GH₵ 450</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Transport</span>
+                    <span className="font-bold text-blue-600">Bus 3 En Route</span>
+                  </div>
+                </div>
+
+                <div className="pt-1 border-t border-slate-100 flex justify-around text-[9px] text-slate-400 font-semibold">
+                  <span className="text-blue-600">Home</span>
+                  <span>Results</span>
+                  <span>Fees</span>
+                  <span>More</span>
+                </div>
+              </div>
             </div>
 
-            {/* Stage 3: JHS */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-300">
-              <span className="inline-block px-3 py-1 rounded-md bg-indigo-100 text-indigo-800 text-xs font-bold">
-                Junior High (JHS 1–3)
-              </span>
-              <h3 className="text-lg font-bold text-slate-900">BECE Candidate Excellence</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Rigorous preparation for BECE candidates with 50/50 SBA continuous assessment, mock tests, and Stanine rankings.
-              </p>
-              <ul className="space-y-2 text-xs text-slate-700">
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
-                  <span>English, Integrated Science & Math</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
-                  <span>Social Studies & RME</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
-                  <span>Career Technology & Creative Arts</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
-                  <span>Stanine 1–9 BECE Aggregate Calculator</span>
-                </li>
-              </ul>
-            </div>
           </div>
-        </div>
-
-        {/* Page 4 Bottom Bar */}
-        <div className="pt-6 pb-2 text-center">
-          <button
-            onClick={() => scrollToPage(5)}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
-          >
-            <span>Next: Educator Reviews</span>
-            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
-          </button>
         </div>
       </section>
 
       {/* =========================================================================
-          PAGE 5: REAL TESTIMONIALS FROM GHANAIAN EDUCATORS & PARENTS
+          6. SECTION: HOW IT WORKS
           ========================================================================= */}
-      <section
-        id="page-5"
-        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-slate-50 border-b border-slate-200 relative overflow-hidden"
-      >
-        {/* Subtle Ambient Glow */}
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-emerald-50/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider border border-emerald-200">
-              <span>Page 05 • Institutional Feedback</span>
+      <section id="how-it-works" className="py-16 md:py-24 bg-slate-50/60 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
+            <span className="text-xs font-bold text-[#2563EB] tracking-wider uppercase">
+              HOW IT WORKS
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
-              What Ghanaian educators say about SchoolOS
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B2545] tracking-tight">
+              Simple, transparent pricing
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Real results from headteachers, accountants, and parents across the country.
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              Choose the plan that fits your school's needs. All plans include core features and can be upgraded as your school grows.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Testimonial 1 */}
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-              <div className="space-y-3">
-                <div className="flex items-center gap-1 text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-500" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                  “Our teachers used to take two full weeks of sleepless nights preparing end-of-term reports. With SchoolOS, every mark, position rank, and conduct remark was calculated in one afternoon. Parents were thrilled by how neat the reports looked.”
-                </p>
+          {/* 3 Steps */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            
+            {/* Step 1 */}
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200 flex items-center justify-center font-bold text-base mx-auto">
+                1
               </div>
-
-              <div className="pt-4 border-t border-slate-100 mt-6 flex items-center gap-3">
-                <img
-                  src="/assets/ghana_headmistress_crisp.jpg"
-                  alt="Mrs. Elizabeth A. Appiah"
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                />
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">Mrs. Elizabeth A. Appiah</h4>
-                  <p className="text-[11px] text-blue-600 font-medium">Headmistress, Accra Basic School</p>
-                  <p className="text-[10px] text-slate-400">Greater Accra, Ghana</p>
-                </div>
-              </div>
+              <h3 className="text-lg font-bold text-[#0B2545]">Book a Demo</h3>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
+                Schedule a demo with our team to see SchoolOS in action and discuss your school's needs.
+              </p>
             </div>
 
-            {/* Testimonial 2 */}
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-              <div className="space-y-3">
-                <div className="flex items-center gap-1 text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-500" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                  “The Mobile Money integration completely eradicated cash shortages in our bursary. Parents receive automated SMS prompts and pay from home. Our tuition collection jumped from 68% to 94% in our very first term.”
-                </p>
+            {/* Step 2 */}
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200 flex items-center justify-center font-bold text-base mx-auto">
+                2
               </div>
-
-              <div className="pt-4 border-t border-slate-100 mt-6 flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=128&q=80"
-                  alt="Mr. Samuel Boakye"
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                />
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">Mr. Samuel Boakye</h4>
-                  <p className="text-[11px] text-emerald-600 font-medium">Chief Accountant / Bursar, Kumasi Premier Academy</p>
-                  <p className="text-[10px] text-slate-400">Ashanti Region, Ghana</p>
-                </div>
-              </div>
+              <h3 className="text-lg font-bold text-[#0B2545]">Set Up Your School</h3>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
+                We'll help you configure your school, import your data and set up your preferences.
+              </p>
             </div>
 
-            {/* Testimonial 3 */}
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-              <div className="space-y-3">
-                <div className="flex items-center gap-1 text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-500" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                  “As a working mother, I cannot visit the school daily. SchoolOS lets me check whether my daughter arrived safely each morning and see her JHS mock examination aggregate immediately. It gives me peace of mind.”
-                </p>
+            {/* Step 3 */}
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200 flex items-center justify-center font-bold text-base mx-auto">
+                3
               </div>
-
-              <div className="pt-4 border-t border-slate-100 mt-6 flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=128&q=80"
-                  alt="Mrs. Abena Osei"
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                />
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">Mrs. Abena Osei</h4>
-                  <p className="text-[11px] text-purple-600 font-medium">Parent & Guardian (JHS 2 Pupil)</p>
-                  <p className="text-[10px] text-slate-400">Takoradi, Western Region</p>
-                </div>
-              </div>
+              <h3 className="text-lg font-bold text-[#0B2545]">Start Managing</h3>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
+                Your team gets access and you start enjoying a more organized, efficient school.
+              </p>
             </div>
+
           </div>
-        </div>
 
-        {/* Page 5 Bottom Bar */}
-        <div className="pt-6 pb-2 text-center">
-          <button
-            onClick={() => scrollToPage(6)}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
-          >
-            <span>Next: Plans & Pricing</span>
-            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
-          </button>
         </div>
       </section>
 
       {/* =========================================================================
-          PAGE 6: TRANSPARENT INSTITUTIONAL PRICING
+          7. SECTION: PRICING
           ========================================================================= */}
-      <section
-        id="page-6"
-        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-white border-b border-slate-200 relative overflow-hidden"
-      >
-        {/* Subtle Ambient Glow */}
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-blue-50/70 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full">
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
-              <span>Page 06 • Clear Pricing</span>
+      <section id="pricing" className="py-16 md:py-24 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
+            <span className="text-xs font-bold text-[#2563EB] tracking-wider uppercase">
+              PRICING
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
-              Predictable plans for every Ghanaian school
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B2545] tracking-tight">
+              Plans for every school size
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Transparent institutional pricing with zero hidden fees and free onboarding training for your staff.
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              Flexible pricing designed for private primary and JHS schools.
             </p>
-
-            {/* Toggle */}
-            <div className="mt-5 inline-flex items-center p-1 rounded-lg bg-slate-100 border border-slate-200 text-xs">
-              <button
-                onClick={() => setBillingCycle('term')}
-                className={`px-4 py-1.5 rounded-md font-bold transition-all ${
-                  billingCycle === 'term' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'
-                }`}
-              >
-                Per Academic Term
-              </button>
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`px-4 py-1.5 rounded-md font-bold transition-all ${
-                  billingCycle === 'annual' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'
-                }`}
-              >
-                Annual (Save 15%)
-              </button>
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-            {/* Starter */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Community Starter</span>
-                <h3 className="text-xl font-bold text-slate-900 mt-1">Kindergarten & Primary</h3>
-                <p className="text-xs text-slate-500 mt-1">For growing basic schools establishing digital records.</p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">
-                    {billingCycle === 'term' ? 'GH₵ 450' : 'GH₵ 1,150'}
-                  </span>
-                  <span className="text-xs text-slate-500">/{billingCycle === 'term' ? 'term' : 'year'}</span>
+          {/* Pricing Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
+            
+            {/* Card 1: Basic */}
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#0B2545]">Basic</h3>
+                  <p className="text-xs text-slate-500 mt-1">Perfect for small schools getting started.</p>
                 </div>
 
-                <ul className="mt-5 space-y-2.5 text-xs text-slate-600">
+                <div className="pt-2">
+                  <span className="text-3xl font-extrabold text-[#0B2545]">GH₵ 1,200</span>
+                  <span className="text-xs text-slate-500"> / month</span>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Up to 250 enrolled pupils</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Up to 200 students</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>KG 1 to Basic 6 Streams</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Student & teacher management</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Continuous Assessment & Reports</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Attendance tracking</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Cash & Bank Receipting</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Basic reporting</span>
                   </li>
                 </ul>
               </div>
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="mt-6 w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors"
+                className="w-full py-2.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-800 transition-colors"
               >
                 Get Started
               </button>
             </div>
 
-            {/* Professional (Featured) */}
-            <div className="p-7 rounded-2xl bg-slate-900 text-white shadow-xl relative flex flex-col justify-between border-2 border-blue-500 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-600 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
-                Recommended for JHS
+            {/* Card 2: Professional (Featured with 'Most Popular') */}
+            <div className="p-8 rounded-2xl bg-white border-2 border-[#0B2545] shadow-xl relative flex flex-col justify-between space-y-6">
+              <div className="absolute -top-3.5 right-6 px-3 py-1 bg-[#0B2545] text-white rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Most Popular
               </div>
 
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Professional Suite</span>
-                <h3 className="text-xl font-bold text-white mt-1">Complete Basic & JHS</h3>
-                <p className="text-xs text-slate-300 mt-1">Full-featured platform for Ghanaian basic and junior high schools.</p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-white">
-                    {billingCycle === 'term' ? 'GH₵ 850' : 'GH₵ 2,150'}
-                  </span>
-                  <span className="text-xs text-slate-400">/{billingCycle === 'term' ? 'term' : 'year'}</span>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#0B2545]">Professional</h3>
+                  <p className="text-xs text-slate-500 mt-1">For growing schools with more needs.</p>
                 </div>
 
-                <ul className="mt-5 space-y-2.5 text-xs text-slate-300">
+                <div className="pt-2">
+                  <span className="text-3xl font-extrabold text-[#0B2545]">GH₵ 2,500</span>
+                  <span className="text-xs text-slate-500"> / month</span>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span>Up to 750 enrolled pupils</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Up to 500 students</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span>Full KG, Basic 1–6 & JHS 1–3</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>All core features</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span>Automated MTN MoMo Collection</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Financial management</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span>BECE Stanine Aggregate Calculator</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Parent & teacher portal</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span>Dedicated Parent Portal Access</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Advanced reporting</span>
                   </li>
                 </ul>
               </div>
 
               <button
                 onClick={() => setAuthScreen('signup')}
-                className="mt-6 w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow transition-all"
+                className="w-full py-2.5 rounded-lg bg-[#0B2545] hover:bg-[#071A31] text-xs font-bold text-white shadow transition-all"
               >
-                Register Your School
+                Get Started
               </button>
             </div>
 
-            {/* Enterprise */}
-            <div className="p-7 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Enterprise</span>
-                <h3 className="text-xl font-bold text-slate-900 mt-1">Multi-Campus & Mission</h3>
-                <p className="text-xs text-slate-500 mt-1">For mission units, trusts, and multi-campus school systems.</p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">Custom</span>
-                  <span className="text-xs text-slate-500">/ volume discount</span>
+            {/* Card 3: Enterprise */}
+            <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#0B2545]">Enterprise</h3>
+                  <p className="text-xs text-slate-500 mt-1">For large schools and multiple campuses.</p>
                 </div>
 
-                <ul className="mt-5 space-y-2.5 text-xs text-slate-600">
+                <div className="pt-2">
+                  <span className="text-3xl font-extrabold text-[#0B2545]">GH₵ 4,500</span>
+                  <span className="text-xs text-slate-500"> / month</span>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Unlimited students & streams</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Unlimited students</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Branded SMS Sender ID</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Multi-school support</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Dedicated Staff Onboarding</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Advanced analytics</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>24/7 Priority Support Hotline</span>
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Dedicated support</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />
+                    <span>Custom integrations</span>
                   </li>
                 </ul>
               </div>
 
               <button
-                onClick={() => setAuthScreen('signup')}
-                className="mt-6 w-full py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors"
+                onClick={() => setIsDemoModalOpen(true)}
+                className="w-full py-2.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-800 transition-colors"
               >
-                Contact Us
+                Contact Sales
               </button>
             </div>
+
           </div>
-        </div>
 
-        {/* Page 6 Bottom Bar */}
-        <div className="pt-6 pb-2 text-center">
-          <button
-            onClick={() => scrollToPage(7)}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs group animate-bounce-subtle"
-          >
-            <span>Next: FAQs & Support</span>
-            <ArrowDown className="w-3.5 h-3.5 text-blue-600 group-hover:translate-y-0.5 transition-transform" />
-          </button>
         </div>
       </section>
 
       {/* =========================================================================
-          PAGE 7: FREQUENTLY ASKED QUESTIONS & INSTITUTIONAL FOOTER
+          8. DARK NAVY CTA BANNER
           ========================================================================= */}
-      <section
-        id="page-7"
-        className="page-snap-section min-h-screen flex flex-col justify-between py-12 md:py-16 bg-slate-50 relative overflow-hidden"
-      >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 my-auto w-full space-y-12">
-          
-          {/* FAQ Header */}
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider border border-blue-200">
-              <span>Page 07 • Clear Answers</span>
-            </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          {/* FAQ Accordion */}
-          <div className="space-y-3">
-            {faqs.map((faq, index) => {
-              const isOpen = openFaq === index;
-              return (
-                <div
-                  key={index}
-                  className="rounded-xl bg-white border border-slate-200 shadow-2xs overflow-hidden transition-all"
+      <section className="bg-[#0B2545] text-white py-14 border-t border-slate-800 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Copy */}
+            <div className="lg:col-span-6 space-y-4 text-left">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                Ready to transform your school?
+              </h2>
+              <p className="text-slate-300 text-xs sm:text-sm max-w-lg leading-relaxed">
+                Join the growing number of schools using SchoolOS to save time, reduce costs and improve learning outcomes.
+              </p>
+              <div className="pt-2 flex flex-wrap items-center gap-3.5">
+                <button
+                  onClick={() => setIsDemoModalOpen(true)}
+                  className="px-6 py-2.5 rounded-lg bg-white text-[#0B2545] font-bold text-xs hover:bg-slate-100 transition-colors shadow-sm"
                 >
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : index)}
-                    className="w-full text-left p-4 sm:p-5 flex items-center justify-between text-sm font-bold text-slate-900 hover:text-blue-600 transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-blue-600 flex-shrink-0 ml-2" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0 ml-2" />
-                    )}
-                  </button>
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100 animate-fade-in">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Final Call to Action Block */}
-          <div className="rounded-2xl bg-slate-900 text-white p-8 sm:p-10 text-center space-y-5 shadow-xl relative overflow-hidden border border-slate-800">
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Ready to upgrade your school operations?
-            </h3>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-              Join over 180 forward-thinking Ghanaian schools. Register in under 3 minutes with zero paperwork.
-            </p>
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <button
-                onClick={() => setAuthScreen('signup')}
-                className="w-full sm:w-auto px-7 py-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
-              >
-                <span>Register Your School Free</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleLaunchRoleDemo('school_admin')}
-                className="w-full sm:w-auto px-7 py-3 text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all"
-              >
-                Test Drive Demo
-              </button>
+                  Book a Demo
+                </button>
+                <button
+                  onClick={() => scrollTo('contact')}
+                  className="px-6 py-2.5 rounded-lg bg-transparent border border-white/40 text-white font-semibold text-xs hover:bg-white/10 transition-colors"
+                >
+                  Contact Us
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Back to Top Quick Action */}
-          <div className="text-center pt-2">
-            <button
-              onClick={() => scrollToPage(1)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 transition-all shadow-2xs group"
-            >
-              <ArrowUp className="w-3.5 h-3.5 text-blue-600 group-hover:-translate-y-0.5 transition-transform" />
-              <span>Back to Top (Page 01)</span>
-            </button>
+            {/* Right Photo Strip & Slogan */}
+            <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-end gap-6">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-white/10 max-w-xs">
+                <img
+                  src="/assets/ghana_students_hero.jpg"
+                  alt="Ghanaian school pupils"
+                  className="w-full h-36 object-cover object-center"
+                />
+              </div>
+              <div className="text-left space-y-2">
+                <p className="text-base font-bold tracking-tight text-white leading-tight">
+                  Better systems.<br />Brighter futures.
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded bg-white text-[#0B2545] flex items-center justify-center font-black text-xs">
+                    <GraduationCap className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="font-extrabold text-sm text-white">SchoolOS</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
+      </section>
 
-        {/* Institutional Footer */}
-        <footer className="mt-12 bg-slate-950 border-t border-slate-800 py-8 text-xs text-slate-400">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-slate-800 text-[11px]">
-              {/* Col 1 */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-[10px]">
-                    SOS
-                  </div>
-                  <span className="font-extrabold text-white text-xs">SchoolOS Ghana</span>
+      {/* =========================================================================
+          9. DARK FOOTER
+          ========================================================================= */}
+      <footer id="contact" className="bg-[#071524] text-slate-400 py-12 text-xs border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-800/80">
+            {/* Logo & Description */}
+            <div className="space-y-1.5 max-w-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-white text-[#0B2545] flex items-center justify-center font-black text-xs">
+                  <GraduationCap className="w-4 h-4" />
                 </div>
-                <p className="text-slate-400 leading-relaxed">
-                  Institutional OS for Ghanaian Basic & JHS. Compliant with GES, NaCCA, and Act 843.
-                </p>
+                <span className="font-extrabold text-white text-lg">SchoolOS</span>
               </div>
-
-              {/* Col 2 */}
-              <div>
-                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] mb-2">Specialized Portals</h5>
-                <ul className="space-y-1.5 text-slate-400">
-                  <li><button onClick={() => handleLaunchRoleDemo('school_admin')} className="hover:text-white transition-colors">Headteacher Cockpit</button></li>
-                  <li><button onClick={() => handleLaunchRoleDemo('teacher')} className="hover:text-white transition-colors">Teacher Workbench</button></li>
-                  <li><button onClick={() => handleLaunchRoleDemo('accountant')} className="hover:text-white transition-colors">Bursary Desk</button></li>
-                  <li><button onClick={() => handleLaunchRoleDemo('parent')} className="hover:text-white transition-colors">Parent Portal</button></li>
-                </ul>
-              </div>
-
-              {/* Col 3 */}
-              <div>
-                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] mb-2">Curriculum Stages</h5>
-                <ul className="space-y-1.5 text-slate-400">
-                  <li><span>Kindergarten (KG 1–2)</span></li>
-                  <li><span>Primary (Basic 1–6)</span></li>
-                  <li><span>Junior High (JHS 1–3)</span></li>
-                  <li><span>BECE 50/50 Continuous Assessment</span></li>
-                </ul>
-              </div>
-
-              {/* Col 4 */}
-              <div className="space-y-1.5">
-                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] mb-2">Support & Office</h5>
-                <p className="flex items-center gap-1.5 text-slate-300">
-                  <MapPin className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
-                  <span>Ridge & Airport City, Accra, Ghana</span>
-                </p>
-                <p className="flex items-center gap-1.5 text-slate-300">
-                  <Phone className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
-                  <span>+233 (0) 24 000 0000</span>
-                </p>
-                <p className="flex items-center gap-1.5 text-slate-300">
-                  <Mail className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
-                  <span>support@schoolos.edu.gh</span>
-                </p>
-              </div>
+              <p className="text-[11px] text-slate-400">
+                The operating system for modern schools.
+              </p>
             </div>
 
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-500">
-              <p>© {new Date().getFullYear()} SchoolOS Ghana. All rights reserved.</p>
-              <div className="flex items-center gap-4">
-                <button onClick={() => setAuthScreen('login')} className="hover:text-slate-300">Sign In</button>
-                <button onClick={() => setAuthScreen('signup')} className="hover:text-slate-300">Register School</button>
-                <span>GES & NaCCA Framework</span>
-              </div>
+            {/* Nav Links */}
+            <div className="flex flex-wrap items-center gap-6 text-xs text-slate-300 font-medium">
+              <button onClick={() => scrollTo('hero')} className="hover:text-white transition-colors">Home</button>
+              <button onClick={() => scrollTo('features')} className="hover:text-white transition-colors">Features</button>
+              <button onClick={() => scrollTo('solutions')} className="hover:text-white transition-colors">Solutions</button>
+              <button onClick={() => scrollTo('how-it-works')} className="hover:text-white transition-colors">How It Works</button>
+              <button onClick={() => scrollTo('pricing')} className="hover:text-white transition-colors">Pricing</button>
+              <button onClick={() => scrollTo('contact')} className="hover:text-white transition-colors">Contact</button>
+            </div>
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-4 text-slate-400">
+              <a href="#linkedin" title="LinkedIn" className="hover:text-white transition-colors"><Linkedin className="w-4 h-4" /></a>
+              <a href="#twitter" title="Twitter" className="hover:text-white transition-colors"><Twitter className="w-4 h-4" /></a>
+              <a href="#facebook" title="Facebook" className="hover:text-white transition-colors"><Facebook className="w-4 h-4" /></a>
+              <a href="#youtube" title="YouTube" className="hover:text-white transition-colors"><Youtube className="w-4 h-4" /></a>
             </div>
           </div>
-        </footer>
-      </section>
+
+          {/* Legal Bottom Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+            <p>© 2025 SchoolOS. All rights reserved.</p>
+            <div className="flex items-center gap-6">
+              <a href="#privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+              <a href="#terms" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+            </div>
+          </div>
+
+        </div>
+      </footer>
+
+      {/* =========================================================================
+          DEMO / ROLE MODAL (For 'Book a Demo' & 'View Demo' Triggers)
+          ========================================================================= */}
+      {isDemoModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-5 animate-fade-in">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#0B2545] text-white flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4" />
+                </div>
+                <h3 className="font-extrabold text-[#0B2545] text-base">Select Live Demo Experience</h3>
+              </div>
+              <button
+                onClick={() => setIsDemoModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Explore SchoolOS as any of the specialized stakeholders. No registration required to test-drive.
+            </p>
+
+            <div className="space-y-2.5">
+              <button
+                onClick={() => handleLaunchRoleDemo('school_admin')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <p className="font-bold text-xs text-[#0B2545]">Headteacher / Administrator</p>
+                  <p className="text-[11px] text-slate-500">Full school governance, attendance & report cards</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#2563EB] group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={() => handleLaunchRoleDemo('teacher')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <p className="font-bold text-xs text-[#0B2545]">Class Teacher / Form Master</p>
+                  <p className="text-[11px] text-slate-500">Fast roll call, continuous assessment markbooks</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#2563EB] group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={() => handleLaunchRoleDemo('accountant')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <p className="font-bold text-xs text-[#0B2545]">Bursar & Finance Desk</p>
+                  <p className="text-[11px] text-slate-500">School fees, feeding fees, Mobile Money reconciliation</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#2563EB] group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={() => handleLaunchRoleDemo('parent')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <p className="font-bold text-xs text-[#0B2545]">Parent & Guardian</p>
+                  <p className="text-[11px] text-slate-500">Terminal report cards, daily attendance & fee payments</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#2563EB] group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+
+            <div className="pt-2 text-center">
+              <button
+                onClick={() => {
+                  setIsDemoModalOpen(false);
+                  setAuthScreen('signup');
+                }}
+                className="text-xs font-bold text-[#2563EB] hover:underline"
+              >
+                Or register a brand new school account →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
