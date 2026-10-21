@@ -42,20 +42,7 @@ export const LandingPageView: React.FC = () => {
   const [activePortalTab, setActivePortalTab] = useState<'admin' | 'teacher' | 'bursar' | 'parent'>('admin');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [billingCycle, setBillingCycle] = useState<'term' | 'annual'>('term');
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Defined 7 distinct page slides
-  const pages = [
-    { id: 'page-1', title: 'Overview & Hero', number: '01' },
-    { id: 'page-2', title: 'Classroom Life', number: '02' },
-    { id: 'page-3', title: '4 Specialized Portals', number: '03' },
-    { id: 'page-4', title: 'NaCCA & GES Standards', number: '04' },
-    { id: 'page-5', title: 'Educator Reviews', number: '05' },
-    { id: 'page-6', title: 'Plans & Pricing', number: '06' },
-    { id: 'page-7', title: 'FAQs & Support', number: '07' },
-  ];
 
   // Smooth scroll to target page
   const scrollToPage = (pageIndex: number) => {
@@ -63,63 +50,8 @@ export const LandingPageView: React.FC = () => {
     const element = document.getElementById(pageId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setCurrentPage(pageIndex);
     }
   };
-
-  const handleNextPage = () => {
-    if (currentPage < pages.length) {
-      scrollToPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      scrollToPage(currentPage - 1);
-    }
-  };
-
-  // Observe scroll position to update current page indicator
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      const scrollPos = container.scrollTop + container.clientHeight / 3;
-      pages.forEach((page, idx) => {
-        const el = document.getElementById(page.id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
-            setCurrentPage(idx + 1);
-          }
-        }
-      });
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Keyboard navigation support: ArrowDown/ArrowUp, PageDown/PageUp
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        e.preventDefault();
-        handleNextPage();
-      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-        e.preventDefault();
-        handlePrevPage();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage]);
 
   // Launch live interactive demo into specific persona
   const handleLaunchRoleDemo = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
@@ -155,97 +87,7 @@ export const LandingPageView: React.FC = () => {
       ref={containerRef}
       className="page-snap-container bg-white text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white relative"
     >
-      {/* =========================================================================
-          FLOATING RIGHT-SIDE PAGE DOCK (Page After Page Indicator & Controls)
-          ========================================================================= */}
-      <aside
-        aria-label="Page navigation"
-        className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center gap-2.5 p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl transition-all duration-300"
-      >
-        {/* Page Counter Badge */}
-        <div className="text-[10px] font-black tracking-widest text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200 uppercase">
-          0{currentPage} / 0{pages.length}
-        </div>
 
-        {/* Previous Page Button */}
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          title="Previous Page (Up Arrow)"
-          className={`p-1.5 rounded-lg transition-colors ${
-            currentPage === 1
-              ? 'text-slate-300 cursor-not-allowed'
-              : 'text-slate-600 hover:text-blue-600 hover:bg-slate-100'
-          }`}
-        >
-          <ChevronUp className="w-4 h-4" />
-        </button>
-
-        {/* Dot Indicators for Each Page */}
-        <div className="flex flex-col gap-2 my-1">
-          {pages.map((p, idx) => {
-            const pageNum = idx + 1;
-            const isActive = currentPage === pageNum;
-            return (
-              <button
-                key={p.id}
-                onClick={() => scrollToPage(pageNum)}
-                title={`Jump to Page ${p.number}: ${p.title}`}
-                className="group relative flex items-center justify-center p-1"
-              >
-                {/* Dot */}
-                <span
-                  className={`block rounded-full transition-all duration-300 ${
-                    isActive
-                      ? 'w-3 h-7 bg-blue-600 shadow-md shadow-blue-500/40'
-                      : 'w-2.5 h-2.5 bg-slate-300 group-hover:bg-slate-400 group-hover:scale-125'
-                  }`}
-                />
-
-                {/* Tooltip Label on Hover */}
-                <span className="absolute right-8 px-2.5 py-1 bg-slate-900 text-white text-[11px] font-semibold rounded-md shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  {p.number}. {p.title}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Next Page Button */}
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === pages.length}
-          title="Next Page (Down Arrow)"
-          className={`p-1.5 rounded-lg transition-colors ${
-            currentPage === pages.length
-              ? 'text-slate-300 cursor-not-allowed'
-              : 'text-slate-600 hover:text-blue-600 hover:bg-slate-100'
-          }`}
-        >
-          <ChevronDown className="w-4 h-4" />
-        </button>
-      </aside>
-
-      {/* Floating Bottom Page Bar for Mobile / Tablet */}
-      <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-2xl border border-slate-700 flex items-center gap-3 text-xs font-semibold">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={`p-1 rounded ${currentPage === 1 ? 'opacity-30' : 'hover:text-blue-400'}`}
-        >
-          <ChevronUp className="w-4 h-4" />
-        </button>
-        <span className="text-[11px] font-bold tracking-wider">
-          PAGE 0{currentPage} / 0{pages.length}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === pages.length}
-          className={`p-1 rounded ${currentPage === pages.length ? 'opacity-30' : 'hover:text-blue-400'}`}
-        >
-          <ChevronDown className="w-4 h-4" />
-        </button>
-      </div>
 
       {/* =========================================================================
           PAGE 1: OVERVIEW & HERO
