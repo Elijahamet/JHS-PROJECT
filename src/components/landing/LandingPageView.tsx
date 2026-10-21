@@ -448,10 +448,11 @@ export const LandingPageView: React.FC = () => {
 
               <div className="pt-3">
                 <button
-                  onClick={() => setIsDemoModalOpen(true)}
-                  className="px-7 py-3 text-sm font-bold text-[#0B2545] bg-white hover:bg-slate-100 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+                  onClick={() => setAuthScreen('signup')}
+                  className="px-7 py-3 text-sm font-bold text-[#0B2545] bg-white hover:bg-slate-100 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center gap-2 group"
                 >
-                  View Demo
+                  <span>Sign Up</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
