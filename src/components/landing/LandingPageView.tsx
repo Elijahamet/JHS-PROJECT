@@ -195,25 +195,32 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Right Column: Hero Visual with Real Pupils & Floating Live Dashboard UI */}
-            <div className="lg:col-span-6 relative">
-              {/* Authentic Photo of Ghanaian Pupils with Zoom Effect on Hover */}
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 max-w-md ml-auto group">
+            <div className="lg:col-span-6 relative w-full pt-2">
+              {/* Authentic Photo of Ghanaian Pupils - perfectly contained and responsive */}
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 w-full relative group">
                 <img
-                  src="/assets/ghana_students_hero.jpg"
+                  src="/assets/login-hero.jpg"
                   alt="Ghanaian school pupils smiling together in classroom"
-                  className="w-full h-84 sm:h-96 object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  className="w-full h-72 sm:h-88 md:h-96 lg:h-[410px] object-cover object-[center_18%] group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent pointer-events-none" />
+
+                {/* Live Session Pill in Top-Right */}
+                <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-white/70 shadow-md flex items-center gap-2 text-[11px] font-bold text-[#0B2545]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span>Active Term Session</span>
+                </div>
               </div>
 
               {/* Overlapping Realistic Desktop Dashboard Mockup with Floating Animation */}
-              <div className="mt-[-110px] sm:mt-[-140px] mr-auto lg:mr-8 max-w-xl rounded-2xl bg-white border border-slate-200 shadow-[0_25px_50px_-12px_rgba(11,37,69,0.22)] overflow-hidden text-xs relative z-10 animate-float-slow hover:[animation-play-state:paused] transition-all duration-300">
+              <div className="relative -mt-20 sm:-mt-28 mx-auto w-[94%] sm:w-[92%] rounded-2xl bg-white border border-slate-200 shadow-[0_20px_50px_rgba(11,37,69,0.22)] overflow-hidden text-xs z-20 animate-float-slow hover:[animation-play-state:paused] transition-all duration-300">
                 {/* Dashboard Frame Header */}
-                <div className="bg-[#0B2545] text-white px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+                <div className="bg-[#0B2545] text-white px-3.5 py-2.5 flex items-center justify-between border-b border-slate-800">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-400"></div>
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-                    <span className="font-bold text-[11px] ml-2 tracking-tight">SchoolOS Administration</span>
+                    <span className="font-bold text-[11px] ml-1.5 tracking-tight">SchoolOS Administration</span>
                   </div>
                   <span className="text-[10px] text-slate-300 font-medium bg-white/10 px-2 py-0.5 rounded flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -224,27 +231,25 @@ export const LandingPageView: React.FC = () => {
                 {/* Dashboard Inner Layout */}
                 <div className="flex bg-slate-50">
                   {/* Miniature Sidebar */}
-                  <div className="w-36 bg-[#0B2545] text-slate-300 p-3 space-y-1 shrink-0 hidden sm:block">
-                    <div className="px-2.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1.5 shadow-sm">
+                  <div className="w-32 bg-[#0B2545] text-slate-300 p-2.5 space-y-1 shrink-0 hidden sm:block">
+                    <div className="px-2 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1.5 shadow-sm">
                       <TrendingUp className="w-3 h-3" />
                       <span>Dashboard</span>
                     </div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Students</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Teachers</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Attendance</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Results & SBA</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Fees Ledger</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Transport</div>
-                    <div className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-white/5 rounded text-[10px] transition-colors cursor-pointer">Settings</div>
+                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Students</div>
+                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Teachers</div>
+                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Attendance</div>
+                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Results & SBA</div>
+                    <div className="px-2 py-1 text-slate-400 hover:text-white rounded text-[10px]">Fees Ledger</div>
                   </div>
 
                   {/* Miniature Content Area */}
-                  <div className="flex-1 p-4 space-y-3 bg-slate-50/70">
+                  <div className="flex-1 p-3 sm:p-3.5 space-y-2.5 bg-slate-50/70">
                     {/* Greeting & Header */}
                     <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
                       <div>
-                        <p className="font-black text-[#0B2545] text-sm">Good morning, Admin.</p>
-                        <p className="text-[10px] text-slate-500">Here's what's happening at Bright Future Academy today.</p>
+                        <p className="font-black text-[#0B2545] text-xs sm:text-sm">Good morning, Admin.</p>
+                        <p className="text-[9px] sm:text-[10px] text-slate-500">Here's what's happening today.</p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-blue-100 text-[#0B2545] font-bold text-[10px] flex items-center justify-center">
                         AD
@@ -252,55 +257,55 @@ export const LandingPageView: React.FC = () => {
                     </div>
 
                     {/* Stat Cards Row with Hover Lift */}
-                    <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
-                        <p className="text-[9px] text-slate-500 font-semibold">Students</p>
-                        <p className="font-black text-[#0B2545] text-sm mt-0.5">428</p>
+                    <div className="grid grid-cols-4 gap-1.5 text-center">
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Students</p>
+                        <p className="font-black text-[#0B2545] text-xs sm:text-sm mt-0.5">428</p>
                       </div>
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
-                        <p className="text-[9px] text-slate-500 font-semibold">Teachers</p>
-                        <p className="font-black text-[#0B2545] text-sm mt-0.5">36</p>
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Teachers</p>
+                        <p className="font-black text-[#0B2545] text-xs sm:text-sm mt-0.5">36</p>
                       </div>
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
-                        <p className="text-[9px] text-slate-500 font-semibold">Classes</p>
-                        <p className="font-black text-[#0B2545] text-sm mt-0.5">18</p>
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Classes</p>
+                        <p className="font-black text-[#0B2545] text-xs sm:text-sm mt-0.5">18</p>
                       </div>
-                      <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all">
-                        <p className="text-[9px] text-slate-500 font-semibold">Attendance</p>
-                        <p className="font-black text-emerald-600 text-sm mt-0.5">94%</p>
+                      <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                        <p className="text-[8px] sm:text-[9px] text-slate-500 font-semibold">Attendance</p>
+                        <p className="font-black text-emerald-600 text-xs sm:text-sm mt-0.5">94%</p>
                       </div>
                     </div>
 
                     {/* Financial Overview & Recent Payments */}
-                    <div className="grid grid-cols-2 gap-2 text-[10px]">
+                    <div className="grid grid-cols-2 gap-2 text-[9px] sm:text-[10px]">
                       {/* Attendance & Finance Card */}
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5 hover:shadow-sm transition-shadow">
-                        <p className="font-bold text-slate-800 text-[11px]">Financial Overview</p>
+                      <div className="p-2 rounded-lg bg-white border border-slate-200 shadow-2xs space-y-1">
+                        <p className="font-bold text-slate-800 text-[10px]">Financial Overview</p>
                         <div className="space-y-0.5">
                           <p className="text-emerald-700 font-extrabold text-xs">GH₵ 48,750</p>
-                          <p className="text-[9px] text-slate-500">Total Fees Collected (Term 1)</p>
+                          <p className="text-[8px] text-slate-500">Total Fees (Term 1)</p>
                         </div>
-                        <div className="pt-1 border-t border-slate-100 flex justify-between text-[9px]">
+                        <div className="pt-0.5 border-t border-slate-100 flex justify-between text-[8px]">
                           <span className="text-slate-500">Outstanding:</span>
                           <span className="font-bold text-rose-600">GH₵ 12,350</span>
                         </div>
                       </div>
 
                       {/* Recent Payment Table Snapshot */}
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1.5 hover:shadow-sm transition-shadow">
-                        <p className="font-bold text-slate-800 text-[11px]">Recent Payments</p>
-                        <div className="space-y-1 text-[9px]">
+                      <div className="p-2 rounded-lg bg-white border border-slate-200 shadow-2xs space-y-1">
+                        <p className="font-bold text-slate-800 text-[10px]">Recent Payments</p>
+                        <div className="space-y-1 text-[8px]">
                           <div className="flex justify-between items-center">
                             <span className="font-medium text-slate-700">Akua Boateng</span>
-                            <span className="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold">Paid</span>
+                            <span className="px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold">Paid</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="font-medium text-slate-700">Kwame Mensah</span>
-                            <span className="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold">Paid</span>
+                            <span className="px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold">Paid</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="font-medium text-slate-700">Abena Osei</span>
-                            <span className="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 font-bold">Pending</span>
+                            <span className="px-1 py-0.2 rounded bg-amber-50 text-amber-700 font-bold">Pending</span>
                           </div>
                         </div>
                       </div>
@@ -514,18 +519,18 @@ export const LandingPageView: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             {/* Left Photo: Ghanaian Pupil in Uniform Holding Books */}
-            <div className="lg:col-span-4 flex justify-center">
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 max-w-sm group">
+            <div className="lg:col-span-4 flex justify-center w-full">
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 w-full max-w-[280px] sm:max-w-xs group bg-slate-100">
                 <img
-                  src="/assets/ghana_students_running.png"
-                  alt="Ghanaian school pupil in uniform holding textbooks"
-                  className="w-full h-[420px] object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
+                  src="/assets/ghana_pupil_books.jpg"
+                  alt="Ghanaian primary school pupil smiling with textbooks"
+                  className="w-full h-80 sm:h-96 lg:h-[410px] object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
             </div>
 
             {/* Center: Details & Feature Checklist */}
-            <div className="lg:col-span-4 space-y-5 text-left">
+            <div className="lg:col-span-4 space-y-5 text-left w-full">
               <span className="text-xs font-extrabold text-[#2563EB] tracking-wider uppercase">
                 SEE IT IN ACTION
               </span>
@@ -575,9 +580,9 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Right: Dual Device Previews (Desktop Analytics + Mobile Smartphone) */}
-            <div className="lg:col-span-4 flex items-center justify-center relative">
+            <div className="lg:col-span-4 flex items-center justify-center relative w-full overflow-hidden sm:overflow-visible py-4">
               {/* Desktop Dashboard Card with Subtle Inverse Float */}
-              <div className="w-60 sm:w-68 rounded-2xl bg-white border border-slate-200 shadow-xl p-4 space-y-2.5 opacity-90 hidden sm:block animate-float-reverse">
+              <div className="w-48 sm:w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-3.5 space-y-2 opacity-95 hidden sm:block animate-float-reverse shrink-0">
                 <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[11px] font-bold text-slate-700">
                   <span>Class Performance</span>
                   <span className="text-emerald-600 text-[10px] flex items-center gap-1">
@@ -585,14 +590,14 @@ export const LandingPageView: React.FC = () => {
                     Live
                   </span>
                 </div>
-                <div className="h-20 bg-slate-50 rounded-xl border border-slate-100 p-2 flex items-end justify-between gap-1.5">
-                  <div className="w-3.5 bg-blue-400 rounded-t h-[55%] transition-all hover:h-[70%]"></div>
-                  <div className="w-3.5 bg-blue-500 rounded-t h-[70%] transition-all hover:h-[80%]"></div>
-                  <div className="w-3.5 bg-blue-600 rounded-t h-[88%] transition-all hover:h-[95%]"></div>
-                  <div className="w-3.5 bg-[#0B2545] rounded-t h-[80%] transition-all hover:h-[90%]"></div>
-                  <div className="w-3.5 bg-emerald-500 rounded-t h-[95%] transition-all hover:h-full"></div>
+                <div className="h-16 bg-slate-50 rounded-xl border border-slate-100 p-2 flex items-end justify-between gap-1.5">
+                  <div className="w-3 bg-blue-400 rounded-t h-[55%] transition-all hover:h-[70%]"></div>
+                  <div className="w-3 bg-blue-500 rounded-t h-[70%] transition-all hover:h-[80%]"></div>
+                  <div className="w-3 bg-blue-600 rounded-t h-[88%] transition-all hover:h-[95%]"></div>
+                  <div className="w-3 bg-[#0B2545] rounded-t h-[80%] transition-all hover:h-[90%]"></div>
+                  <div className="w-3 bg-emerald-500 rounded-t h-[95%] transition-all hover:h-full"></div>
                 </div>
-                <div className="space-y-1.5 text-[10px] text-slate-500 pt-1">
+                <div className="space-y-1 text-[9px] text-slate-500 pt-1">
                   <div className="flex justify-between">
                     <span>Average Attendance</span>
                     <span className="font-extrabold text-[#0B2545]">96.4%</span>
@@ -605,24 +610,24 @@ export const LandingPageView: React.FC = () => {
               </div>
 
               {/* Mobile Phone Device Mockup with Float Animation */}
-              <div className="w-56 sm:w-60 -ml-12 sm:-ml-16 rounded-[2.5rem] bg-white border-4 border-slate-900 shadow-2xl p-3.5 space-y-3 z-10 ring-8 ring-slate-100 animate-float-slow">
-                <div className="w-14 h-1.5 bg-slate-900 rounded-full mx-auto mb-1"></div>
-                <div className="flex justify-between items-center text-[10px] text-slate-400 px-1">
+              <div className="w-52 sm:w-56 -ml-8 sm:-ml-12 rounded-[2.2rem] bg-white border-4 border-slate-900 shadow-2xl p-3 space-y-2.5 z-10 ring-4 sm:ring-8 ring-slate-100 animate-float-slow shrink-0">
+                <div className="w-12 h-1 bg-slate-900 rounded-full mx-auto mb-1"></div>
+                <div className="flex justify-between items-center text-[9px] text-slate-400 px-1">
                   <span className="font-extrabold text-[#0B2545]">SchoolOS Mobile</span>
                   <span>9:41 AM</span>
                 </div>
                 
-                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1 hover:bg-slate-100 transition-colors">
-                  <p className="text-[10px] text-slate-500 font-medium">Good morning, Parent</p>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1 hover:bg-slate-100 transition-colors">
+                  <p className="text-[9px] text-slate-500 font-medium">Good morning, Parent</p>
                   <p className="font-extrabold text-[#0B2545] text-xs">Kwame Mensah</p>
-                  <p className="text-[10px] text-slate-500">Class: Basic 5a</p>
-                  <div className="flex items-center gap-1.5 text-[10px] text-emerald-700 font-bold mt-1.5 bg-emerald-50 px-2 py-0.5 rounded-md w-fit">
+                  <p className="text-[9px] text-slate-500">Class: Basic 5a</p>
+                  <div className="flex items-center gap-1.5 text-[9px] text-emerald-700 font-bold mt-1 bg-emerald-50 px-1.5 py-0.5 rounded w-fit">
                     <Check className="w-3 h-3 text-emerald-600" />
                     <span>Attendance: Present</span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1.5 text-[10px]">
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 space-y-1 text-[9px]">
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500">Latest Result</span>
                     <span className="font-extrabold text-[#0B2545]">88% Average</span>
@@ -637,7 +642,7 @@ export const LandingPageView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-1.5 border-t border-slate-100 flex justify-around text-[10px] text-slate-400 font-bold">
+                <div className="pt-1 border-t border-slate-100 flex justify-around text-[9px] text-slate-400 font-bold">
                   <span className="text-blue-600 cursor-pointer">Home</span>
                   <span className="hover:text-slate-700 cursor-pointer">Results</span>
                   <span className="hover:text-slate-700 cursor-pointer">Fees</span>
@@ -903,8 +908,8 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* Right Photo Strip & Slogan */}
-            <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-end gap-6">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 max-w-xs group">
+            <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-6 w-full">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full max-w-xs group">
                 <img
                   src="/assets/ghana_students_hero.jpg"
                   alt="Ghanaian school pupils"

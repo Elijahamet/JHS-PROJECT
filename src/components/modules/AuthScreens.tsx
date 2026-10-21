@@ -217,7 +217,7 @@ export const AuthScreens: React.FC = () => {
   ];
 
   return (
-    <div className="h-screen w-screen max-h-screen overflow-hidden bg-slate-900 text-slate-900 flex flex-col font-sans selection:bg-[#0B2545] selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-hidden bg-slate-900 text-slate-900 flex flex-col font-sans selection:bg-[#0B2545] selection:text-white">
       {/* Top Ghana National Branding Bar */}
       <div className="h-1 w-full bg-gradient-to-r from-red-600 via-amber-400 to-emerald-600 shrink-0 z-20" />
 
