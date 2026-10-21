@@ -217,7 +217,7 @@ export const AuthScreens: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-hidden bg-slate-900 text-slate-900 flex flex-col font-sans selection:bg-[#0B2545] selection:text-white">
+    <div className="h-screen w-full max-w-full overflow-hidden bg-[#0B2545] text-slate-900 flex flex-col font-sans selection:bg-[#0B2545] selection:text-white">
       {/* Top Ghana National Branding Bar */}
       <div className="h-1 w-full bg-gradient-to-r from-red-600 via-amber-400 to-emerald-600 shrink-0 z-20" />
 
@@ -225,9 +225,9 @@ export const AuthScreens: React.FC = () => {
       {/* 1. SIGN IN SCREEN                                                         */}
       {/* ========================================================================= */}
       {authScreen === 'login' && (
-        <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
+        <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden bg-white">
           {/* Left Hero Column: Authentic Editorial Brand Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full min-h-full self-stretch overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
             {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
             <img
               src="/assets/login-hero.jpg"
@@ -475,9 +475,9 @@ export const AuthScreens: React.FC = () => {
       {/* 2. SIGN UP SCREEN (INSTITUTIONAL REGISTRATION)                             */}
       {/* ========================================================================= */}
       {authScreen === 'signup' && (
-        <div className="h-full w-full flex flex-col lg:flex-row overflow-hidden bg-slate-50">
+        <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden bg-white">
           {/* Left Column: Exclusive Institutional Registration Showcase */}
-          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
+          <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full min-h-full self-stretch overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
             {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
             <img
               src="/assets/signup-hero.jpg"
