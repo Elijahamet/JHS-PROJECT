@@ -213,17 +213,21 @@ export const LandingPageView: React.FC = () => {
       {/* =========================================================================
           3. SECTION: THE CHALLENGE
           ========================================================================= */}
-      <section className="py-20 md:py-28 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 md:py-28 bg-[#0B2545] text-white relative overflow-hidden border-t border-slate-800">
+        {/* Subtle ambient radial gradient in background for richness */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
-            <span className="text-xs font-extrabold text-[#2563EB] tracking-wider uppercase">
+            <span className="text-xs font-extrabold text-blue-400 tracking-wider uppercase">
               THE CHALLENGE
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-[#0B2545] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-white tracking-tight">
               Running a school is complex.
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
+            <p className="text-base text-slate-300 leading-relaxed font-normal">
               From student management to fee collection, communication and transport, schools face many daily challenges. SchoolOS brings everything together in one simple, powerful platform.
             </p>
           </div>
@@ -232,53 +236,53 @@ export const LandingPageView: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Card 1 */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
+            <div className="group p-7 rounded-2xl bg-white/5 backdrop-blur-xs border border-white/10 hover:border-blue-400/50 hover:bg-white/10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-400/30 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <FileEdit className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
+              <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
                 Manual record keeping
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                 Time-consuming and error-prone processes.
               </p>
             </div>
 
             {/* Card 2 */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
+            <div className="group p-7 rounded-2xl bg-white/5 backdrop-blur-xs border border-white/10 hover:border-blue-400/50 hover:bg-white/10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-400/30 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <MessageSquare className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
+              <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
                 Lost communication
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                 Important information gets missed or delayed.
               </p>
             </div>
 
             {/* Card 3 */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
+            <div className="group p-7 rounded-2xl bg-white/5 backdrop-blur-xs border border-white/10 hover:border-blue-400/50 hover:bg-white/10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-400/30 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <CreditCard className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
+              <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
                 Fee collection struggles
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                 Tracking school and feeding fees is difficult.
               </p>
             </div>
 
             {/* Card 4 */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
+            <div className="group p-7 rounded-2xl bg-white/5 backdrop-blur-xs border border-white/10 hover:border-blue-400/50 hover:bg-white/10 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 space-y-4 cursor-default">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-400/30 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <Eye className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">
+              <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
                 Poor visibility
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                 Hard to get real-time updates on attendance, performance and operations.
               </p>
             </div>
