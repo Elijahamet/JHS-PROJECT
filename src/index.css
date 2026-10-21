@@ -30,61 +30,6 @@
   }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-/* Glassmorphism & Modern SaaS Surfaces */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.glass-panel-dark {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(51, 65, 85, 0.6);
-}
-
-.bg-grid-slate {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.bg-grid-slate-dark {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.gradient-text-blue {
-  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #06B6D4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gradient-text-gold {
-  background: linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gradient-text-dark {
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 70%, #334155 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.shadow-glow-blue {
-  box-shadow: 0 0 35px -5px rgba(37, 99, 235, 0.25);
-}
-
-.shadow-glow-emerald {
-  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
-}
-
 /* Page-after-Page & Smooth Motion Animation Utilities */
 @keyframes fadeInUp {
   from {
@@ -155,6 +100,19 @@ html {
 
 .animate-pulse-glow {
   animation: pulseGlow 7s ease-in-out infinite;
+}
+
+/* Scroll snap utilities */
+.page-snap-container {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.page-snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
 }
 
 
