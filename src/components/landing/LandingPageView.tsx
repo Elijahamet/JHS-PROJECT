@@ -170,28 +170,6 @@ export const LandingPageView: React.FC = () => {
                   Explore Features
                 </button>
               </div>
-
-              {/* 3 Value Propositions with Micro-Animations */}
-              <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-6 sm:gap-8 text-xs text-slate-600 font-semibold">
-                <div className="flex items-center gap-2 group cursor-default">
-                  <div className="p-1 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-[#2563EB] transition-colors">
-                    <Shield className="w-4 h-4 text-[#0B2545] group-hover:text-[#2563EB] transition-colors" />
-                  </div>
-                  <span>Secure & Reliable</span>
-                </div>
-                <div className="flex items-center gap-2 group cursor-default">
-                  <div className="p-1 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-[#2563EB] transition-colors">
-                    <User className="w-4 h-4 text-[#0B2545] group-hover:text-[#2563EB] transition-colors" />
-                  </div>
-                  <span>Easy to Use</span>
-                </div>
-                <div className="flex items-center gap-2 group cursor-default">
-                  <div className="p-1 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-[#2563EB] transition-colors">
-                    <GraduationCap className="w-4 h-4 text-[#0B2545] group-hover:text-[#2563EB] transition-colors" />
-                  </div>
-                  <span>Built for Ghanaian Schools</span>
-                </div>
-              </div>
             </div>
 
             {/* Right Column: Hero Visual with Real Pupils */}
