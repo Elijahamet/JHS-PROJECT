@@ -336,12 +336,8 @@ export const AuthScreens: React.FC = () => {
 
             {/* Main Form Center Box */}
             <div className="w-full max-w-md mx-auto my-auto py-5 sm:py-6 space-y-5 sm:space-y-6">
-              {/* Header Title with Official Accreditation Pill */}
+              {/* Header Title */}
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200/80 text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  <span>GES Verified Institutional Portal</span>
-                </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-[#0B2545] tracking-tight">
                   Sign In to School Portal
                 </h2>
@@ -612,44 +608,45 @@ export const AuthScreens: React.FC = () => {
           </div>
 
           {/* Right Column: Structured Two-Step Registration Form */}
-          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-18 py-8 bg-white">
+          <div className="flex-1 h-full overflow-y-auto flex flex-col justify-between px-6 sm:px-10 lg:px-14 xl:px-18 py-6 sm:py-8 bg-white">
             {/* Top Navigation Bar */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setAuthScreen('landing')}
-                  className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-semibold transition-colors mr-1"
-                  title="Return to SchoolOS Landing Page"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Home</span>
-                </button>
-                <span className="font-bold text-[#0B2545] text-sm">
-                  School Registration
-                </span>
-                <span className="text-xs text-slate-400">• Step {signupStep} of 2</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => setAuthScreen('landing')}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                title="Return to SchoolOS Landing Page"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Home</span>
+              </button>
 
               <div className="flex items-center gap-2 text-xs">
                 <span className="text-slate-500 hidden sm:inline">Already registered?</span>
                 <button
                   type="button"
                   onClick={() => setAuthScreen('login')}
-                  className="font-bold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors"
+                  className="inline-flex items-center gap-1 font-bold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors px-2 py-1 rounded-md hover:bg-blue-50"
                 >
-                  Sign In Here
+                  <span>Sign In Here</span>
+                  <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
             </div>
 
             {/* Main Form Center Content */}
-            <div className="w-full max-w-xl mx-auto my-auto py-4 space-y-5">
+            <div className="w-full max-w-xl mx-auto my-auto py-5 sm:py-6 space-y-5">
+              {/* Header Title with Step Pill */}
               <div>
-                <h2 className="text-2xl font-black text-[#0B2545] tracking-tight">
-                  {signupStep === 1 ? 'Step 1: School Identity & Location' : 'Step 2: Administrator & Security Setup'}
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <div className="flex items-center justify-between mb-1">
+                  <h2 className="text-2xl sm:text-3xl font-black text-[#0B2545] tracking-tight">
+                    {signupStep === 1 ? 'Register Your School' : 'Administrator Setup'}
+                  </h2>
+                  <span className="text-xs font-bold text-[#0B2545] bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full shrink-0">
+                    Step {signupStep} of 2
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
                   {signupStep === 1
                     ? 'Enter your official basic school details and Ghanaian regional location.'
                     : 'Designate the principal administrator account to manage your institution.'}
@@ -658,8 +655,8 @@ export const AuthScreens: React.FC = () => {
 
               {/* Progress Indicator */}
               <div className="flex items-center gap-2">
-                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 1 ? 'bg-[#0B2545]' : 'bg-slate-200'}`} />
-                <div className={`flex-1 h-1.5 rounded-full transition-all ${signupStep >= 2 ? 'bg-[#0B2545]' : 'bg-slate-200'}`} />
+                <div className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${signupStep >= 1 ? 'bg-[#0B2545]' : 'bg-slate-200'}`} />
+                <div className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${signupStep >= 2 ? 'bg-[#0B2545]' : 'bg-slate-200'}`} />
               </div>
 
               {/* Success Notification */}
@@ -680,31 +677,31 @@ export const AuthScreens: React.FC = () => {
                 {signupStep === 1 && (
                   <div className="space-y-3.5">
                     <div>
-                      <label className="block font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-bold text-slate-800 mb-1.5">
                         Official School Name <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                        <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                         <input
                           type="text"
                           required
                           value={schoolName}
                           onChange={(e) => setSchoolName(e.target.value)}
                           placeholder="e.g. St. Augustine Basic & JHS Academy"
-                          className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Curriculum & Stream Level
                         </label>
                         <select
                           value={schoolLevel}
                           onChange={(e) => setSchoolLevel(e.target.value)}
-                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          className="w-full px-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium cursor-pointer"
                         >
                           <option value="Basic 1 - 6 & JHS 1 - 3">Basic 1–6 & JHS 1–3 (Comprehensive)</option>
                           <option value="Junior High School (JHS 1 - 3)">Junior High School (JHS 1–3 Only)</option>
@@ -713,28 +710,28 @@ export const AuthScreens: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
-                          GES / EMIS School Code (Optional)
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                          GES / EMIS School Code <span className="text-slate-400 font-normal">(Optional)</span>
                         </label>
                         <input
                           type="text"
                           value={emisCode}
                           onChange={(e) => setEmisCode(e.target.value)}
                           placeholder="e.g. GES-GAR-2024-048"
-                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          className="w-full px-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Region in Ghana <span className="text-rose-500">*</span>
                         </label>
                         <select
                           value={region}
                           onChange={(e) => setRegion(e.target.value)}
-                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          className="w-full px-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium cursor-pointer"
                         >
                           <option value="Greater Accra">Greater Accra</option>
                           <option value="Ashanti">Ashanti</option>
@@ -756,17 +753,17 @@ export const AuthScreens: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           City / Municipality / Suburb
                         </label>
                         <div className="relative">
-                          <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <input
                             type="text"
                             value={city}
                             onChange={(e) => setCity(e.target.value)}
                             placeholder="e.g. East Legon / Kumasi"
-                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                            className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                         </div>
                       </div>
@@ -774,10 +771,10 @@ export const AuthScreens: React.FC = () => {
 
                     <button
                       type="submit"
-                      className="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 mt-4"
+                      className="w-full py-3 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group active:scale-[0.99] mt-3"
                     >
                       <span>Continue to Administrator Setup</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 )}
@@ -785,49 +782,82 @@ export const AuthScreens: React.FC = () => {
                 {/* STEP 2: ADMINISTRATOR & CREDENTIALS */}
                 {signupStep === 2 && (
                   <div className="space-y-3.5">
-                    {/* Role selector */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 mb-1">
-                        Registering Account Role:
-                      </label>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
-                        {portalRoles.map((role) => (
-                          <button
-                            key={role.id}
-                            type="button"
-                            onClick={() => setSignupRole(role.id)}
-                            className={`py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all ${
-                              signupRole === role.id
-                                ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
-                                : 'text-slate-600 hover:text-slate-900'
-                            }`}
-                          >
-                            {role.title}
-                          </button>
-                        ))}
+                    {/* Spacious 2x2 Role Selector */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                          Select Account Role:
+                        </label>
+                        <span className="text-[10px] text-slate-400 font-medium">Designate portal access tier</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {portalRoles.map((role) => {
+                          const Icon = role.icon;
+                          const isSelected = signupRole === role.id;
+                          return (
+                            <button
+                              key={role.id}
+                              type="button"
+                              onClick={() => setSignupRole(role.id)}
+                              className={`relative p-2.5 rounded-xl text-left transition-all duration-150 flex items-center gap-2.5 border group ${
+                                isSelected
+                                  ? 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/30 border-[#0B2545] shadow-sm ring-2 ring-[#0B2545]/20'
+                                  : 'bg-white border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/70 text-slate-700'
+                              }`}
+                            >
+                              <div
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                                  isSelected
+                                    ? 'bg-[#0B2545] text-white shadow-xs'
+                                    : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200/70'
+                                }`}
+                              >
+                                <Icon className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between">
+                                  <span className={`text-xs font-bold truncate ${isSelected ? 'text-[#0B2545]' : 'text-slate-900'}`}>
+                                    {role.title}
+                                  </span>
+                                  <span
+                                    className={`text-[9px] font-bold uppercase tracking-wider px-1 rounded ml-1 shrink-0 ${
+                                      isSelected ? 'bg-[#0B2545]/10 text-[#0B2545]' : 'bg-slate-100 text-slate-500'
+                                    }`}
+                                  >
+                                    {role.badge}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-slate-500 truncate mt-0.5">
+                                  {role.description}
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Administrator Full Name <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
-                          <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <input
                             type="text"
                             required
                             value={adminName}
                             onChange={(e) => setAdminName(e.target.value)}
                             placeholder="e.g. Mrs. Cynthia Arthur"
-                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                            className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Official Designation
                         </label>
                         <input
@@ -835,42 +865,42 @@ export const AuthScreens: React.FC = () => {
                           value={adminDesignation}
                           onChange={(e) => setAdminDesignation(e.target.value)}
                           placeholder="e.g. Headmistress / Principal"
-                          className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                          className="w-full px-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Official School Email <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
-                          <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <input
                             type="email"
                             required
                             value={adminEmail}
                             onChange={(e) => setAdminEmail(e.target.value)}
                             placeholder="admin@school.edu.gh"
-                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                            className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Phone / WhatsApp (+233) <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
-                          <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <input
                             type="tel"
                             required
                             value={adminPhone}
                             onChange={(e) => setAdminPhone(e.target.value)}
                             placeholder="+233 24 123 4567"
-                            className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                            className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                         </div>
                       </div>
@@ -878,11 +908,11 @@ export const AuthScreens: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Security Password <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
-                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <input
                             type={showSignupPassword ? 'text' : 'password'}
                             required
@@ -890,17 +920,17 @@ export const AuthScreens: React.FC = () => {
                             value={signupPassword}
                             onChange={(e) => setSignupPassword(e.target.value)}
                             placeholder="Minimum 6 characters"
-                            className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                            className="w-full pl-10 pr-10 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-bold text-slate-800 mb-1.5">
                           Confirm Password <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
-                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <input
                             type={showSignupPassword ? 'text' : 'password'}
                             required
@@ -908,12 +938,13 @@ export const AuthScreens: React.FC = () => {
                             value={confirmSignupPassword}
                             onChange={(e) => setConfirmSignupPassword(e.target.value)}
                             placeholder="Repeat password"
-                            className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all font-medium"
+                            className="w-full pl-10 pr-10 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                           <button
                             type="button"
                             onClick={() => setShowSignupPassword(!showSignupPassword)}
-                            className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5"
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1"
+                            title={showSignupPassword ? 'Hide password' : 'Show password'}
                           >
                             {showSignupPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -921,13 +952,13 @@ export const AuthScreens: React.FC = () => {
                       </div>
                     </div>
 
-                    <label className="flex items-start gap-2 pt-1 cursor-pointer select-none">
+                    <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         required
                         checked={agreeTerms}
                         onChange={(e) => setAgreeTerms(e.target.checked)}
-                        className="w-4 h-4 rounded border-slate-300 text-[#0B2545] focus:ring-[#0B2545] shrink-0 mt-0.5"
+                        className="w-4 h-4 rounded border-slate-300 text-[#0B2545] focus:ring-[#0B2545] shrink-0 mt-0.5 cursor-pointer"
                       />
                       <span className="text-[11px] text-slate-600 leading-snug">
                         I verify that I am an authorized representative of this educational institution and agree to the{' '}
@@ -940,7 +971,7 @@ export const AuthScreens: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSignupStep(1)}
-                        className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+                        className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 active:scale-[0.99]"
                       >
                         <ArrowLeft className="w-4 h-4" />
                         <span>Back</span>
@@ -948,10 +979,10 @@ export const AuthScreens: React.FC = () => {
 
                       <button
                         type="submit"
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-3 px-4 rounded-xl bg-[#0B2545] hover:bg-[#071A31] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group active:scale-[0.99]"
                       >
-                        <span>Create School Account & Launch</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <span>Complete Registration & Launch</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
                   </div>
@@ -961,7 +992,10 @@ export const AuthScreens: React.FC = () => {
 
             {/* Bottom Support & Legal Links */}
             <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-2">
-              <p>Ghana Education Service (GES) Compliant Registration</p>
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Ghana Education Service (GES) Compliant Registration</span>
+              </div>
               <div className="flex items-center gap-4 text-slate-500 font-medium">
                 <a href="#help" className="hover:text-slate-900 transition-colors">Help Desk</a>
                 <span>•</span>
