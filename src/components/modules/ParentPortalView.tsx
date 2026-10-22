@@ -40,6 +40,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
     setIsReportCardModalOpen,
     setSelectedReceiptPayment,
     addPayment,
+    getClassFee,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'attendance' | 'fees' | 'pay' | 'announcements' | 'chat'>(tab);
@@ -252,24 +253,31 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                 )}
               </div>
 
-              <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Term 2 Billed:</span>
-                  <span className="font-semibold text-slate-900">{formatCurrency(2000)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Total Paid:</span>
-                  <span className="font-semibold text-emerald-700">
-                    {formatCurrency(Math.max(0, 2000 - child.schoolFeeBalance))}
-                  </span>
-                </div>
-                <div className="flex justify-between pt-1 border-t border-slate-100 font-bold">
-                  <span className="text-slate-700">Remaining Balance:</span>
-                  <span className={child.schoolFeeBalance === 0 ? 'text-emerald-700' : 'text-rose-600'}>
-                    {formatCurrency(child.schoolFeeBalance)}
-                  </span>
-                </div>
-              </div>
+              {(() => {
+                const childTuitionBilled = child.totalBilledSchoolFee || getClassFee(child.className) || 2000;
+                const childTuitionPaid = Math.max(0, childTuitionBilled - child.schoolFeeBalance);
+
+                return (
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Term 2 Billed:</span>
+                      <span className="font-semibold text-slate-900">{formatCurrency(childTuitionBilled)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Total Paid:</span>
+                      <span className="font-semibold text-emerald-700">
+                        {formatCurrency(childTuitionPaid)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-slate-100 font-bold">
+                      <span className="text-slate-700">Remaining Balance:</span>
+                      <span className={child.schoolFeeBalance === 0 ? 'text-emerald-700' : 'text-rose-600'}>
+                        {formatCurrency(child.schoolFeeBalance)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Feeding Fees Card */}

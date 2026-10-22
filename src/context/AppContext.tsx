@@ -79,7 +79,8 @@ interface AppContextType {
 
   // Collections & CRUD
   students: Student[];
-  addStudent: (studentData: Partial<Student>) => void;
+  addStudent: (studentData: Partial<Student> & { customSchoolFee?: number }) => void;
+  deleteStudent: (studentId: string) => void;
   parents: Parent[];
   teachers: Teacher[];
   addTeacher: (teacherData: Partial<Teacher>) => void;
@@ -89,6 +90,12 @@ interface AppContextType {
   deleteClass: (classId: string) => void;
   assignTeacherToClass: (classId: string, teacherId: string) => void;
   feeStructures: FeeStructureItem[];
+  setFeeStructures: React.Dispatch<React.SetStateAction<FeeStructureItem[]>>;
+  updateFeeStructureItem: (feeId: string, updates: Partial<FeeStructureItem>) => void;
+  addFeeStructureItem: (feeItem: Omit<FeeStructureItem, 'id'>) => void;
+  deleteFeeStructureItem: (feeId: string) => void;
+  getClassFee: (classNameOrId: string) => number;
+  updateClassFee: (classIdOrName: string, newFee: number, applyToEnrolledStudents?: boolean) => void;
   payments: PaymentRecord[];
   addPayment: (paymentData: {
     studentId: string;
@@ -343,7 +350,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       console.warn('Failed to save parents to storage', e);
     }
   }, [parents]);
-  const [feeStructures] = useState<FeeStructureItem[]>(mockFeeStructure);
+
+  const [feeStructures, setFeeStructures] = useState<FeeStructureItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_fee_structures_v6');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached fee structures', e);
+    }
+    return mockFeeStructure;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_fee_structures_v6', JSON.stringify(feeStructures));
+    } catch (e) {
+      console.warn('Failed to save fee structures to storage', e);
+    }
+  }, [feeStructures]);
   const [payments, setPayments] = useState<PaymentRecord[]>(mockPayments);
   const [assessments, setAssessments] = useState<AssessmentRecord[]>(mockAssessments);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(mockAttendanceToday);
@@ -674,7 +698,158 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const addStudent = (studentData: Partial<Student>) => {
+  // =========================================================================
+  // CLASS TUITION FEES & FEE SCHEDULE CONFIGURATION
+  // =========================================================================
+  const getClassFee = (classNameOrId: string): number => {
+    if (!classNameOrId) return 1500;
+
+    // 1. Direct class match in classes state
+    const matchedClass = classes.find(
+      (c) =>
+        c.id === classNameOrId ||
+        c.name.toLowerCase().trim() === classNameOrId.toLowerCase().trim()
+    );
+    if (matchedClass && matchedClass.termFee !== undefined && matchedClass.termFee > 0) {
+      return matchedClass.termFee;
+    }
+
+    // 2. Matching fee structure entry
+    const matchedFee = feeStructures.find(
+      (f) =>
+        f.category === 'School Fees' &&
+        f.status === 'Active' &&
+        ((matchedClass &&
+          (f.applicableClass === matchedClass.name ||
+            f.applicableClass === matchedClass.stage ||
+            f.applicableClass === 'All')) ||
+          f.applicableClass.toLowerCase().trim() === classNameOrId.toLowerCase().trim())
+    );
+    if (matchedFee && matchedFee.amount > 0) {
+      return matchedFee.amount;
+    }
+
+    // 3. Fallback stage defaults
+    const stage =
+      matchedClass?.stage ||
+      (classNameOrId.toUpperCase().startsWith('KG') ||
+      classNameOrId.toUpperCase().startsWith('NUR') ||
+      classNameOrId.toUpperCase().startsWith('CR')
+        ? 'Kindergarten'
+        : classNameOrId.toUpperCase().startsWith('JHS')
+        ? 'JHS'
+        : 'Primary');
+
+    return stage === 'Kindergarten' ? 1200 : stage === 'JHS' ? 2000 : 1500;
+  };
+
+  const updateClassFee = (
+    classIdOrName: string,
+    newFee: number,
+    applyToEnrolledStudents = false
+  ) => {
+    const parsedFee = Math.max(0, Number(newFee));
+    const targetClass = classes.find(
+      (c) =>
+        c.id === classIdOrName ||
+        c.name.toLowerCase().trim() === classIdOrName.toLowerCase().trim()
+    );
+    const className = targetClass ? targetClass.name : classIdOrName;
+
+    // 1. Update ClassRoom object in classes
+    setClasses((prev) =>
+      prev.map((c) =>
+        c.id === classIdOrName || c.name.toLowerCase().trim() === classIdOrName.toLowerCase().trim()
+          ? { ...c, termFee: parsedFee }
+          : c
+      )
+    );
+
+    // 2. Update or insert in feeStructures
+    setFeeStructures((prev) => {
+      const existingIndex = prev.findIndex(
+        (f) =>
+          f.category === 'School Fees' &&
+          (f.applicableClass === className || (targetClass && f.applicableClass === targetClass.stage))
+      );
+      if (existingIndex >= 0) {
+        const copy = [...prev];
+        copy[existingIndex] = {
+          ...copy[existingIndex],
+          name: `${className} Term Tuition Fee`,
+          amount: parsedFee,
+          applicableClass: className,
+        };
+        return copy;
+      } else {
+        const newItem: FeeStructureItem = {
+          id: `fee_${Date.now()}`,
+          name: `${className} Term Tuition Fee`,
+          category: 'School Fees',
+          amount: parsedFee,
+          academicYear: '2024 / 2025',
+          term: 'Term 2',
+          applicableClass: className,
+          dueDate: '2025-02-15',
+          status: 'Active',
+        };
+        return [...prev, newItem];
+      }
+    });
+
+    // 3. If applyToEnrolledStudents is true, update the balances of all students in that class
+    if (applyToEnrolledStudents && targetClass) {
+      setStudents((prev) =>
+        prev.map((s) => {
+          if (s.classId === targetClass.id || s.className === targetClass.name) {
+            const oldTotal = s.totalBilledSchoolFee || getClassFee(s.className) || 2000;
+            const previouslyPaid = Math.max(0, oldTotal - s.schoolFeeBalance);
+            const newBalance = Math.max(0, parsedFee - previouslyPaid);
+            return {
+              ...s,
+              totalBilledSchoolFee: parsedFee,
+              schoolFeeBalance: newBalance,
+            };
+          }
+          return s;
+        })
+      );
+    }
+
+    // 4. Send notification
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Tuition Fee Updated — ${className}`,
+      message: `Term Tuition Fee for ${className} set to GH₵ ${parsedFee.toLocaleString()}${
+        applyToEnrolledStudents ? ' and updated for enrolled pupils.' : '.'
+      }`,
+      type: 'payment',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'fees',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const updateFeeStructureItem = (feeId: string, updates: Partial<FeeStructureItem>) => {
+    setFeeStructures((prev) =>
+      prev.map((f) => (f.id === feeId ? { ...f, ...updates } : f))
+    );
+  };
+
+  const addFeeStructureItem = (itemData: Omit<FeeStructureItem, 'id'>) => {
+    const newItem: FeeStructureItem = {
+      id: `fee_${Date.now()}`,
+      ...itemData,
+    };
+    setFeeStructures((prev) => [...prev, newItem]);
+  };
+
+  const deleteFeeStructureItem = (feeId: string) => {
+    setFeeStructures((prev) => prev.filter((f) => f.id !== feeId));
+  };
+
+  const addStudent = (studentData: Partial<Student> & { customSchoolFee?: number }) => {
     const newId = `std_${Date.now()}`;
     const studentCode = `BFA-2025-${String(students.length + 1).padStart(4, '0')}`;
     const studentFullName = `${studentData.firstName || 'New'} ${studentData.lastName || 'Student'}`.trim();
@@ -855,8 +1030,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       participatesInFeeding: studentData.participatesInFeeding ?? true,
       busRouteId: studentData.busRouteId,
       busRouteName: studentData.busRouteName,
-      schoolFeeBalance: 2000,
-      feedingFeeBalance: 600,
+      totalBilledSchoolFee: studentData.customSchoolFee !== undefined && !isNaN(Number(studentData.customSchoolFee))
+        ? Number(studentData.customSchoolFee)
+        : getClassFee(finalClassName),
+      schoolFeeBalance: studentData.customSchoolFee !== undefined && !isNaN(Number(studentData.customSchoolFee))
+        ? Number(studentData.customSchoolFee)
+        : getClassFee(finalClassName),
+      feedingFeeBalance: studentData.participatesInFeeding ? 600 : 0,
       attendanceRate: 100,
       lastGradeAverage: 0,
     };
@@ -864,6 +1044,56 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setStudents((prev) => [newStudent, ...prev]);
     setEnrollTargetClass(null);
     clearStudentDraft();
+  };
+
+  const deleteStudent = (studentId: string) => {
+    const targetStudent = students.find((s) => s.id === studentId);
+    if (!targetStudent) return;
+
+    // 1. Remove from students list
+    setStudents((prev) => prev.filter((s) => s.id !== studentId));
+
+    // 2. Decrement student count on the class
+    setClasses((prev) =>
+      prev.map((c) =>
+        c.name === targetStudent.className || c.id === targetStudent.classId
+          ? { ...c, studentCount: Math.max(0, (c.studentCount || 1) - 1) }
+          : c
+      )
+    );
+
+    // 3. Update parent's linked children if any
+    setParents((prev) =>
+      prev.map((p) => {
+        if (p.childrenIds?.includes(studentId)) {
+          return {
+            ...p,
+            childrenIds: p.childrenIds.filter((id) => id !== studentId),
+            childrenNames: p.childrenNames?.filter(
+              (name) => !name.includes(targetStudent.lastName)
+            ),
+          };
+        }
+        return p;
+      })
+    );
+
+    // 4. Clear selected student if active
+    if (selectedStudentId === studentId) {
+      setSelectedStudentId(null);
+    }
+
+    // 5. Send notification
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Student Record Deleted — ${targetStudent.firstName} ${targetStudent.lastName}`,
+      message: `${targetStudent.firstName} ${targetStudent.lastName} (${targetStudent.studentId}) was permanently removed from ${targetStudent.className}.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'students',
+    };
+    setNotifications((prev) => [notif, ...prev]);
   };
 
   const addTeacher = (teacherData: Partial<Teacher>) => {
@@ -925,6 +1155,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ? ['English Language', 'Mathematics', 'Integrated Science', 'Social Studies', 'Religious and Moral Education', 'Ghanaian Language', 'Career Technology', 'Creative Arts & Design', 'Computing', 'French']
       : ['English Language', 'Mathematics', 'Natural Science', 'Our World Our People', 'Religious and Moral Education', 'Ghanaian Language (Twi/Ga)', 'Creative Arts & Design', 'Computing'];
 
+    const termFee = classData.termFee || getClassFee(classData.name || '');
+
     const newClass: ClassRoom = {
       id: newId,
       name: classData.name || 'New Class Stream',
@@ -937,6 +1169,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       roomNumber: classData.roomNumber || (stage === 'Kindergarten' ? 'KG Department - Room 1' : 'Block B - Room 101'),
       averageAttendance: 100,
       subjects: classData.subjects && classData.subjects.length > 0 ? classData.subjects : defaultSubjects,
+      termFee,
     };
 
     setClasses((prev) => [...prev, newClass]);
@@ -977,17 +1210,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const seedStandardGhanaianClasses = () => {
     const standardStreams: Partial<ClassRoom>[] = [
-      { name: 'KG 1', code: 'KG1', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG1' },
-      { name: 'KG 2', code: 'KG2', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG2' },
-      { name: 'Basic 1', code: 'B1', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 1' },
-      { name: 'Basic 2', code: 'B2', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 2' },
-      { name: 'Basic 3', code: 'B3', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 3' },
-      { name: 'Basic 4', code: 'B4', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 4' },
-      { name: 'Basic 5', code: 'B5', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 5' },
-      { name: 'Basic 6', code: 'B6', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 6' },
-      { name: 'JHS 1', code: 'JHS1', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS1' },
-      { name: 'JHS 2', code: 'JHS2', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS2' },
-      { name: 'JHS 3', code: 'JHS3', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS3' },
+      { name: 'KG 1', code: 'KG1', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG1', termFee: 1200 },
+      { name: 'KG 2', code: 'KG2', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG2', termFee: 1200 },
+      { name: 'Basic 1', code: 'B1', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 1', termFee: 1500 },
+      { name: 'Basic 2', code: 'B2', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 2', termFee: 1500 },
+      { name: 'Basic 3', code: 'B3', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 3', termFee: 1500 },
+      { name: 'Basic 4', code: 'B4', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 4', termFee: 1600 },
+      { name: 'Basic 5', code: 'B5', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 5', termFee: 1600 },
+      { name: 'Basic 6', code: 'B6', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 6', termFee: 1600 },
+      { name: 'JHS 1', code: 'JHS1', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS1', termFee: 2000 },
+      { name: 'JHS 2', code: 'JHS2', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS2', termFee: 2100 },
+      { name: 'JHS 3', code: 'JHS3', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS3', termFee: 2200 },
     ];
 
     standardStreams.forEach((st) => addClass(st));
@@ -1042,6 +1275,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setClasses((prevClasses) =>
       prevClasses.map((c) => (c.id === classId ? { ...c, ...updates } : c))
     );
+    if (updates.termFee !== undefined && !isNaN(Number(updates.termFee))) {
+      updateClassFee(classId, Number(updates.termFee), false);
+    }
   };
 
   const deleteClass = (classId: string) => {
@@ -1629,6 +1865,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setSelectedClassFilter,
         students,
         addStudent,
+        deleteStudent,
         parents,
         teachers,
         addTeacher,
@@ -1638,6 +1875,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         deleteClass,
         assignTeacherToClass,
         feeStructures,
+        setFeeStructures,
+        updateFeeStructureItem,
+        addFeeStructureItem,
+        deleteFeeStructureItem,
+        getClassFee,
+        updateClassFee,
         payments,
         addPayment,
         assessments,

@@ -13,6 +13,7 @@ import {
   UtensilsCrossed,
   ShieldCheck,
   UserCheck,
+  Coins,
 } from 'lucide-react';
 
 interface AddStudentViewProps {
@@ -32,6 +33,7 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
     setStudentDraft: setFormData,
     clearStudentDraft,
     hasStudentDraft,
+    getClassFee,
   } = useApp();
 
   const [isCreatingNewClass, setIsCreatingNewClass] = useState(false);
@@ -110,6 +112,8 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
       (formData.classId && c.id === formData.classId) ||
       (formData.className && c.name.toLowerCase() === formData.className.toLowerCase())
   );
+
+  const standardClassFee = getClassFee(formData.className || '');
 
   return (
     <FormPageLayout
@@ -376,6 +380,63 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
                   </span>
                 </div>
               )}
+
+              {/* Class Fee Notice & Custom Fee Override */}
+              <div className="p-3.5 bg-white border border-blue-200/90 rounded-xl space-y-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span className="font-bold text-slate-900 text-xs">
+                      Term Tuition Fee for {formData.className || 'Selected Stream'}:
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-extrabold text-xs font-mono">
+                      GH₵ {standardClassFee.toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    Configured by Admin
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100">
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Custom Student Tuition Fee (GH₵) — Optional Override
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-2 text-xs font-bold text-slate-400">
+                        GH₵
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="10"
+                        value={formData.customSchoolFee !== undefined ? formData.customSchoolFee : ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customSchoolFee: e.target.value === '' ? undefined : Number(e.target.value),
+                          })
+                        }
+                        placeholder={`Standard Class Default (GH₵ ${standardClassFee.toLocaleString()})`}
+                        className="w-full pl-12 pr-3 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600 bg-slate-50/50"
+                      />
+                    </div>
+                    {formData.customSchoolFee !== undefined && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, customSchoolFee: undefined })}
+                        className="text-xs text-slate-500 hover:text-slate-800 font-medium px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50 cursor-pointer"
+                      >
+                        Reset to Default
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Leave blank to use the official admin-set fee for {formData.className || 'this class'} (GH₵ {standardClassFee.toLocaleString()}).
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
