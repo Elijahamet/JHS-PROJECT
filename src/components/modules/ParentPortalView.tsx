@@ -40,6 +40,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
     setIsReportCardModalOpen,
     setSelectedReceiptPayment,
     addPayment,
+    getClassFee,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'attendance' | 'fees' | 'pay' | 'announcements' | 'chat'>(tab);
@@ -50,6 +51,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
 
   // Primary linked student for parent persona
   const child = students.find((s) => s.id === currentUser?.linkedStudentId) || students[0];
+  const childTuitionBilled = child ? (child.totalBilledSchoolFee || getClassFee(child.className) || 2000) : 2000;
 
   // Online Payment Simulation States
   const [payCategory, setPayCategory] = useState<'School Fees' | 'Feeding Fees'>('Feeding Fees');
@@ -255,12 +257,12 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
               <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Term 2 Billed:</span>
-                  <span className="font-semibold text-slate-900">{formatCurrency(2000)}</span>
+                  <span className="font-semibold text-slate-900">{formatCurrency(childTuitionBilled)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Total Paid:</span>
                   <span className="font-semibold text-emerald-700">
-                    {formatCurrency(Math.max(0, 2000 - child.schoolFeeBalance))}
+                    {formatCurrency(Math.max(0, childTuitionBilled - child.schoolFeeBalance))}
                   </span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-slate-100 font-bold">

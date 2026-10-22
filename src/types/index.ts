@@ -64,6 +64,7 @@ export interface Student {
   busRouteId?: string;
   busRouteName?: string;
   participatesInFeeding: boolean;
+  totalBilledSchoolFee?: number;
   schoolFeeBalance: number;
   feedingFeeBalance: number;
   attendanceRate: number; // e.g. 96.5%
@@ -109,6 +110,7 @@ export interface ClassRoom {
   roomNumber: string;
   averageAttendance: number;
   subjects: string[];
+  termFee?: number;
 }
 
 export interface AttendanceRecord {

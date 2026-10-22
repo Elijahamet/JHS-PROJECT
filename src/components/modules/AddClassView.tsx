@@ -63,12 +63,14 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
   const capacity = classDraft.capacity;
   const selectedTeacherId = classDraft.selectedTeacherId;
   const selectedSubjects = classDraft.selectedSubjects;
+  const termFee = classDraft.termFee ?? 2000;
 
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setRoomNumber = (val: string) => setClassDraft((prev) => ({ ...prev, roomNumber: val }));
   const setCapacity = (val: number) => setClassDraft((prev) => ({ ...prev, capacity: val }));
+  const setTermFee = (val: number) => setClassDraft((prev) => ({ ...prev, termFee: val }));
   const setSelectedTeacherId = (val: string) => setClassDraft((prev) => ({ ...prev, selectedTeacherId: val }));
 
   const handleStageChange = (newStage: AcademicStage) => {
@@ -144,6 +146,7 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
           roomNumber: roomNumber.trim() || `R-${Math.floor(10 + Math.random() * 89)}`,
           capacity: Number(capacity) || 35,
           subjects: selectedSubjects,
+          termFee: Number(termFee) || 0,
         },
         selectedTeacherId || undefined
       );
@@ -333,6 +336,27 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-slate-700 font-semibold mb-1.5 flex items-center justify-between">
+                <span>Term Tuition Fee (GH₵) *</span>
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  Manual Admin Pricing
+                </span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="50"
+                required
+                value={termFee}
+                onChange={(e) => setTermFee(Number(e.target.value))}
+                placeholder="e.g. 2000"
+                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all text-xs bg-slate-50/50 hover:bg-white font-semibold text-slate-900"
+              />
+              <p className="text-[10px] text-slate-500 mt-1">
+                Admin sets base school fees per term for this class. Automatic fee assignment is disabled.
+              </p>
             </div>
           </div>
         </div>
