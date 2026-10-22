@@ -16,7 +16,6 @@ export interface StudentFormData {
   participatesInFeeding: boolean;
   busRouteId: string;
   busRouteName: string;
-  customSchoolFee?: number;
 }
 
 export const DEFAULT_STUDENT_FORM: StudentFormData = {
@@ -37,7 +36,6 @@ export const DEFAULT_STUDENT_FORM: StudentFormData = {
   participatesInFeeding: true,
   busRouteId: '',
   busRouteName: '',
-  customSchoolFee: undefined,
 };
 
 export interface TeacherFormData {
@@ -70,7 +68,6 @@ export interface ClassFormData {
   capacity: number;
   selectedTeacherId: string;
   selectedSubjects: string[];
-  termFee: number;
 }
 
 export const DEFAULT_CLASS_FORM: ClassFormData = {
@@ -80,7 +77,6 @@ export const DEFAULT_CLASS_FORM: ClassFormData = {
   roomNumber: '',
   capacity: 35,
   selectedTeacherId: '',
-  termFee: 1500,
   selectedSubjects: [
     'English Language',
     'Mathematics',

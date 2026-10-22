@@ -63,7 +63,6 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
   const capacity = classDraft.capacity;
   const selectedTeacherId = classDraft.selectedTeacherId;
   const selectedSubjects = classDraft.selectedSubjects;
-  const termFee = classDraft.termFee || (stage === 'Kindergarten' ? 1200 : stage === 'JHS' ? 2000 : 1500);
 
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,12 +70,10 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
   const setRoomNumber = (val: string) => setClassDraft((prev) => ({ ...prev, roomNumber: val }));
   const setCapacity = (val: number) => setClassDraft((prev) => ({ ...prev, capacity: val }));
   const setSelectedTeacherId = (val: string) => setClassDraft((prev) => ({ ...prev, selectedTeacherId: val }));
-  const setTermFee = (val: number) => setClassDraft((prev) => ({ ...prev, termFee: val }));
 
   const handleStageChange = (newStage: AcademicStage) => {
     let newSubjects = classDraft.selectedSubjects;
     let newCapacity = classDraft.capacity;
-    const defaultFee = newStage === 'Kindergarten' ? 1200 : newStage === 'JHS' ? 2000 : 1500;
     if (newStage === 'Kindergarten') {
       newSubjects = KINDERGARTEN_SUBJECTS;
       newCapacity = 25;
@@ -92,7 +89,6 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
       stage: newStage,
       selectedSubjects: newSubjects,
       capacity: newCapacity,
-      termFee: defaultFee,
     }));
   };
 
@@ -148,7 +144,6 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
           roomNumber: roomNumber.trim() || `R-${Math.floor(10 + Math.random() * 89)}`,
           capacity: Number(capacity) || 35,
           subjects: selectedSubjects,
-          termFee: Number(termFee) || (stage === 'Kindergarten' ? 1200 : stage === 'JHS' ? 2000 : 1500),
         },
         selectedTeacherId || undefined
       );
@@ -338,29 +333,6 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="sm:col-span-2 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-              <label className="block text-slate-900 font-bold mb-1 text-xs">
-                Term Tuition Fee for this Class (GH₵) *
-              </label>
-              <div className="relative max-w-xs">
-                <span className="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">
-                  GH₵
-                </span>
-                <input
-                  type="number"
-                  min="0"
-                  step="50"
-                  required
-                  value={termFee}
-                  onChange={(e) => setTermFee(Number(e.target.value))}
-                  placeholder="e.g. 1500"
-                  className="w-full pl-12 pr-3.5 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 text-xs bg-white font-bold text-slate-900 shadow-2xs"
-                />
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                The school fees amount that will be billed to students enrolled in {name || 'this class'}.
-              </p>
             </div>
           </div>
         </div>

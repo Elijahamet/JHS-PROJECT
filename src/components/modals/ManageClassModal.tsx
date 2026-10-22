@@ -68,7 +68,6 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
   const [name, setName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [capacity, setCapacity] = useState(40);
-  const [termFee, setTermFee] = useState(1500);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [subjects, setSubjects] = useState<string[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -78,7 +77,6 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
       setName(classRoom.name);
       setRoomNumber(classRoom.roomNumber);
       setCapacity(classRoom.capacity);
-      setTermFee(classRoom.termFee || (classRoom.stage === 'Kindergarten' ? 1200 : classRoom.stage === 'JHS' ? 2000 : 1500));
       setSelectedTeacherId(classRoom.classTeacherId || '');
       setSubjects(classRoom.subjects || []);
       setShowDeleteConfirm(false);
@@ -105,7 +103,6 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
       roomNumber: roomNumber.trim() || classRoom.roomNumber,
       capacity: Number(capacity) || classRoom.capacity,
       subjects: subjects.length > 0 ? subjects : classRoom.subjects,
-      termFee: Number(termFee) || (classRoom.stage === 'Kindergarten' ? 1200 : classRoom.stage === 'JHS' ? 2000 : 1500),
     });
 
     // If teacher assignment changed
@@ -218,7 +215,7 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
         </div>
 
         {/* 1. Identification & Room */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           <div>
             <label className="block text-slate-700 font-semibold mb-1">
               Stream Name
@@ -255,20 +252,6 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
               value={capacity}
               onChange={(e) => setCapacity(Number(e.target.value))}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-700 font-semibold mb-1">
-              Term Tuition Fee (GH₵)
-            </label>
-            <input
-              type="number"
-              min="0"
-              step="50"
-              value={termFee}
-              onChange={(e) => setTermFee(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
             />
           </div>
         </div>
