@@ -11,16 +11,20 @@ import {
   ShieldCheck,
   GraduationCap,
   Sparkles,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { formatCurrency } from '../../utils/formatters';
+import { Parent } from '../../types';
 
 export const ParentsListView: React.FC = () => {
   const {
     parents,
     students,
+    deleteParent,
     setCurrentNav,
     setSelectedStudentId,
     openChatWith,
@@ -30,6 +34,7 @@ export const ParentsListView: React.FC = () => {
 
   const [search, setSearch] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'multi' | 'single'>('all');
+  const [parentToDelete, setParentToDelete] = useState<Parent | null>(null);
 
   // Multi-ward metrics
   const totalParents = parents.length;
@@ -400,6 +405,14 @@ export const ParentsListView: React.FC = () => {
                     {parent.occupation || 'Parent / Guardian'}
                   </span>
                   <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setParentToDelete(parent)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                      title="Delete Parent Record"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                     <Button
                       size="sm"
                       variant="outline"
@@ -421,6 +434,49 @@ export const ParentsListView: React.FC = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Delete Parent Confirmation Modal */}
+      {parentToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-150">
+            <div className="p-6">
+              <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mb-4">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900">
+                Delete Parent Profile?
+              </h3>
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Are you sure you want to delete <strong className="text-slate-900 font-semibold">{parentToDelete.fullName}</strong> ({parentToDelete.phone}) from the school registry?
+              </p>
+              <div className="mt-3 bg-rose-50/70 border border-rose-100 rounded-lg p-3 text-[11px] text-rose-800 leading-relaxed">
+                This will delete this parent profile from communications, broadcast rosters, and guardian accounts.
+              </div>
+
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setParentToDelete(null)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    deleteParent(parentToDelete.id);
+                    setParentToDelete(null);
+                  }}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete Parent
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

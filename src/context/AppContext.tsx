@@ -82,6 +82,7 @@ interface AppContextType {
   addStudent: (studentData: Partial<Student> & { customSchoolFee?: number }) => void;
   deleteStudent: (studentId: string) => void;
   parents: Parent[];
+  deleteParent: (parentId: string) => void;
   teachers: Teacher[];
   addTeacher: (teacherData: Partial<Teacher>) => void;
   deleteTeacher: (teacherId: string) => void;
@@ -98,6 +99,7 @@ interface AppContextType {
   getClassFee: (classNameOrId: string) => number;
   updateClassFee: (classIdOrName: string, newFee: number, applyToEnrolledStudents?: boolean) => void;
   payments: PaymentRecord[];
+  deletePayment: (paymentId: string) => void;
   addPayment: (paymentData: {
     studentId: string;
     category: PaymentRecord['category'];
@@ -369,7 +371,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       console.warn('Failed to save fee structures to storage', e);
     }
   }, [feeStructures]);
-  const [payments, setPayments] = useState<PaymentRecord[]>(mockPayments);
+
+  const [payments, setPayments] = useState<PaymentRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_payments_v6');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse cached payments', e);
+    }
+    return mockPayments;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_payments_v6', JSON.stringify(payments));
+    } catch (e) {
+      console.warn('Failed to save payments to storage', e);
+    }
+  }, [payments]);
   const [assessments, setAssessments] = useState<AssessmentRecord[]>(mockAssessments);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(mockAttendanceToday);
   const [buses, setBuses] = useState<TransportBus[]>(mockBuses);
@@ -1047,10 +1066,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const targetStudent = students.find((s) => s.id === studentId);
     if (!targetStudent) return;
 
+    const studentFullName = `${targetStudent.firstName} ${targetStudent.lastName}`.toLowerCase().trim();
+
     // 1. Remove from students list
     setStudents((prev) => prev.filter((s) => s.id !== studentId));
 
-    // 2. Decrement student count on the class
+    // 2. Remove/clean from class roster and decrement student count
     setClasses((prev) =>
       prev.map((c) =>
         c.name === targetStudent.className || c.id === targetStudent.classId
@@ -1059,36 +1080,158 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       )
     );
 
-    // 3. Update parent's linked children if any
-    setParents((prev) =>
-      prev.map((p) => {
-        if (p.childrenIds?.includes(studentId)) {
-          return {
-            ...p,
-            childrenIds: p.childrenIds.filter((id) => id !== studentId),
-            childrenNames: p.childrenNames?.filter(
-              (name) => !name.includes(targetStudent.lastName)
-            ),
-          };
-        }
-        return p;
-      })
+    // 3. Delete fees: delete all payments and fee transactions linked to this student
+    setPayments((prev) =>
+      prev.filter(
+        (p) =>
+          p.studentId !== studentId &&
+          p.studentId !== targetStudent.studentId &&
+          p.studentName.toLowerCase().trim() !== studentFullName
+      )
     );
 
-    // 4. Clear selected student if active
+    // 4. Delete parents: clean children references and delete the parent record if no other children remain
+    setParents((prev) => {
+      return prev
+        .map((p) => {
+          const isLinked =
+            (targetStudent.parentId && p.id === targetStudent.parentId) ||
+            p.childrenIds?.includes(studentId) ||
+            (targetStudent.parentPhone &&
+              p.phone &&
+              p.phone.replace(/[\s\-()]/g, '') === targetStudent.parentPhone.replace(/[\s\-()]/g, '')) ||
+            (targetStudent.parentName &&
+              p.fullName.toLowerCase().trim() === targetStudent.parentName.toLowerCase().trim());
+
+          if (!isLinked) return p;
+
+          const updatedChildrenIds = (p.childrenIds || []).filter((id) => id !== studentId);
+          const updatedChildrenNames = (p.childrenNames || []).filter(
+            (name) =>
+              name.toLowerCase().trim() !== studentFullName &&
+              !name.toLowerCase().includes(targetStudent.lastName.toLowerCase().trim())
+          );
+
+          return {
+            ...p,
+            childrenIds: updatedChildrenIds,
+            childrenNames: updatedChildrenNames,
+          };
+        })
+        .filter((p) => {
+          // If this parent has 0 enrolled children remaining, completely DELETE the parent!
+          const remainingChildCount = Math.max(p.childrenIds?.length || 0, p.childrenNames?.length || 0);
+          return remainingChildCount > 0;
+        });
+    });
+
+    // 5. Clean up associated attendance, assessments, and report cards
+    setAttendance((prev) => prev.filter((a) => a.studentId !== studentId));
+    setAssessments((prev) => prev.filter((asm) => asm.studentId !== studentId));
+    setReportCards((prev) => prev.filter((rc) => rc.studentId !== studentId));
+
+    // 6. Clear selected student if active
     if (selectedStudentId === studentId) {
       setSelectedStudentId(null);
     }
 
-    // 5. Send notification
+    // 7. Send notification
     const notif: SchoolNotification = {
       id: `notif_${Date.now()}`,
-      title: `Student Record Deleted — ${targetStudent.firstName} ${targetStudent.lastName}`,
-      message: `${targetStudent.firstName} ${targetStudent.lastName} (${targetStudent.studentId}) was permanently removed from ${targetStudent.className}.`,
+      title: `Student Record & Fees Deleted — ${targetStudent.firstName} ${targetStudent.lastName}`,
+      message: `${targetStudent.firstName} ${targetStudent.lastName} (${targetStudent.studentId}), fee payments, class roster entry, and parent links were permanently deleted.`,
       type: 'system',
       timestamp: 'Just now',
       isRead: false,
       linkTo: 'students',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const deleteParent = (parentId: string) => {
+    const targetParent = parents.find((p) => p.id === parentId);
+    if (!targetParent) return;
+
+    // 1. Remove from parents list
+    setParents((prev) => prev.filter((p) => p.id !== parentId));
+
+    // 2. Unlink from students who reference this parent
+    setStudents((prev) =>
+      prev.map((s) => {
+        const isChildOfThisParent =
+          s.parentId === parentId ||
+          (targetParent.childrenIds && targetParent.childrenIds.includes(s.id)) ||
+          (targetParent.phone && s.parentPhone === targetParent.phone) ||
+          (targetParent.fullName && s.parentName.toLowerCase().trim() === targetParent.fullName.toLowerCase().trim());
+
+        if (isChildOfThisParent) {
+          return {
+            ...s,
+            parentId: '',
+            parentName: 'Unassigned',
+            parentPhone: '',
+          };
+        }
+        return s;
+      })
+    );
+
+    // 3. Send notification
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Parent Record Deleted — ${targetParent.fullName}`,
+      message: `Parent profile for ${targetParent.fullName} (${targetParent.phone}) was permanently deleted.`,
+      type: 'system',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'parents',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const deletePayment = (paymentId: string) => {
+    const targetPayment = payments.find((p) => p.id === paymentId);
+    if (!targetPayment) return;
+
+    // 1. Remove from payments list
+    setPayments((prev) => prev.filter((p) => p.id !== paymentId));
+
+    // 2. Restore student balance if applicable
+    if (targetPayment.amount > 0) {
+      setStudents((prev) =>
+        prev.map((s) => {
+          const isTargetStudent =
+            s.id === targetPayment.studentId ||
+            s.studentId === targetPayment.studentId ||
+            `${s.firstName} ${s.lastName}`.toLowerCase().trim() === targetPayment.studentName.toLowerCase().trim();
+
+          if (isTargetStudent) {
+            if (targetPayment.category === 'Feeding Fees') {
+              return {
+                ...s,
+                feedingFeeBalance: (s.feedingFeeBalance || 0) + targetPayment.amount,
+              };
+            } else {
+              return {
+                ...s,
+                schoolFeeBalance: (s.schoolFeeBalance || 0) + targetPayment.amount,
+              };
+            }
+          }
+          return s;
+        })
+      );
+    }
+
+    // 3. Send notification
+    const notif: SchoolNotification = {
+      id: `notif_${Date.now()}`,
+      title: `Payment Deleted / Voided — ${targetPayment.receiptNumber}`,
+      message: `Transaction ${targetPayment.receiptNumber} of GH₵ ${targetPayment.amount.toLocaleString()} (${targetPayment.category}) for ${targetPayment.studentName} was deleted.`,
+      type: 'payment',
+      timestamp: 'Just now',
+      isRead: false,
+      linkTo: 'fees',
     };
     setNotifications((prev) => [notif, ...prev]);
   };
@@ -1310,8 +1453,75 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const targetClass = classes.find((c) => c.id === classId);
     if (!targetClass) return;
 
+    // 1. Remove the class from classes list
     setClasses((prevClasses) => prevClasses.filter((c) => c.id !== classId));
 
+    // 2. Delete fee structures specifically tied to this class
+    setFeeStructures((prev) =>
+      prev.filter(
+        (f) =>
+          f.applicableClass !== targetClass.name &&
+          f.applicableClass !== targetClass.id &&
+          f.applicableClass !== targetClass.code
+      )
+    );
+
+    // 3. Find students enrolled in this class
+    const enrolledStudents = students.filter(
+      (s) => s.classId === classId || s.className === targetClass.name
+    );
+    const enrolledStudentIds = enrolledStudents.map((s) => s.id);
+    const enrolledNames = enrolledStudents.map((s) => `${s.firstName} ${s.lastName}`.toLowerCase().trim());
+
+    // Delete fees/payments for all students in this class
+    if (enrolledStudentIds.length > 0) {
+      setPayments((prev) =>
+        prev.filter(
+          (p) =>
+            !enrolledStudentIds.includes(p.studentId) &&
+            !enrolledNames.includes(p.studentName.toLowerCase().trim())
+        )
+      );
+
+      // Clean up / delete parents of these students if no other children in remaining classes
+      setParents((prev) => {
+        return prev
+          .map((p) => {
+            const updatedChildrenIds = (p.childrenIds || []).filter(
+              (id) => !enrolledStudentIds.includes(id)
+            );
+            const updatedChildrenNames = (p.childrenNames || []).filter(
+              (name) => !enrolledNames.includes(name.toLowerCase().trim())
+            );
+            return {
+              ...p,
+              childrenIds: updatedChildrenIds,
+              childrenNames: updatedChildrenNames,
+            };
+          })
+          .filter((p) => {
+            const remainingCount = Math.max(p.childrenIds?.length || 0, p.childrenNames?.length || 0);
+            return remainingCount > 0;
+          });
+      });
+
+      // Remove the enrolled students
+      setStudents((prev) =>
+        prev.filter(
+          (s) => s.classId !== classId && s.className !== targetClass.name
+        )
+      );
+
+      // Remove attendance & assessments
+      setAttendance((prev) =>
+        prev.filter((a) => a.classId !== classId && a.className !== targetClass.name && !enrolledStudentIds.includes(a.studentId))
+      );
+      setAssessments((prev) =>
+        prev.filter((asm) => !enrolledStudentIds.includes(asm.studentId))
+      );
+    }
+
+    // 4. Unassign class teacher if assigned
     if (targetClass.classTeacherId) {
       setTeachers((prevTeachers) =>
         prevTeachers.map((t) => {
@@ -1329,8 +1539,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const newNotif: SchoolNotification = {
       id: `notif_${Date.now()}`,
-      title: `Class Stream Decommissioned — ${targetClass.name}`,
-      message: `Stream ${targetClass.name} has been removed from the academic register.`,
+      title: `Class Stream & Related Records Deleted — ${targetClass.name}`,
+      message: `Stream ${targetClass.name}, associated fees, student enrollments, and parent links have been permanently deleted.`,
       type: 'system',
       timestamp: 'Just now',
       isRead: false,
@@ -1893,6 +2103,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addStudent,
         deleteStudent,
         parents,
+        deleteParent,
         teachers,
         addTeacher,
         deleteTeacher,
@@ -1909,6 +2120,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         getClassFee,
         updateClassFee,
         payments,
+        deletePayment,
         addPayment,
         assessments,
         updateAssessment,

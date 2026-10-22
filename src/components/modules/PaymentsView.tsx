@@ -8,15 +8,19 @@ import {
   Eye,
   CheckCircle2,
   Sparkles,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { formatCurrency, formatDate } from '../../utils/formatters';
+import { PaymentRecord } from '../../types';
 
 export const PaymentsView: React.FC = () => {
   const {
     payments,
+    deletePayment,
     setIsRecordPaymentOpen,
     setSelectedReceiptPayment,
     setIsReceiptModalOpen,
@@ -28,6 +32,7 @@ export const PaymentsView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedMethod, setSelectedMethod] = useState('ALL');
+  const [paymentToDelete, setPaymentToDelete] = useState<PaymentRecord | null>(null);
 
   const filteredPayments = payments.filter((p) => {
     const matchSearch =
@@ -241,16 +246,26 @@ export const PaymentsView: React.FC = () => {
                       )}
                     </td>
                     <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => {
-                          setSelectedReceiptPayment(pmt);
-                          setIsReceiptModalOpen(true);
-                        }}
-                        className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Receipt</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedReceiptPayment(pmt);
+                            setIsReceiptModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Receipt</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentToDelete(pmt)}
+                          className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
+                          title="Delete Payment"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -259,6 +274,49 @@ export const PaymentsView: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Delete Payment Confirmation Modal */}
+      {paymentToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-150">
+            <div className="p-6">
+              <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mb-4">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900">
+                Delete & Void Payment?
+              </h3>
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Are you sure you want to delete receipt <strong className="font-mono text-slate-900">{paymentToDelete.receiptNumber}</strong> of <strong className="text-emerald-700 font-semibold">{formatCurrency(paymentToDelete.amount)}</strong> ({paymentToDelete.category}) for <strong className="text-slate-900">{paymentToDelete.studentName}</strong>?
+              </p>
+              <div className="mt-3 bg-rose-50/70 border border-rose-100 rounded-lg p-3 text-[11px] text-rose-800 leading-relaxed">
+                Deleting this record will restore the student's outstanding fee balance accordingly.
+              </div>
+
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setPaymentToDelete(null)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    deletePayment(paymentToDelete.id);
+                    setPaymentToDelete(null);
+                  }}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete Payment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

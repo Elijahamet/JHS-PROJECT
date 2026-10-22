@@ -496,7 +496,7 @@ export const StudentsListView: React.FC<StudentsListViewProps> = ({
                 Are you sure you want to permanently remove <strong className="text-slate-900 font-semibold">{studentToDelete.firstName} {studentToDelete.lastName}</strong> (<span className="font-mono text-slate-500">{studentToDelete.studentId}</span>) from <strong className="text-slate-900">{studentToDelete.className}</strong>?
               </p>
               <div className="mt-3 bg-rose-50/70 border border-rose-100 rounded-lg p-3 text-[11px] text-rose-800 leading-relaxed">
-                This will delete the student's profile, disenroll them from class registers, update attendance stats, and remove them from family guardian accounts.
+                This will permanently delete the student's profile, disenroll them from class registers, wipe all their recorded tuition &amp; feeding fee transactions, and delete/unlink their parent account.
               </div>
 
               <div className="mt-6 flex items-center justify-end gap-2.5">

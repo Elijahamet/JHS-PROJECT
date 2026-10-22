@@ -714,7 +714,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 Are you sure you want to permanently delete <strong className="text-slate-900 font-semibold">{student.firstName} {student.lastName}</strong> (<span className="font-mono text-slate-500">{student.studentId}</span>) from <strong className="text-slate-900">{student.className}</strong>?
               </p>
               <div className="mt-3 bg-rose-50/70 border border-rose-100 rounded-lg p-3 text-[11px] text-rose-800 leading-relaxed">
-                This action cannot be undone. All class enrollment records, report card attachments, and parent ward connections for this student will be cleared.
+                This action cannot be undone. All class enrollment records, tuition and feeding fee transactions, report card attachments, and parent account connections for this student will be permanently deleted.
               </div>
 
               <div className="mt-6 flex items-center justify-end gap-2.5">
