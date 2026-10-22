@@ -5,15 +5,18 @@ import { Header } from './components/layout/Header';
 import { MobileNav } from './components/layout/MobileNav';
 import { GlobalSearchModal } from './components/layout/GlobalSearchModal';
 
-// Modals
-import { AddStudentModal } from './components/modals/AddStudentModal';
-import { AddClassModal } from './components/modals/AddClassModal';
-import { AddTeacherModal } from './components/modals/AddTeacherModal';
-import { AddTransportModal } from './components/modals/AddTransportModal';
-import { RecordPaymentModal } from './components/modals/RecordPaymentModal';
-import { CreateAnnouncementModal } from './components/modals/CreateAnnouncementModal';
+// Document Modals
 import { ReceiptModal } from './components/modals/ReceiptModal';
 import { ReportCardModal } from './components/modals/ReportCardModal';
+
+// Dedicated Full-Page Form Views (Pure State Transitions)
+import { AddStudentView } from './components/modules/AddStudentView';
+import { AddTeacherView } from './components/modules/AddTeacherView';
+import { AddClassView } from './components/modules/AddClassView';
+import { RecordPaymentView } from './components/modules/RecordPaymentView';
+import { AddTransportView } from './components/modules/AddTransportView';
+import { CreateAnnouncementView } from './components/modules/CreateAnnouncementView';
+import { SendParentNotificationView } from './components/modules/SendParentNotificationView';
 
 // Admin Platform Views
 import { DashboardView } from './components/modules/DashboardView';
@@ -32,7 +35,6 @@ import { ReportsView } from './components/modules/ReportsView';
 import { NotificationsView } from './components/modules/NotificationsView';
 import { SettingsView } from './components/modules/SettingsView';
 import { CommunicationsView } from './components/modules/CommunicationsView';
-import { SendParentNotificationModal } from './components/modals/SendParentNotificationModal';
 
 // Dedicated Isolated Platforms
 import { TeacherPortalView } from './components/modules/TeacherPortalView';
@@ -53,6 +55,21 @@ export const AppContent: React.FC = () => {
     currentUser,
     selectedStudentId,
     setSelectedStudentId,
+    isAddStudentOpen,
+    setIsAddStudentOpen,
+    isAddTeacherOpen,
+    setIsAddTeacherOpen,
+    isAddClassOpen,
+    setIsAddClassOpen,
+    isRecordPaymentOpen,
+    setIsRecordPaymentOpen,
+    isAddTransportOpen,
+    setIsAddTransportOpen,
+    isCreateAnnouncementOpen,
+    setIsCreateAnnouncementOpen,
+    isSendParentNotificationOpen,
+    setIsSendParentNotificationOpen,
+    setEnrollTargetClass,
   } = useApp();
 
   if (authScreen === 'landing') {
@@ -65,6 +82,51 @@ export const AppContent: React.FC = () => {
 
   // Strict Role-Based View Dispatcher (One role cannot see another role's platform)
   const renderCurrentView = () => {
+    // ==========================================
+    // 0. Dedicated Full-Page Form Views (Pure State Transitions, Same URL)
+    // ==========================================
+    if (isAddStudentOpen) {
+      return (
+        <AddStudentView
+          onBack={() => {
+            setIsAddStudentOpen(false);
+            setEnrollTargetClass(null);
+          }}
+        />
+      );
+    }
+
+    if (isAddTeacherOpen) {
+      return <AddTeacherView onBack={() => setIsAddTeacherOpen(false)} />;
+    }
+
+    if (isAddClassOpen) {
+      return <AddClassView onBack={() => setIsAddClassOpen(false)} />;
+    }
+
+    if (isRecordPaymentOpen) {
+      return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+    }
+
+    if (isAddTransportOpen) {
+      return <AddTransportView onBack={() => setIsAddTransportOpen(false)} />;
+    }
+
+    if (isCreateAnnouncementOpen) {
+      return (
+        <CreateAnnouncementView
+          onBack={() => setIsCreateAnnouncementOpen(false)}
+        />
+      );
+    }
+
+    if (isSendParentNotificationOpen) {
+      return (
+        <SendParentNotificationView
+          onBack={() => setIsSendParentNotificationOpen(false)}
+        />
+      );
+    }
     switch (currentUser.role) {
       // ==========================================
       // 1. TEACHER PLATFORM
@@ -229,14 +291,7 @@ export const AppContent: React.FC = () => {
         </main>
       </div>
 
-      {/* Global Modals */}
-      <AddStudentModal />
-      <AddClassModal />
-      <AddTeacherModal />
-      <AddTransportModal />
-      <RecordPaymentModal />
-      <CreateAnnouncementModal />
-      <SendParentNotificationModal />
+      {/* Global Dialogs & Document Previews */}
       <ReceiptModal />
       <ReportCardModal />
       <GlobalSearchModal />
