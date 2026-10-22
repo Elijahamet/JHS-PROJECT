@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, Phone, Mail, Award, BookOpen, MessageSquare } from 'lucide-react';
+import { Search, UserPlus, Phone, Mail, Award, BookOpen, MessageSquare, Sparkles } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 
 export const TeachersListView: React.FC = () => {
-  const { teachers, setIsAddTeacherOpen, openChatWith, setCurrentNav } = useApp();
+  const {
+    teachers,
+    setIsAddTeacherOpen,
+    openChatWith,
+    setCurrentNav,
+    teacherDraft,
+    clearTeacherDraft,
+    hasTeacherDraft,
+  } = useApp();
   const [search, setSearch] = useState('');
 
   const filteredTeachers = teachers.filter(
@@ -42,10 +50,47 @@ export const TeachersListView: React.FC = () => {
             icon={UserPlus}
             onClick={() => setIsAddTeacherOpen(true)}
           >
-            Add Teacher
+            {hasTeacherDraft ? 'Resume Teacher Draft' : 'Add Teacher'}
           </Button>
         </div>
       </div>
+
+      {/* Active Unfinished Draft Recovery Alert */}
+      {hasTeacherDraft && (
+        <div className="p-4 bg-gradient-to-r from-amber-50/90 via-orange-50/40 to-amber-50/80 border border-amber-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-amber-700" />
+            </div>
+            <div>
+              <p className="font-bold text-slate-900">
+                You have an unsaved teacher profile draft in progress
+                {teacherDraft.fullName ? `: "${teacherDraft.fullName}"` : ''}
+              </p>
+              <p className="text-[11px] text-amber-800/90 mt-0.5">
+                All information you entered has been automatically preserved. You can resume anytime or discard.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <button
+              type="button"
+              onClick={clearTeacherDraft}
+              className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white hover:text-rose-600 font-semibold text-xs bg-white/70 transition-colors cursor-pointer"
+            >
+              Discard
+            </button>
+            <Button
+              size="sm"
+              variant="primary"
+              icon={UserPlus}
+              onClick={() => setIsAddTeacherOpen(true)}
+            >
+              Resume Profile
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">

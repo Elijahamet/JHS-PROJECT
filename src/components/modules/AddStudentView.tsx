@@ -28,31 +28,15 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
     enrollTargetClass,
     setEnrollTargetClass,
     setIsAddStudentOpen,
+    studentDraft: formData,
+    setStudentDraft: setFormData,
+    clearStudentDraft,
+    hasStudentDraft,
   } = useApp();
 
   const [isCreatingNewClass, setIsCreatingNewClass] = useState(false);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    gender: 'Male' as 'Male' | 'Female',
-    dateOfBirth: '2012-05-15',
-    className: classes[0]?.name || 'Basic 1',
-    classId: classes[0]?.id || '',
-    parentId: '',
-    parentName: '',
-    parentPhone: '',
-    parentEmail: '',
-    parentRelationship: 'Father',
-    residentialAddress: '',
-    emergencyContact: '',
-    medicalNotes: '',
-    participatesInFeeding: true,
-    busRouteId: '',
-    busRouteName: '',
-  });
 
   useEffect(() => {
     setFormError('');
@@ -63,24 +47,14 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
         classId: enrollTargetClass.id,
       }));
       setIsCreatingNewClass(false);
-    } else if (classes.length > 0) {
-      if (!formData.classId && !formData.className) {
-        setFormData((prev) => ({
-          ...prev,
-          className: classes[0].name,
-          classId: classes[0].id,
-        }));
-      }
-      setIsCreatingNewClass(false);
-    } else {
-      setIsCreatingNewClass(true);
+    } else if (classes.length > 0 && !formData.className) {
       setFormData((prev) => ({
         ...prev,
-        className: prev.className || 'Basic 1',
-        classId: '',
+        className: classes[0].name,
+        classId: classes[0].id,
       }));
     }
-  }, [enrollTargetClass, classes]);
+  }, [enrollTargetClass, classes, formData.className, setFormData]);
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -156,6 +130,30 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       maxWidth="max-w-4xl"
+      actions={
+        <div className="flex items-center gap-2">
+          {hasStudentDraft && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Draft Auto-Saved</span>
+            </span>
+          )}
+          {hasStudentDraft && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to discard this student enrollment draft?')) {
+                  clearStudentDraft();
+                  onBack();
+                }
+              }}
+              className="px-2.5 py-1 text-[11px] text-slate-500 hover:text-rose-600 font-semibold hover:underline cursor-pointer"
+            >
+              Discard Draft
+            </button>
+          )}
+        </div>
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-8 text-xs">
         {formError && (

@@ -82,51 +82,6 @@ export const AppContent: React.FC = () => {
 
   // Strict Role-Based View Dispatcher (One role cannot see another role's platform)
   const renderCurrentView = () => {
-    // ==========================================
-    // 0. Dedicated Full-Page Form Views (Pure State Transitions, Same URL)
-    // ==========================================
-    if (isAddStudentOpen) {
-      return (
-        <AddStudentView
-          onBack={() => {
-            setIsAddStudentOpen(false);
-            setEnrollTargetClass(null);
-          }}
-        />
-      );
-    }
-
-    if (isAddTeacherOpen) {
-      return <AddTeacherView onBack={() => setIsAddTeacherOpen(false)} />;
-    }
-
-    if (isAddClassOpen) {
-      return <AddClassView onBack={() => setIsAddClassOpen(false)} />;
-    }
-
-    if (isRecordPaymentOpen) {
-      return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
-    }
-
-    if (isAddTransportOpen) {
-      return <AddTransportView onBack={() => setIsAddTransportOpen(false)} />;
-    }
-
-    if (isCreateAnnouncementOpen) {
-      return (
-        <CreateAnnouncementView
-          onBack={() => setIsCreateAnnouncementOpen(false)}
-        />
-      );
-    }
-
-    if (isSendParentNotificationOpen) {
-      return (
-        <SendParentNotificationView
-          onBack={() => setIsSendParentNotificationOpen(false)}
-        />
-      );
-    }
     switch (currentUser.role) {
       // ==========================================
       // 1. TEACHER PLATFORM
@@ -144,6 +99,13 @@ export const AppContent: React.FC = () => {
           case 'teacher-reports':
             return <TeacherPortalView tab="remarks" />;
           case 'teacher-announcements':
+            if (isCreateAnnouncementOpen) {
+              return (
+                <CreateAnnouncementView
+                  onBack={() => setIsCreateAnnouncementOpen(false)}
+                />
+              );
+            }
             return <TeacherPortalView tab="announcements" />;
           case 'teacher-chat':
             return <TeacherPortalView tab="chat" />;
@@ -159,11 +121,20 @@ export const AppContent: React.FC = () => {
       case 'accountant': {
         switch (currentNav) {
           case 'accountant-fees':
+            if (isRecordPaymentOpen) {
+              return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+            }
             return <SchoolFeesView />;
           case 'accountant-feeding':
+            if (isRecordPaymentOpen) {
+              return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+            }
             return <FeedingFeesView />;
           case 'accountant-payments':
           case 'accountant-receipts':
+            if (isRecordPaymentOpen) {
+              return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+            }
             return <PaymentsView />;
           case 'accountant-defaulters':
             return <AccountantPortalView tab="defaulters" />;
@@ -205,6 +176,16 @@ export const AppContent: React.FC = () => {
       default: {
         switch (currentNav) {
           case 'students':
+            if (isAddStudentOpen) {
+              return (
+                <AddStudentView
+                  onBack={() => {
+                    setIsAddStudentOpen(false);
+                    setEnrollTargetClass(null);
+                  }}
+                />
+              );
+            }
             if (selectedStudentId) {
               return (
                 <StudentProfileView
@@ -228,33 +209,61 @@ export const AppContent: React.FC = () => {
           case 'parents':
             return <ParentsListView />;
           case 'teachers':
+            if (isAddTeacherOpen) {
+              return <AddTeacherView onBack={() => setIsAddTeacherOpen(false)} />;
+            }
             return <TeachersListView />;
           case 'classes':
+            if (isAddClassOpen) {
+              return <AddClassView onBack={() => setIsAddClassOpen(false)} />;
+            }
             return <ClassesView />;
           case 'attendance':
             return <AttendanceView />;
           case 'results':
             return <ResultsView />;
           case 'fees':
+            if (isRecordPaymentOpen) {
+              return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+            }
             return <SchoolFeesView />;
           case 'feeding-fees':
+            if (isRecordPaymentOpen) {
+              return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+            }
             return <FeedingFeesView />;
           case 'payments':
           case 'receipts':
+            if (isRecordPaymentOpen) {
+              return <RecordPaymentView onBack={() => setIsRecordPaymentOpen(false)} />;
+            }
             return <PaymentsView />;
           case 'financial-reports':
             return <ReportsView />;
           case 'transport':
+            if (isAddTransportOpen) {
+              return <AddTransportView onBack={() => setIsAddTransportOpen(false)} />;
+            }
             return <TransportView />;
           case 'admissions':
             return <AdmissionsView />;
           case 'inventory':
             return <InventoryView />;
           case 'announcements':
+            if (isCreateAnnouncementOpen) {
+              return <CreateAnnouncementView onBack={() => setIsCreateAnnouncementOpen(false)} />;
+            }
             return <AnnouncementsView />;
           case 'communications':
           case 'chat':
           case 'messages':
+            if (isSendParentNotificationOpen) {
+              return (
+                <SendParentNotificationView
+                  onBack={() => setIsSendParentNotificationOpen(false)}
+                />
+              );
+            }
             return <CommunicationsView />;
           case 'reports':
             return <ReportsView />;

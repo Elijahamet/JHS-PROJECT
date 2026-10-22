@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormPageLayout } from '../common/FormPageLayout';
 import { useApp } from '../../context/AppContext';
 import { FeeCategory, PaymentRecord } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
-import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, Wallet } from 'lucide-react';
+import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, Wallet, Check } from 'lucide-react';
 
 interface RecordPaymentViewProps {
   onBack: () => void;
@@ -16,21 +16,43 @@ export const RecordPaymentView: React.FC<RecordPaymentViewProps> = ({ onBack }) 
     setSelectedReceiptPayment,
     setIsReceiptModalOpen,
     setIsRecordPaymentOpen,
+    paymentDraft,
+    setPaymentDraft,
+    clearPaymentDraft,
+    hasPaymentDraft,
   } = useApp();
 
-  const [selectedStudentId, setSelectedStudentId] = useState(
-    students[0]?.id || ''
-  );
-  const [category, setCategory] = useState<FeeCategory>('School Fees');
-  const [amount, setAmount] = useState<number>(500);
-  const [paymentMethod, setPaymentMethod] =
-    useState<PaymentRecord['paymentMethod']>('Mobile Money (MoMo)');
-  const [reference, setReference] = useState(
-    'MTN-MM-' + Math.floor(100000000 + Math.random() * 900000000)
-  );
-  const [notes, setNotes] = useState('');
+  const selectedStudentId = paymentDraft.selectedStudentId || students[0]?.id || '';
+  const category = paymentDraft.category;
+  const amount = paymentDraft.amount;
+  const paymentMethod = paymentDraft.paymentMethod;
+  const reference = paymentDraft.reference;
+  const notes = paymentDraft.notes;
+
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!paymentDraft.selectedStudentId && students.length > 0) {
+      setPaymentDraft((prev) => ({
+        ...prev,
+        selectedStudentId: students[0].id,
+      }));
+    }
+  }, [students, paymentDraft.selectedStudentId, setPaymentDraft]);
+
+  const setSelectedStudentId = (id: string) =>
+    setPaymentDraft((prev) => ({ ...prev, selectedStudentId: id }));
+  const setCategory = (cat: FeeCategory) =>
+    setPaymentDraft((prev) => ({ ...prev, category: cat }));
+  const setAmount = (amt: number) =>
+    setPaymentDraft((prev) => ({ ...prev, amount: amt }));
+  const setPaymentMethod = (meth: PaymentRecord['paymentMethod']) =>
+    setPaymentDraft((prev) => ({ ...prev, paymentMethod: meth }));
+  const setReference = (ref: string) =>
+    setPaymentDraft((prev) => ({ ...prev, reference: ref }));
+  const setNotes = (n: string) =>
+    setPaymentDraft((prev) => ({ ...prev, notes: n }));
 
   const targetStudent = students.find((s) => s.id === selectedStudentId);
 
@@ -90,6 +112,30 @@ export const RecordPaymentView: React.FC<RecordPaymentViewProps> = ({ onBack }) 
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       maxWidth="max-w-4xl"
+      actions={
+        <div className="flex items-center gap-2">
+          {hasPaymentDraft && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Draft Auto-Saved</span>
+            </span>
+          )}
+          {hasPaymentDraft && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to discard this payment record draft?')) {
+                  clearPaymentDraft();
+                  onBack();
+                }
+              }}
+              className="px-2.5 py-1 text-[11px] text-slate-500 hover:text-rose-600 font-semibold hover:underline cursor-pointer"
+            >
+              Discard Draft
+            </button>
+          )}
+        </div>
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-8 text-xs">
         {error && (

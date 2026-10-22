@@ -46,30 +46,50 @@ const JHS_SUBJECTS = [
 ];
 
 export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
-  const { addClass, teachers, setIsAddClassOpen } = useApp();
+  const {
+    addClass,
+    teachers,
+    setIsAddClassOpen,
+    classDraft,
+    setClassDraft,
+    clearClassDraft,
+    hasClassDraft,
+  } = useApp();
 
-  const [stage, setStage] = useState<AcademicStage>('Kindergarten');
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [roomNumber, setRoomNumber] = useState('');
-  const [capacity, setCapacity] = useState<number>(25);
-  const [selectedTeacherId, setSelectedTeacherId] = useState('');
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(KINDERGARTEN_SUBJECTS);
+  const stage = classDraft.stage;
+  const name = classDraft.name;
+  const code = classDraft.code;
+  const roomNumber = classDraft.roomNumber;
+  const capacity = classDraft.capacity;
+  const selectedTeacherId = classDraft.selectedTeacherId;
+  const selectedSubjects = classDraft.selectedSubjects;
+
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const setRoomNumber = (val: string) => setClassDraft((prev) => ({ ...prev, roomNumber: val }));
+  const setCapacity = (val: number) => setClassDraft((prev) => ({ ...prev, capacity: val }));
+  const setSelectedTeacherId = (val: string) => setClassDraft((prev) => ({ ...prev, selectedTeacherId: val }));
+
   const handleStageChange = (newStage: AcademicStage) => {
-    setStage(newStage);
+    let newSubjects = classDraft.selectedSubjects;
+    let newCapacity = classDraft.capacity;
     if (newStage === 'Kindergarten') {
-      setSelectedSubjects(KINDERGARTEN_SUBJECTS);
-      setCapacity(25);
+      newSubjects = KINDERGARTEN_SUBJECTS;
+      newCapacity = 25;
     } else if (newStage === 'Primary') {
-      setSelectedSubjects(PRIMARY_SUBJECTS);
-      setCapacity(35);
+      newSubjects = PRIMARY_SUBJECTS;
+      newCapacity = 35;
     } else {
-      setSelectedSubjects(JHS_SUBJECTS);
-      setCapacity(40);
+      newSubjects = JHS_SUBJECTS;
+      newCapacity = 40;
     }
+    setClassDraft((prev) => ({
+      ...prev,
+      stage: newStage,
+      selectedSubjects: newSubjects,
+      capacity: newCapacity,
+    }));
   };
 
   const quickPresets =
@@ -80,23 +100,30 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
       : ['JHS 1B', 'JHS 2B', 'JHS 3B', 'JHS 1 Gold', 'JHS 2 Gold', 'JHS 3 Gold'];
 
   const handleSelectPreset = (presetName: string) => {
-    setName(presetName);
-    setCode(presetName.replace(/\s+/g, '').toUpperCase());
+    setClassDraft((prev) => ({
+      ...prev,
+      name: presetName,
+      code: presetName.replace(/\s+/g, '').toUpperCase(),
+    }));
     setError('');
   };
 
   const handleNameChange = (val: string) => {
-    setName(val);
-    setCode(val.replace(/\s+/g, '').toUpperCase());
+    setClassDraft((prev) => ({
+      ...prev,
+      name: val,
+      code: val.replace(/\s+/g, '').toUpperCase(),
+    }));
     if (error) setError('');
   };
 
   const toggleSubject = (subj: string) => {
-    if (selectedSubjects.includes(subj)) {
-      setSelectedSubjects(selectedSubjects.filter((s) => s !== subj));
-    } else {
-      setSelectedSubjects([...selectedSubjects, subj]);
-    }
+    setClassDraft((prev) => ({
+      ...prev,
+      selectedSubjects: prev.selectedSubjects.includes(subj)
+        ? prev.selectedSubjects.filter((s) => s !== subj)
+        : [...prev.selectedSubjects, subj],
+    }));
   };
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -148,6 +175,30 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       maxWidth="max-w-4xl"
+      actions={
+        <div className="flex items-center gap-2">
+          {hasClassDraft && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Draft Auto-Saved</span>
+            </span>
+          )}
+          {hasClassDraft && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to discard this class stream draft?')) {
+                  clearClassDraft();
+                  onBack();
+                }
+              }}
+              className="px-2.5 py-1 text-[11px] text-slate-500 hover:text-rose-600 font-semibold hover:underline cursor-pointer"
+            >
+              Discard Draft
+            </button>
+          )}
+        </div>
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-8 text-xs">
         {error && (

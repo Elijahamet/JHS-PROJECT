@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 import { FormPageLayout } from '../common/FormPageLayout';
 import { useApp } from '../../context/AppContext';
-import { UserPlus, Award, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { UserPlus, Award, BookOpen, AlertCircle, CheckCircle2, Check } from 'lucide-react';
 
 interface AddTeacherViewProps {
   onBack: () => void;
 }
 
 export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
-  const { addTeacher, classes, setIsAddTeacherOpen } = useApp();
-
-  const [formData, setFormData] = useState({
-    fullName: '',
-    staffId: '',
-    email: '',
-    phone: '',
-    qualification: 'B.Ed. Basic Education',
-    isClassTeacherOf: '',
-    status: 'Active' as 'Active' | 'On Leave',
-    subjectsAssigned: [] as string[],
-  });
+  const {
+    addTeacher,
+    classes,
+    setIsAddTeacherOpen,
+    teacherDraft: formData,
+    setTeacherDraft: setFormData,
+    clearTeacherDraft,
+    hasTeacherDraft,
+  } = useApp();
 
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,6 +98,30 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       maxWidth="max-w-4xl"
+      actions={
+        <div className="flex items-center gap-2">
+          {hasTeacherDraft && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Draft Auto-Saved</span>
+            </span>
+          )}
+          {hasTeacherDraft && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to discard this teacher profile draft?')) {
+                  clearTeacherDraft();
+                  onBack();
+                }
+              }}
+              className="px-2.5 py-1 text-[11px] text-slate-500 hover:text-rose-600 font-semibold hover:underline cursor-pointer"
+            >
+              Discard Draft
+            </button>
+          )}
+        </div>
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-8 text-xs">
         {formError && (

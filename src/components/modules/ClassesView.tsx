@@ -34,6 +34,9 @@ export const ClassesView: React.FC = () => {
     teachers,
     assignTeacherToClass,
     setSelectedClassFilter,
+    classDraft,
+    clearClassDraft,
+    hasClassDraft,
   } = useApp();
 
   const [selectedStage, setSelectedStage] = useState<'ALL' | AcademicStage>('ALL');
@@ -129,10 +132,47 @@ export const ClassesView: React.FC = () => {
             icon={Plus}
             onClick={() => setIsAddClassOpen(true)}
           >
-            New Class Stream
+            {hasClassDraft ? 'Resume Class Draft' : 'New Class Stream'}
           </Button>
         </div>
       </div>
+
+      {/* Active Unfinished Draft Recovery Alert */}
+      {hasClassDraft && (
+        <div className="p-4 bg-gradient-to-r from-amber-50/90 via-orange-50/40 to-amber-50/80 border border-amber-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-amber-700" />
+            </div>
+            <div>
+              <p className="font-bold text-slate-900">
+                You have an unsaved class stream draft in progress
+                {classDraft.name ? `: "${classDraft.name}"` : ''}
+              </p>
+              <p className="text-[11px] text-amber-800/90 mt-0.5">
+                All information you entered has been automatically preserved. You can resume anytime or discard.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <button
+              type="button"
+              onClick={clearClassDraft}
+              className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white hover:text-rose-600 font-semibold text-xs bg-white/70 transition-colors cursor-pointer"
+            >
+              Discard
+            </button>
+            <Button
+              size="sm"
+              variant="primary"
+              icon={Plus}
+              onClick={() => setIsAddClassOpen(true)}
+            >
+              Resume Class Stream
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Quick Stream KPI Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-7 gap-3">

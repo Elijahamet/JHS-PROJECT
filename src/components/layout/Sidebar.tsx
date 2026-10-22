@@ -45,7 +45,26 @@ interface NavGroup {
 }
 
 export const Sidebar: React.FC = () => {
-  const { currentNav, setCurrentNav, currentSchool, currentUser, setSelectedStudentId, setAuthScreen } = useApp();
+  const {
+    currentNav,
+    setCurrentNav,
+    currentSchool,
+    currentUser,
+    setSelectedStudentId,
+    setAuthScreen,
+    hasStudentDraft,
+    hasTeacherDraft,
+    hasClassDraft,
+    hasPaymentDraft,
+    isAddStudentOpen,
+    setIsAddStudentOpen,
+    isAddTeacherOpen,
+    setIsAddTeacherOpen,
+    isAddClassOpen,
+    setIsAddClassOpen,
+    isRecordPaymentOpen,
+    setIsRecordPaymentOpen,
+  } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // 1. School Admin Navigation (Full Management Suite)
@@ -481,12 +500,38 @@ export const Sidebar: React.FC = () => {
           {items.map((item) => {
             const Icon = item.icon;
             const isActive = currentNav === item.id;
+            const hasDraft =
+              (item.id === 'students' && hasStudentDraft) ||
+              (item.id === 'teachers' && hasTeacherDraft) ||
+              (item.id === 'classes' && hasClassDraft) ||
+              ((item.id === 'fees' || item.id === 'payments' || item.id === 'accountant-payments') && hasPaymentDraft);
+
             return (
               <button
                 key={item.id}
                 onClick={() => {
                   if (item.id === 'students') {
                     setSelectedStudentId(null);
+                    if (currentNav === 'students' && isAddStudentOpen) {
+                      setIsAddStudentOpen(false);
+                    }
+                  } else if (item.id === 'teachers') {
+                    if (currentNav === 'teachers' && isAddTeacherOpen) {
+                      setIsAddTeacherOpen(false);
+                    }
+                  } else if (item.id === 'classes') {
+                    if (currentNav === 'classes' && isAddClassOpen) {
+                      setIsAddClassOpen(false);
+                    }
+                  } else if (
+                    item.id === 'fees' ||
+                    item.id === 'payments' ||
+                    item.id === 'accountant-fees' ||
+                    item.id === 'accountant-payments'
+                  ) {
+                    if (currentNav === item.id && isRecordPaymentOpen) {
+                      setIsRecordPaymentOpen(false);
+                    }
                   }
                   setCurrentNav(item.id);
                 }}
@@ -513,18 +558,27 @@ export const Sidebar: React.FC = () => {
                     {item.label}
                   </span>
                 )}
-                {!isCollapsed && item.badge !== undefined && (
-                  <span
-                    className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold shadow-xs ${
-                      item.badgeColor
-                        ? `${item.badgeColor} text-white`
-                        : isActive
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-700 text-slate-200'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
+                {!isCollapsed && (
+                  <>
+                    {hasDraft && (
+                      <span className="ml-auto text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-amber-400 text-slate-950 uppercase tracking-wider shadow-xs">
+                        Draft
+                      </span>
+                    )}
+                    {item.badge !== undefined && !hasDraft && (
+                      <span
+                        className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold shadow-xs ${
+                          item.badgeColor
+                            ? `${item.badgeColor} text-white`
+                            : isActive
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-700 text-slate-200'
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
                 )}
               </button>
             );

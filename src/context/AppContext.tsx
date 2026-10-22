@@ -23,6 +23,16 @@ import {
   ReportCardStatus,
   AcademicStage,
 } from '../types';
+import {
+  StudentFormData,
+  DEFAULT_STUDENT_FORM,
+  TeacherFormData,
+  DEFAULT_TEACHER_FORM,
+  ClassFormData,
+  DEFAULT_CLASS_FORM,
+  PaymentFormData,
+  DEFAULT_PAYMENT_FORM,
+} from '../types/drafts';
 import { detectAcademicStage, getSubjectsForStage } from '../utils/curriculum';
 import {
   mockCurrentSchool,
@@ -155,6 +165,31 @@ interface AppContextType {
   setIsReportCardModalOpen: (open: boolean) => void;
   isGlobalSearchOpen: boolean;
   setIsGlobalSearchOpen: (open: boolean) => void;
+
+  // Form Drafts (Preserved across sidebar navigation switches)
+  studentDraft: StudentFormData;
+  setStudentDraft: React.Dispatch<React.SetStateAction<StudentFormData>>;
+  updateStudentDraft: (fields: Partial<StudentFormData>) => void;
+  clearStudentDraft: () => void;
+  hasStudentDraft: boolean;
+
+  teacherDraft: TeacherFormData;
+  setTeacherDraft: React.Dispatch<React.SetStateAction<TeacherFormData>>;
+  updateTeacherDraft: (fields: Partial<TeacherFormData>) => void;
+  clearTeacherDraft: () => void;
+  hasTeacherDraft: boolean;
+
+  classDraft: ClassFormData;
+  setClassDraft: React.Dispatch<React.SetStateAction<ClassFormData>>;
+  updateClassDraft: (fields: Partial<ClassFormData>) => void;
+  clearClassDraft: () => void;
+  hasClassDraft: boolean;
+
+  paymentDraft: PaymentFormData;
+  setPaymentDraft: React.Dispatch<React.SetStateAction<PaymentFormData>>;
+  updatePaymentDraft: (fields: Partial<PaymentFormData>) => void;
+  clearPaymentDraft: () => void;
+  hasPaymentDraft: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -399,7 +434,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Parent Notifications
   const [parentNotifications, setParentNotifications] = useState<ParentNotificationRecord[]>(mockParentNotifications);
-  const [isSendParentNotificationOpen, setIsSendParentNotificationOpen] = useState(false);
 
   // Terminal Report Cards Inspection & Dispatch Workflow
   const [reportCards, setReportCards] = useState<StudentReportCardRecord[]>(() => {
@@ -420,8 +454,137 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [reportCards]);
 
-  // Modals
-  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  // Persistent Form Drafts (Preserved across sidebar navigation switches)
+  const [studentDraft, setStudentDraft] = useState<StudentFormData>(() => {
+    try {
+      const saved = sessionStorage.getItem('schoolos_draft_student');
+      return saved ? JSON.parse(saved) : DEFAULT_STUDENT_FORM;
+    } catch {
+      return DEFAULT_STUDENT_FORM;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('schoolos_draft_student', JSON.stringify(studentDraft));
+    } catch {}
+  }, [studentDraft]);
+
+  const updateStudentDraft = (fields: Partial<StudentFormData>) => {
+    setStudentDraft((prev) => ({ ...prev, ...fields }));
+  };
+
+  const clearStudentDraft = () => {
+    setStudentDraft(DEFAULT_STUDENT_FORM);
+    try {
+      sessionStorage.removeItem('schoolos_draft_student');
+    } catch {}
+  };
+
+  const hasStudentDraft = Boolean(
+    studentDraft.firstName.trim() ||
+    studentDraft.lastName.trim() ||
+    studentDraft.parentName.trim() ||
+    studentDraft.parentPhone.trim() ||
+    studentDraft.medicalNotes.trim()
+  );
+
+  // Teacher Draft
+  const [teacherDraft, setTeacherDraft] = useState<TeacherFormData>(() => {
+    try {
+      const saved = sessionStorage.getItem('schoolos_draft_teacher');
+      return saved ? JSON.parse(saved) : DEFAULT_TEACHER_FORM;
+    } catch {
+      return DEFAULT_TEACHER_FORM;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('schoolos_draft_teacher', JSON.stringify(teacherDraft));
+    } catch {}
+  }, [teacherDraft]);
+
+  const updateTeacherDraft = (fields: Partial<TeacherFormData>) => {
+    setTeacherDraft((prev) => ({ ...prev, ...fields }));
+  };
+
+  const clearTeacherDraft = () => {
+    setTeacherDraft(DEFAULT_TEACHER_FORM);
+    try {
+      sessionStorage.removeItem('schoolos_draft_teacher');
+    } catch {}
+  };
+
+  const hasTeacherDraft = Boolean(teacherDraft.fullName.trim());
+
+  // Class Draft
+  const [classDraft, setClassDraft] = useState<ClassFormData>(() => {
+    try {
+      const saved = sessionStorage.getItem('schoolos_draft_class');
+      return saved ? JSON.parse(saved) : DEFAULT_CLASS_FORM;
+    } catch {
+      return DEFAULT_CLASS_FORM;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('schoolos_draft_class', JSON.stringify(classDraft));
+    } catch {}
+  }, [classDraft]);
+
+  const updateClassDraft = (fields: Partial<ClassFormData>) => {
+    setClassDraft((prev) => ({ ...prev, ...fields }));
+  };
+
+  const clearClassDraft = () => {
+    setClassDraft(DEFAULT_CLASS_FORM);
+    try {
+      sessionStorage.removeItem('schoolos_draft_class');
+    } catch {}
+  };
+
+  const hasClassDraft = Boolean(classDraft.name.trim());
+
+  // Payment Draft
+  const [paymentDraft, setPaymentDraft] = useState<PaymentFormData>(() => {
+    try {
+      const saved = sessionStorage.getItem('schoolos_draft_payment');
+      return saved ? JSON.parse(saved) : DEFAULT_PAYMENT_FORM;
+    } catch {
+      return DEFAULT_PAYMENT_FORM;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('schoolos_draft_payment', JSON.stringify(paymentDraft));
+    } catch {}
+  }, [paymentDraft]);
+
+  const updatePaymentDraft = (fields: Partial<PaymentFormData>) => {
+    setPaymentDraft((prev) => ({ ...prev, ...fields }));
+  };
+
+  const clearPaymentDraft = () => {
+    setPaymentDraft(DEFAULT_PAYMENT_FORM);
+    try {
+      sessionStorage.removeItem('schoolos_draft_payment');
+    } catch {}
+  };
+
+  const hasPaymentDraft = Boolean(paymentDraft.notes.trim() || paymentDraft.reference.trim());
+
+  // Navigation-Aware Modal & Page View Triggers
+  const [isAddStudentOpen, setIsAddStudentOpenRaw] = useState(false);
+  const setIsAddStudentOpen = (open: boolean) => {
+    setIsAddStudentOpenRaw(open);
+    if (open) {
+      setCurrentNav('students');
+    }
+  };
+
   const [enrollTargetClass, setEnrollTargetClass] = useState<{ id: string; name: string } | null>(null);
 
   const openAddStudentForClass = (cls?: { id: string; name: string } | string) => {
@@ -436,48 +599,53 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setIsAddStudentOpen(true);
   };
 
-  const seedStandardGhanaianClasses = () => {
-    const STANDARD_CLASSES = [
-      { name: 'Basic 1', code: 'B1', stage: 'Primary' as const, roomNumber: 'Block A - 101', capacity: 35 },
-      { name: 'Basic 2', code: 'B2', stage: 'Primary' as const, roomNumber: 'Block A - 102', capacity: 35 },
-      { name: 'Basic 3', code: 'B3', stage: 'Primary' as const, roomNumber: 'Block A - 103', capacity: 35 },
-      { name: 'Basic 4', code: 'B4', stage: 'Primary' as const, roomNumber: 'Block B - 201', capacity: 35 },
-      { name: 'Basic 5', code: 'B5', stage: 'Primary' as const, roomNumber: 'Block B - 202', capacity: 35 },
-      { name: 'Basic 6', code: 'B6', stage: 'Primary' as const, roomNumber: 'Block B - 203', capacity: 35 },
-      { name: 'JHS 1', code: 'JHS1', stage: 'JHS' as const, roomNumber: 'Block C - 301', capacity: 40 },
-      { name: 'JHS 2', code: 'JHS2', stage: 'JHS' as const, roomNumber: 'Block C - 302', capacity: 40 },
-      { name: 'JHS 3', code: 'JHS3', stage: 'JHS' as const, roomNumber: 'Block C - 303', capacity: 40 },
-    ];
-
-    setClasses((prev) => {
-      const existingNames = new Set(prev.map((c) => c.name.toLowerCase()));
-      const toAdd: ClassRoom[] = [];
-      STANDARD_CLASSES.forEach((sc, idx) => {
-        if (!existingNames.has(sc.name.toLowerCase())) {
-          toAdd.push({
-            id: `cls_std_${idx}_${Date.now()}`,
-            name: sc.name,
-            code: sc.code,
-            stage: sc.stage,
-            classTeacherId: '',
-            classTeacherName: 'Unassigned',
-            studentCount: students.filter((s) => s.className?.toLowerCase() === sc.name.toLowerCase()).length,
-            capacity: sc.capacity,
-            roomNumber: sc.roomNumber,
-            averageAttendance: 0,
-            subjects: getSubjectsForStage(sc.stage),
-          });
-        }
-      });
-      return [...prev, ...toAdd];
-    });
+  const [isAddClassOpen, setIsAddClassOpenRaw] = useState(false);
+  const setIsAddClassOpen = (open: boolean) => {
+    setIsAddClassOpenRaw(open);
+    if (open) {
+      setCurrentNav('classes');
+    }
   };
 
-  const [isAddClassOpen, setIsAddClassOpen] = useState(false);
-  const [isAddTeacherOpen, setIsAddTeacherOpen] = useState(false);
-  const [isAddTransportOpen, setIsAddTransportOpen] = useState(false);
-  const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
-  const [isCreateAnnouncementOpen, setIsCreateAnnouncementOpen] = useState(false);
+  const [isAddTeacherOpen, setIsAddTeacherOpenRaw] = useState(false);
+  const setIsAddTeacherOpen = (open: boolean) => {
+    setIsAddTeacherOpenRaw(open);
+    if (open) {
+      setCurrentNav('teachers');
+    }
+  };
+
+  const [isAddTransportOpen, setIsAddTransportOpenRaw] = useState(false);
+  const setIsAddTransportOpen = (open: boolean) => {
+    setIsAddTransportOpenRaw(open);
+    if (open) {
+      setCurrentNav('transport');
+    }
+  };
+
+  const [isRecordPaymentOpen, setIsRecordPaymentOpenRaw] = useState(false);
+  const setIsRecordPaymentOpen = (open: boolean) => {
+    setIsRecordPaymentOpenRaw(open);
+    if (open) {
+      setCurrentNav(currentUser.role === 'accountant' ? 'accountant-payments' : 'payments');
+    }
+  };
+
+  const [isCreateAnnouncementOpen, setIsCreateAnnouncementOpenRaw] = useState(false);
+  const setIsCreateAnnouncementOpen = (open: boolean) => {
+    setIsCreateAnnouncementOpenRaw(open);
+    if (open) {
+      setCurrentNav(currentUser.role === 'teacher' ? 'teacher-announcements' : 'announcements');
+    }
+  };
+
+  const [isSendParentNotificationOpen, setIsSendParentNotificationOpenRaw] = useState(false);
+  const setIsSendParentNotificationOpen = (open: boolean) => {
+    setIsSendParentNotificationOpenRaw(open);
+    if (open) {
+      setCurrentNav('communications');
+    }
+  };
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [isReportCardModalOpen, setIsReportCardModalOpen] = useState(false);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
@@ -695,6 +863,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setStudents((prev) => [newStudent, ...prev]);
     setEnrollTargetClass(null);
+    clearStudentDraft();
   };
 
   const addTeacher = (teacherData: Partial<Teacher>) => {
@@ -725,6 +894,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       linkTo: 'teachers',
     };
     setNotifications([newNotif, ...notifications]);
+    clearTeacherDraft();
   };
 
   const addClass = (classData: Partial<ClassRoom>, assignTeacherId?: string) => {
@@ -802,6 +972,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       linkTo: 'classes',
     };
     setNotifications((prev) => [newNotif, ...prev]);
+    clearClassDraft();
+  };
+
+  const seedStandardGhanaianClasses = () => {
+    const standardStreams: Partial<ClassRoom>[] = [
+      { name: 'KG 1', code: 'KG1', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG1' },
+      { name: 'KG 2', code: 'KG2', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG2' },
+      { name: 'Basic 1', code: 'B1', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 1' },
+      { name: 'Basic 2', code: 'B2', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 2' },
+      { name: 'Basic 3', code: 'B3', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 3' },
+      { name: 'Basic 4', code: 'B4', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 4' },
+      { name: 'Basic 5', code: 'B5', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 5' },
+      { name: 'Basic 6', code: 'B6', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 6' },
+      { name: 'JHS 1', code: 'JHS1', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS1' },
+      { name: 'JHS 2', code: 'JHS2', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS2' },
+      { name: 'JHS 3', code: 'JHS3', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS3' },
+    ];
+
+    standardStreams.forEach((st) => addClass(st));
   };
 
   const assignTeacherToClass = (classId: string, teacherId: string) => {
@@ -987,6 +1176,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       linkTo: 'receipts',
     };
     setNotifications([newNotif, ...notifications]);
+    clearPaymentDraft();
 
     return newPayment;
   };
@@ -1509,6 +1699,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setIsReportCardModalOpen,
         isGlobalSearchOpen,
         setIsGlobalSearchOpen,
+        studentDraft,
+        setStudentDraft,
+        updateStudentDraft,
+        clearStudentDraft,
+        hasStudentDraft,
+        teacherDraft,
+        setTeacherDraft,
+        updateTeacherDraft,
+        clearTeacherDraft,
+        hasTeacherDraft,
+        classDraft,
+        setClassDraft,
+        updateClassDraft,
+        clearClassDraft,
+        hasClassDraft,
+        paymentDraft,
+        setPaymentDraft,
+        updatePaymentDraft,
+        clearPaymentDraft,
+        hasPaymentDraft,
       }}
     >
       {children}
