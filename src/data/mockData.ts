@@ -114,14 +114,7 @@ export const mockStudents: Student[] = [];
 export const mockChatMessages: ChatMessage[] = [];
 export const mockParentNotifications: ParentNotificationRecord[] = [];
 
-export const mockFeeStructure: FeeStructureItem[] = [
-  { id: 'fee_01', name: 'Primary Tuition Fee', category: 'School Fees', amount: 1500, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'Primary', dueDate: '2025-02-15', status: 'Active' },
-  { id: 'fee_02', name: 'JHS Tuition Fee', category: 'School Fees', amount: 2000, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'JHS', dueDate: '2025-02-15', status: 'Active' },
-  { id: 'fee_03', name: 'Primary Hot Canteen Feeding Fee', category: 'Feeding Fees', amount: 500, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'Primary', dueDate: '2025-02-15', status: 'Active' },
-  { id: 'fee_04', name: 'JHS Hot Canteen Feeding Fee', category: 'Feeding Fees', amount: 600, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'JHS', dueDate: '2025-02-15', status: 'Active' },
-  { id: 'fee_05', name: 'ICT & Science Lab Practical Levy', category: 'Examination', amount: 250, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'JHS', dueDate: '2025-02-15', status: 'Active' },
-  { id: 'fee_06', name: 'PTA School Development Levy', category: 'Other', amount: 150, academicYear: '2024 / 2025', term: 'Term 2', applicableClass: 'All', dueDate: '2025-02-15', status: 'Active' },
-];
+export const mockFeeStructure: FeeStructureItem[] = [];
 
 export const mockPayments: PaymentRecord[] = [];
 export const mockAssessments: AssessmentRecord[] = [];

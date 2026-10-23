@@ -208,12 +208,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [schools] = useState<School[]>(mockSchoolsList);
   const [currentSchool, setCurrentSchoolState] = useState<School>(() => {
     try {
-      const savedSchool = localStorage.getItem('schoolos_current_school_v6');
+      const savedSchool = localStorage.getItem('schoolos_current_school_v8_clean');
       if (savedSchool) {
         const parsed = JSON.parse(savedSchool);
         if (parsed && parsed.name) return parsed;
       }
-      const savedName = localStorage.getItem('schoolos_registered_school_name_v6');
+      const savedName = localStorage.getItem('schoolos_registered_school_name_v8_clean');
       if (savedName) {
         return {
           ...mockCurrentSchool,
@@ -229,8 +229,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setCurrentSchool = (school: School) => {
     setCurrentSchoolState(school);
     try {
-      localStorage.setItem('schoolos_current_school_v6', JSON.stringify(school));
-      localStorage.setItem('schoolos_registered_school_name_v6', school.name);
+      localStorage.setItem('schoolos_current_school_v8_clean', JSON.stringify(school));
+      localStorage.setItem('schoolos_registered_school_name_v8_clean', school.name);
     } catch (e) {
       console.warn('Failed to persist current school', e);
     }
@@ -238,8 +238,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [currentUser, setCurrentUser] = useState<User>(() => {
     try {
-      const savedSchool = localStorage.getItem('schoolos_current_school_v6');
-      const savedName = localStorage.getItem('schoolos_registered_school_name_v6');
+      const savedSchool = localStorage.getItem('schoolos_current_school_v8_clean');
+      const savedName = localStorage.getItem('schoolos_registered_school_name_v8_clean');
       const activeSchoolName = savedSchool ? JSON.parse(savedSchool)?.name : savedName;
       if (activeSchoolName) {
         return {
@@ -273,7 +273,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith('schoolos_') && !key.endsWith('_v6')) {
+        if (key.startsWith('schoolos_') && !key.endsWith('_v8_clean')) {
           localStorage.removeItem(key);
         }
       });
@@ -285,7 +285,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Data collections
   const [students, setStudents] = useState<Student[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_students_v6');
+      const saved = localStorage.getItem('schoolos_students_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached students', e);
@@ -295,7 +295,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [parents, setParents] = useState<Parent[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_parents_v6');
+      const saved = localStorage.getItem('schoolos_parents_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached parents', e);
@@ -304,7 +304,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
   const [teachers, setTeachers] = useState<Teacher[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_teachers_v6');
+      const saved = localStorage.getItem('schoolos_teachers_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached teachers', e);
@@ -314,7 +314,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [classes, setClasses] = useState<ClassRoom[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_classes_v6');
+      const saved = localStorage.getItem('schoolos_classes_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached classes', e);
@@ -324,7 +324,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_teachers_v6', JSON.stringify(teachers));
+      localStorage.setItem('schoolos_teachers_v8_clean', JSON.stringify(teachers));
     } catch (e) {
       console.warn('Failed to save teachers to storage', e);
     }
@@ -332,7 +332,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_classes_v6', JSON.stringify(classes));
+      localStorage.setItem('schoolos_classes_v8_clean', JSON.stringify(classes));
     } catch (e) {
       console.warn('Failed to save classes to storage', e);
     }
@@ -340,7 +340,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_students_v6', JSON.stringify(students));
+      localStorage.setItem('schoolos_students_v8_clean', JSON.stringify(students));
     } catch (e) {
       console.warn('Failed to save students to storage', e);
     }
@@ -348,7 +348,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_parents_v6', JSON.stringify(parents));
+      localStorage.setItem('schoolos_parents_v8_clean', JSON.stringify(parents));
     } catch (e) {
       console.warn('Failed to save parents to storage', e);
     }
@@ -356,7 +356,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [feeStructures, setFeeStructures] = useState<FeeStructureItem[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_fee_structures_v6');
+      const saved = localStorage.getItem('schoolos_fee_structures_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached fee structures', e);
@@ -366,7 +366,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_fee_structures_v6', JSON.stringify(feeStructures));
+      localStorage.setItem('schoolos_fee_structures_v8_clean', JSON.stringify(feeStructures));
     } catch (e) {
       console.warn('Failed to save fee structures to storage', e);
     }
@@ -374,7 +374,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [payments, setPayments] = useState<PaymentRecord[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_payments_v6');
+      const saved = localStorage.getItem('schoolos_payments_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached payments', e);
@@ -384,7 +384,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_payments_v6', JSON.stringify(payments));
+      localStorage.setItem('schoolos_payments_v8_clean', JSON.stringify(payments));
     } catch (e) {
       console.warn('Failed to save payments to storage', e);
     }
@@ -413,7 +413,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Chat & Messaging (Offline-First Persistent Storage)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_chat_messages_v6');
+      const saved = localStorage.getItem('schoolos_chat_messages_v8_clean');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -428,7 +428,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Sync to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_chat_messages_v6', JSON.stringify(chatMessages));
+      localStorage.setItem('schoolos_chat_messages_v8_clean', JSON.stringify(chatMessages));
     } catch (e) {
       console.warn('Failed to cache chat messages locally', e);
     }
@@ -437,7 +437,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Listen to cross-tab storage changes
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'schoolos_chat_messages_v6' && e.newValue) {
+      if (e.key === 'schoolos_chat_messages_v8_clean' && e.newValue) {
         try {
           setChatMessages(JSON.parse(e.newValue));
         } catch {}
@@ -482,7 +482,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Terminal Report Cards Inspection & Dispatch Workflow
   const [reportCards, setReportCards] = useState<StudentReportCardRecord[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_report_cards_v6');
+      const saved = localStorage.getItem('schoolos_report_cards_v8_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached report cards', e);
@@ -492,7 +492,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_report_cards_v6', JSON.stringify(reportCards));
+      localStorage.setItem('schoolos_report_cards_v8_clean', JSON.stringify(reportCards));
     } catch (e) {
       console.warn('Failed to save report cards to storage', e);
     }
