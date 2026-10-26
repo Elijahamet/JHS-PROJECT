@@ -298,10 +298,7 @@ export const LandingPageView: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* 1. Student Management */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('school_admin')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-blue-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-blue-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-blue-500/10" />
               <Users className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -324,23 +321,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   Ghanaian JHS Streams
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-blue-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 2. Attendance */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('teacher')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-emerald-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-emerald-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-emerald-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-emerald-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-emerald-500/10" />
               <CalendarCheck className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -363,23 +353,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   SMS Absentee Alerts
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-emerald-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 3. Results & Reports */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('teacher')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-amber-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-amber-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-amber-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-amber-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-amber-500/10" />
               <Award className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -402,23 +385,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   1-Click PDF Dispatch
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-amber-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 4. School Fees */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('accountant')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-indigo-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-indigo-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-indigo-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-indigo-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-indigo-500/10" />
               <CreditCard className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -441,23 +417,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   Manual Admin Pricing
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-indigo-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 5. Feeding Fees */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('accountant')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-rose-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-rose-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-rose-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-rose-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-rose-500/10" />
               <Utensils className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -480,23 +449,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   Strict Ledger Isolation
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-rose-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 6. Transport */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('parent')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-cyan-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-cyan-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-cyan-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-cyan-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-cyan-500/10" />
               <Bus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -519,23 +481,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   Pick-up & Drop Points
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-cyan-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 7. Admissions */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('school_admin')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-violet-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-violet-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-violet-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-violet-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-violet-500/10" />
               <FilePlus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -558,23 +513,16 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   Instant Class Allocation
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-violet-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
 
             {/* 8. Communication */}
-            <div 
-              onClick={() => handleLaunchRoleDemo('parent')}
-              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-teal-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-teal-300"
-            >
+            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-teal-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-teal-300">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-teal-500/10" />
               <MessageSquare className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -597,14 +545,10 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
                   SMS & Parent Portal
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-teal-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  <span>Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>
@@ -620,10 +564,10 @@ export const LandingPageView: React.FC = () => {
                 100% GES & NaCCA Compliant
               </div>
               <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-                Ready to test-drive all modules in real-time?
+                Ready to experience SchoolOS in real-time?
               </h4>
               <p className="text-xs sm:text-sm text-slate-300 max-w-xl font-normal">
-                Click on any module card above to launch its live interactive role dashboard — explore pupil records, fee registers, and terminal report card generation with real mock data.
+                Explore live pupil records, fee registers, and terminal report card generation with real Ghanaian school data.
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 relative z-10">
