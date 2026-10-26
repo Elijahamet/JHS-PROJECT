@@ -273,18 +273,24 @@ export const LandingPageView: React.FC = () => {
       {/* =========================================================================
           4. SECTION: KEY FEATURES
           ========================================================================= */}
-      <section id="features" className="py-20 md:py-28 bg-slate-50/70 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="relative py-24 md:py-32 bg-gradient-to-b from-white via-slate-50/80 to-blue-50/20 border-t border-slate-100 overflow-hidden">
+        {/* Subtle background ambient glow flares */}
+        <div className="absolute top-12 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-16 right-1/4 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-indigo-300/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
-            <span className="text-xs font-extrabold text-[#2563EB] tracking-wider uppercase">
-              KEY FEATURES
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-[#0B2545] tracking-tight">
-              Everything you need in one platform
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/60 shadow-xs backdrop-blur-xs">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <span>INTEGRATED SCHOOL MANAGEMENT PLATFORM</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#0B2545] tracking-tight leading-tight">
+              Everything you need in <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 bg-clip-text text-transparent">one modern platform</span>
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              SchoolOS gives you the tools to manage your school efficiently, improve communication and focus on what matters most — education.
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+              Say goodbye to fragmented paper registers and manual spreadsheets. SchoolOS brings every Ghanaian school workflow into one connected, intuitive dashboard.
             </p>
           </div>
 
@@ -292,93 +298,344 @@ export const LandingPageView: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* 1. Student Management */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <Users className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('school_admin')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-blue-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-blue-500/10" />
+              <Users className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <Users className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Bio & Rosters
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-blue-700 transition-colors">
+                    Student Management
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Keep detailed student records, emergency contacts, parent linkages, and class allocations in one synchronized hub.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Student Management</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Keep detailed student records and profiles.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Ghanaian JHS Streams
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-blue-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 2. Attendance */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <CalendarCheck className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('teacher')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-emerald-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-emerald-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-emerald-500/10" />
+              <CalendarCheck className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <CalendarCheck className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Daily Roll Call
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-emerald-700 transition-colors">
+                    Attendance
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Record daily class attendance in real-time, monitor punctuality trends, and trigger instant absentee notices to guardians.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Attendance</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Track attendance in real-time and improve accountability.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  SMS Absentee Alerts
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-emerald-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 3. Results & Reports */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <Award className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('teacher')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-amber-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-amber-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-amber-500/10" />
+              <Award className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <Award className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    GES / WAEC
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-amber-700 transition-colors">
+                    Results & Reports
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Manage continuous assessments (SBA), auto-calculate positions, and generate verified, stamped terminal PDF report cards.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Results & Reports</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Manage grades, generate report cards and track performance.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  1-Click PDF Dispatch
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-amber-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 4. School Fees */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <CreditCard className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('accountant')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-indigo-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-indigo-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-indigo-500/10" />
+              <CreditCard className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <CreditCard className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Bursary Hub
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-indigo-700 transition-colors">
+                    School Fees
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Admin-controlled term tuition fee schedules, automated arrears tracking, and official stamped digital receipts.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">School Fees</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Handle tuition, registration and other fees with ease.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                  Manual Admin Pricing
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-indigo-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 5. Feeding Fees */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <Utensils className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('accountant')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-rose-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-rose-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-rose-500/10" />
+              <Utensils className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <Utensils className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Canteen Ledger
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-rose-700 transition-colors">
+                    Feeding Fees
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Dedicated financial ledger strictly isolated from school tuition. Track student meal subscriptions and daily billing.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Feeding Fees</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Manage meal plans and feeding fee collection.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  Strict Ledger Isolation
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-rose-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 6. Transport */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <Bus className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('parent')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-cyan-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-cyan-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-cyan-500/10" />
+              <Bus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <Bus className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Route Logistics
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-cyan-700 transition-colors">
+                    Transport
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Coordinate school bus fleet, assign pickup stops and driver contacts, and streamline transportation billing.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Transport</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Coordinate buses, routes and pickup locations.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+                  Pick-up & Drop Points
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-cyan-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 7. Admissions */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <FilePlus className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('school_admin')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-violet-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-violet-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-violet-500/10" />
+              <FilePlus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-violet-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <FilePlus className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Intake Pipeline
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-violet-700 transition-colors">
+                    Admissions
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Simplify prospective pupil applications, review submission files, and seamlessly enroll pupils into active classrooms.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Admissions</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Simplify the application and enrollment process.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+                  Instant Class Allocation
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-violet-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
             {/* 8. Communication */}
-            <div className="group p-7 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 space-y-3 cursor-default">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] flex items-center justify-center ring-1 ring-blue-100/60 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-[#0B2545] group-hover:text-white transition-all duration-300">
-                <MessageSquare className="w-6 h-6" />
+            <div 
+              onClick={() => handleLaunchRoleDemo('parent')}
+              className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-teal-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-pointer hover:border-teal-300"
+            >
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-teal-500/10" />
+              <MessageSquare className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shadow-lg shadow-teal-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <MessageSquare className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
+                    Omni-channel
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-teal-700 transition-colors">
+                    Communication
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Direct chat between parents and teachers, bulk SMS broadcasts, and instant school notices delivered to mobile devices.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B2545] group-hover:text-blue-900 transition-colors">Communication</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Keep parents informed with announcements and updates.
-              </p>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-slate-600 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                  SMS & Parent Portal
+                </span>
+                <span className="inline-flex items-center gap-1 font-bold text-teal-600 text-xs opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                  <span>Demo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
 
+          </div>
+
+          {/* Interactive Reassurance Banner */}
+          <div className="mt-14 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#0B2545] via-slate-900 to-[#0B2545] text-white shadow-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="absolute right-0 top-0 w-80 h-full bg-blue-500/10 blur-2xl pointer-events-none" />
+            <div className="space-y-1.5 text-center md:text-left relative z-10">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                100% GES & NaCCA Compliant
+              </div>
+              <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                Ready to test-drive all modules in real-time?
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-xl font-normal">
+                Click on any module card above to launch its live interactive role dashboard — explore pupil records, fee registers, and terminal report card generation with real mock data.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0 relative z-10">
+              <button
+                type="button"
+                onClick={() => handleLaunchRoleDemo('school_admin')}
+                className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition-all hover:scale-105 flex items-center gap-2 cursor-pointer"
+              >
+                <span>Launch Interactive Demo</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
         </div>
