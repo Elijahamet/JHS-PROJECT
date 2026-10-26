@@ -1260,10 +1260,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addTeacher = (teacherData: Partial<Teacher>): Teacher => {
     const newId = `tch_${Date.now()}`;
     const staffId = teacherData.staffId || `STF-2025-${String(teachers.length + 1).padStart(3, '0')}`;
-    const primaryClass = teacherData.isClassTeacherOf || (teacherData.classesAssigned && teacherData.classesAssigned[0]) || '';
-    const classesAssigned = teacherData.classesAssigned && teacherData.classesAssigned.length > 0
-      ? teacherData.classesAssigned
-      : (primaryClass ? [primaryClass] : []);
+    const isSubjectTeacher = teacherData.teacherType === 'Subject Teacher';
+    const primaryClass = !isSubjectTeacher
+      ? (teacherData.isClassTeacherOf || (teacherData.classesAssigned && teacherData.classesAssigned[0]) || '')
+      : '';
+    const classesAssigned = !isSubjectTeacher
+      ? (teacherData.classesAssigned && teacherData.classesAssigned.length > 0
+          ? teacherData.classesAssigned
+          : (primaryClass ? [primaryClass] : []))
+      : [];
 
     const newTeacher: Teacher = {
       id: newId,
@@ -1272,18 +1277,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       email: teacherData.email || 'teacher@brightfuture.edu.gh',
       phone: teacherData.phone || '+233 24 000 0000',
       qualification: teacherData.qualification || 'B.Ed. Education',
+      teacherType: isSubjectTeacher ? 'Subject Teacher' : 'Class Teacher',
       classesAssigned,
       subjectsAssigned: teacherData.subjectsAssigned && teacherData.subjectsAssigned.length > 0
         ? teacherData.subjectsAssigned
         : ['General Science'],
-      isClassTeacherOf: primaryClass || undefined,
+      isClassTeacherOf: !isSubjectTeacher && primaryClass ? primaryClass : undefined,
       status: teacherData.status || 'Active',
       joinDate: new Date().toISOString().split('T')[0],
     };
     setTeachers([newTeacher, ...teachers]);
 
-    // Automatically sync the class stream so its classTeacher points to newTeacher
-    if (primaryClass) {
+    // Automatically sync the class stream only if this faculty member is appointed as a Class Teacher
+    if (!isSubjectTeacher && primaryClass) {
       setClasses((prevClasses) =>
         prevClasses.map((c) =>
           c.name === primaryClass || c.id === primaryClass
@@ -1296,7 +1302,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newNotif: SchoolNotification = {
       id: `notif_${Date.now()}`,
       title: `Teacher Appointed — ${newTeacher.fullName}`,
-      message: `${newTeacher.fullName} (Staff ID: ${staffId}) was registered and appointed to ${primaryClass || 'instructional class'}.`,
+      message: `${newTeacher.fullName} (Staff ID: ${staffId}) was registered as ${isSubjectTeacher ? 'Subject Teacher' : `Class Teacher for ${primaryClass}`}.`,
       type: 'system',
       timestamp: 'Just now',
       isRead: false,

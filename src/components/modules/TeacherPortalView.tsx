@@ -113,7 +113,12 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
         role: 'teacher',
         teacherStaffId: matched.staffId,
       });
-      setSaveToast(`Staff ID Verified: ${matched.fullName} • Loaded class ${matched.isClassTeacherOf || 'assigned stream'} and pupils.`);
+      const isSubj = matched.teacherType === 'Subject Teacher' || (!matched.isClassTeacherOf && (!matched.classesAssigned || matched.classesAssigned.length === 0));
+      if (isSubj) {
+        setSaveToast(`Staff ID Verified: ${matched.fullName} — You are a Subject Teacher (No assigned class stream).`);
+      } else {
+        setSaveToast(`Staff ID Verified: ${matched.fullName} — Appointed Class Teacher for ${matched.isClassTeacherOf || 'assigned stream'}.`);
+      }
       setTimeout(() => setSaveToast(null), 3500);
     } else {
       const availableList = teachers.map((t) => t.staffId).filter(Boolean).join(', ');
@@ -135,44 +140,56 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
     ) ||
     (teachers.length > 0 ? teachers[0] : undefined);
 
-  // Dynamic assigned classes for this teacher
-  const teacherAssignedClasses = classes.filter(
-    (c) =>
-      c.classTeacherId === currentTeacher?.id ||
-      c.classTeacherName === currentTeacher?.fullName ||
-      (currentTeacher?.classesAssigned && currentTeacher.classesAssigned.includes(c.name)) ||
-      (currentTeacher?.isClassTeacherOf && (currentTeacher.isClassTeacherOf === c.name || currentTeacher.isClassTeacherOf === c.id))
-  );
+  // Determine if this faculty member is a Subject Teacher (no class assigned) or Class Teacher (assigned a form class)
+  const isSubjectTeacher =
+    currentTeacher?.teacherType === 'Subject Teacher' ||
+    (!currentTeacher?.isClassTeacherOf && (!currentTeacher?.classesAssigned || currentTeacher.classesAssigned.length === 0));
+
+  // Dynamic assigned classes for this teacher (only populated if Class Teacher or has class streams)
+  const teacherAssignedClasses = !isSubjectTeacher
+    ? classes.filter(
+        (c) =>
+          c.classTeacherId === currentTeacher?.id ||
+          c.classTeacherName === currentTeacher?.fullName ||
+          (currentTeacher?.classesAssigned && currentTeacher.classesAssigned.includes(c.name)) ||
+          (currentTeacher?.isClassTeacherOf && (currentTeacher.isClassTeacherOf === c.name || currentTeacher.isClassTeacherOf === c.id))
+      )
+    : [];
 
   // If teacher has assigned class name that is not yet in classes list (e.g. newly typed)
-  const effectiveAssignedClasses = teacherAssignedClasses.length > 0
-    ? teacherAssignedClasses
-    : (currentTeacher?.isClassTeacherOf
-        ? [{
-            id: `cls_virtual_${currentTeacher.id}`,
-            name: currentTeacher.isClassTeacherOf,
-            code: currentTeacher.isClassTeacherOf.replace(/\s+/g, '').toUpperCase(),
-            stage: 'Primary' as const,
-            classTeacherId: currentTeacher.id,
-            classTeacherName: currentTeacher.fullName,
-            studentCount: 0,
-            capacity: 35,
-            roomNumber: 'Assigned Classroom',
-            averageAttendance: 100,
-            subjects: currentTeacher.subjectsAssigned || ['Core Subjects'],
-          }]
-        : []);
+  const effectiveAssignedClasses = !isSubjectTeacher
+    ? (teacherAssignedClasses.length > 0
+        ? teacherAssignedClasses
+        : (currentTeacher?.isClassTeacherOf
+            ? [{
+                id: `cls_virtual_${currentTeacher.id}`,
+                name: currentTeacher.isClassTeacherOf,
+                code: currentTeacher.isClassTeacherOf.replace(/\s+/g, '').toUpperCase(),
+                stage: 'Primary' as const,
+                classTeacherId: currentTeacher.id,
+                classTeacherName: currentTeacher.fullName,
+                studentCount: 0,
+                capacity: 35,
+                roomNumber: 'Assigned Classroom',
+                averageAttendance: 100,
+                subjects: currentTeacher.subjectsAssigned || ['Core Subjects'],
+              }]
+            : []))
+    : [];
 
   const formClass = effectiveAssignedClasses[selectedClassIndex] || effectiveAssignedClasses[0];
-  const formClassName = formClass ? formClass.name : (currentTeacher?.isClassTeacherOf || 'Unassigned');
+  const formClassName = !isSubjectTeacher && formClass ? formClass.name : 'None (Subject Teacher)';
+  const hasAssignedClass = !isSubjectTeacher && Boolean(formClass);
 
-  const classStudents = students.filter(
-    (s) =>
-      formClass &&
-      (s.classId === formClass.id ||
-       s.className === formClass.name ||
-       (s.className && formClass.name && s.className.toLowerCase().trim() === formClass.name.toLowerCase().trim()))
-  );
+  const classStudents = !isSubjectTeacher
+    ? students.filter(
+        (s) =>
+          formClass &&
+          (s.classId === formClass.id ||
+           s.className === formClass.name ||
+           (s.className && formClass.name && s.className.toLowerCase().trim() === formClass.name.toLowerCase().trim()))
+      )
+    : [];
 
   const teacherClasses = effectiveAssignedClasses.map((cls) => {
     const classPupils = students.filter(
@@ -328,9 +345,13 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                   Teacher Staff ID
                 </span>
                 {currentTeacher ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    ID: {currentTeacher.staffId}
+                  <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold flex items-center gap-1 ${
+                    isSubjectTeacher
+                      ? 'bg-purple-100 text-purple-800 border border-purple-300'
+                      : 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                  }`}>
+                    <CheckCircle2 className={`w-3.5 h-3.5 ${isSubjectTeacher ? 'text-purple-600' : 'text-emerald-600'}`} />
+                    ID: {currentTeacher.staffId} • {isSubjectTeacher ? 'Subject Teacher' : `Class Teacher (${formClassName})`}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
@@ -340,13 +361,19 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               </div>
               <p className="text-xs text-slate-600 font-medium mt-0.5">
                 {currentTeacher ? (
-                  <>
-                    Logged in as <strong>{currentTeacher.fullName}</strong> • Assigned Class:{' '}
-                    <strong className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
-                      {formClassName}
-                    </strong>{' '}
-                    ({classStudents.length} enrolled pupils)
-                  </>
+                  isSubjectTeacher ? (
+                    <>
+                      Logged in as <strong>{currentTeacher.fullName}</strong> • <strong className="text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">You are a Subject Teacher</strong> (No assigned form class stream • Instructing: {currentTeacher.subjectsAssigned?.join(', ') || 'Curriculum Subjects'})
+                    </>
+                  ) : (
+                    <>
+                      Logged in as <strong>{currentTeacher.fullName}</strong> • Assigned Class:{' '}
+                      <strong className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                        {formClassName}
+                      </strong>{' '}
+                      ({classStudents.length} enrolled pupils)
+                    </>
+                  )
                 ) : (
                   'Input the ID given after registration to view your assigned class and students.'
                 )}
@@ -445,30 +472,40 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
-                Teacher Platform • Classroom Desk
+                {isSubjectTeacher ? 'Teacher Platform • Subject Teacher Desk' : 'Teacher Platform • Classroom Desk'}
               </span>
-              <span className="text-xs text-blue-200">• Form Master: <strong>{formClassName}</strong></span>
+              <span className="text-xs text-blue-200">
+                {isSubjectTeacher ? (
+                  '• Role: Subject Teacher'
+                ) : (
+                  <>• Form Master: <strong>{formClassName}</strong></>
+                )}
+              </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white">
               Welcome, {currentTeacher?.fullName || currentUser.name}
             </h1>
             <p className="text-xs text-blue-200 max-w-2xl leading-relaxed">
-              Faculty Desk • Manage your assigned classes, take morning roll call, grade continuous assessments, and formulate terminal remarks.
+              {isSubjectTeacher
+                ? 'Faculty Desk • You are appointed as a Subject Teacher. You instruct specialized curriculum subjects without a form master stream assignment.'
+                : 'Faculty Desk • Manage your assigned classes, take morning roll call, grade continuous assessments, and formulate terminal remarks.'}
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={() => setActiveTab('classes')}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'classes'
-                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-md'
-                  : 'bg-white/10 hover:bg-white/20 text-white'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>My Class & Pupils ({classStudents.length})</span>
-            </button>
+            {!isSubjectTeacher && (
+              <button
+                onClick={() => setActiveTab('classes')}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  activeTab === 'classes'
+                    ? 'bg-cyan-500 text-slate-950 font-bold shadow-md'
+                    : 'bg-white/10 hover:bg-white/20 text-white'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>My Class & Pupils ({classStudents.length})</span>
+              </button>
+            )}
             <button
               onClick={() => setActiveTab('attendance')}
               className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
@@ -533,26 +570,104 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
       {/* ========================================================================= */}
       {activeTab === 'cockpit' && (
         <div className="space-y-6">
+          {/* Subject Teacher Status Notification Banner */}
+          {isSubjectTeacher && (
+            <div className="bg-gradient-to-r from-purple-50 via-indigo-50/60 to-white border border-purple-200/90 rounded-2xl p-5 shadow-2xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="text-sm font-bold text-slate-900">
+                        You are a Subject Teacher
+                      </h2>
+                      <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200">
+                        No Class Assigned
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+                      Based on your Staff ID (<strong>{currentTeacher?.staffId}</strong>), you are registered as a <strong>Subject Teacher</strong>. You do not have an assigned Form Class. You can enter continuous assessment scores, homework, and examination marks for your subjects across any class stream.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setActiveTab('marks')}
+                    className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-4 h-4" />
+                    <span>Enter Subject Marks</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('test-scanner')}
+                    className="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  >
+                    <ScanLine className="w-4 h-4" />
+                    <span>AI Test Scanner</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-purple-100 flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Your Instructed Subjects:
+                </span>
+                {currentTeacher?.subjectsAssigned && currentTeacher.subjectsAssigned.length > 0 ? (
+                  currentTeacher.subjectsAssigned.map((s, idx) => (
+                    <span key={idx} className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-purple-900 border border-purple-200 shadow-2xs">
+                      {s}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-400 italic">No specific subjects configured yet</span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Form Class</span>
-              <p className="text-xl font-black text-slate-900 mt-1">{formClassName}</p>
-              <p className="text-[11px] text-emerald-700 font-medium mt-1 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> {classStudents.length} Registered Pupils
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                {isSubjectTeacher ? 'Teaching Role' : 'Form Class'}
+              </span>
+              <p className="text-xl font-black text-slate-900 mt-1">
+                {isSubjectTeacher ? 'Subject Teacher' : formClassName}
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                {isSubjectTeacher ? (
+                  <span className="text-purple-700 font-semibold">• No form class stream</span>
+                ) : (
+                  <span className="text-emerald-700 font-medium flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> {classStudents.length} Registered Pupils
+                  </span>
+                )}
               </p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Today&apos;s Roll Call</span>
-              <p className="text-xl font-black text-emerald-700 mt-1">{rollCallRate}%</p>
-              <p className="text-[11px] text-slate-500 mt-1">{presentCount} Present • {lateCount} Late • {absentCount} Absent</p>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                {isSubjectTeacher ? 'Curriculum Subjects' : "Today's Roll Call"}
+              </span>
+              <p className="text-xl font-black text-indigo-700 mt-1">
+                {isSubjectTeacher ? `${currentTeacher?.subjectsAssigned?.length || 0} Subjects` : `${rollCallRate}%`}
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                {isSubjectTeacher ? 'Allocated instructional subjects' : `${presentCount} Present • ${lateCount} Late • ${absentCount} Absent`}
+              </p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Marks Recorded</span>
-              <p className="text-xl font-black text-indigo-700 mt-1">{marksRecordedCount} / {classStudents.length}</p>
-              <p className="text-[11px] text-slate-500 mt-1">Pupils marked for Term 2 tests</p>
+              <p className="text-xl font-black text-indigo-700 mt-1">
+                {isSubjectTeacher ? 'Ready' : `${marksRecordedCount} / ${classStudents.length}`}
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                {isSubjectTeacher ? 'Continuous assessment gradebook' : 'Pupils marked for Term 2 tests'}
+              </p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
@@ -793,77 +908,106 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
       {/* ========================================================================= */}
       {activeTab === 'classes' && (
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Form Class Student Roster • {formClassName}</h2>
-              <p className="text-xs text-slate-500">Student records, emergency contacts, and academic averages for your form class.</p>
+          {isSubjectTeacher ? (
+            <div className="py-10 text-center space-y-4 max-w-lg mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center mx-auto shadow-xs">
+                <BookOpen className="w-7 h-7 text-purple-600" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-slate-900">You are a Subject Teacher</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Based on your Staff ID (<strong className="font-mono text-slate-700">{currentTeacher?.staffId}</strong>), you are not assigned a form class. Form classes and morning roll call are managed by appointed Class Teachers.
+                </p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-xl border border-purple-100 text-xs text-purple-900 font-medium">
+                <span>Your Instructed Subjects: </span>
+                <strong className="text-purple-700">{currentTeacher?.subjectsAssigned?.join(', ') || 'General Subjects'}</strong>
+              </div>
+              <div className="pt-2">
+                <button
+                  onClick={() => setActiveTab('marks')}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  <span>Go to Marks Entry for Your Subjects</span>
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={classStudents.length > 0 ? "success" : "warning"}>
-                {classStudents.length} Registered Pupils
-              </Badge>
-              <button
-                type="button"
-                onClick={() => {
-                  if (formClass) setEnrollTargetClass(formClass);
-                  setIsAddStudentOpen(true);
-                }}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>Enroll Student</span>
-              </button>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">Form Class Student Roster • {formClassName}</h2>
+                  <p className="text-xs text-slate-500">Student records, emergency contacts, and academic averages for your form class.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={classStudents.length > 0 ? "success" : "warning"}>
+                    {classStudents.length} Registered Pupils
+                  </Badge>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (formClass) setEnrollTargetClass(formClass);
+                      setIsAddStudentOpen(true);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Enroll Student</span>
+                  </button>
+                </div>
+              </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] tracking-wider">
-                  <th className="py-3 px-4 font-semibold">Student Name</th>
-                  <th className="py-3 px-3 font-semibold">Roll ID</th>
-                  <th className="py-3 px-3 font-semibold">Gender</th>
-                  <th className="py-3 px-3 font-semibold">Status</th>
-                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {jhsStudents.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-xs text-slate-400">
-                      No pupils currently enrolled in {formClassName}. Click &ldquo;Add Student&rdquo; in the admin desk to enroll pupils.
-                    </td>
-                  </tr>
-                ) : (
-                  jhsStudents.map((std) => (
-                    <tr key={std.id} className="hover:bg-slate-50/70">
-                      <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
-                      <td className="py-3 px-3 font-mono text-slate-500">{std.roll}</td>
-                      <td className="py-3 px-3 text-slate-700">{std.gender}</td>
-                      <td className="py-3 px-3">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          Active Pupil
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right space-x-2">
-                        <button
-                          onClick={() => {
-                            setSelectedStudentForRemark(std.id);
-                            setRemarkText(std.remark);
-                            setConductRating(std.conduct);
-                            setActiveTab('remarks');
-                          }}
-                          className="text-xs font-semibold text-blue-600 hover:underline"
-                        >
-                          Enter Remarks
-                        </button>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] tracking-wider">
+                      <th className="py-3 px-4 font-semibold">Student Name</th>
+                      <th className="py-3 px-3 font-semibold">Roll ID</th>
+                      <th className="py-3 px-3 font-semibold">Gender</th>
+                      <th className="py-3 px-3 font-semibold">Status</th>
+                      <th className="py-3 px-4 font-semibold text-right">Actions</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {jhsStudents.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-xs text-slate-400">
+                          No pupils currently enrolled in {formClassName}. Click &ldquo;Add Student&rdquo; in the admin desk to enroll pupils.
+                        </td>
+                      </tr>
+                    ) : (
+                      jhsStudents.map((std) => (
+                        <tr key={std.id} className="hover:bg-slate-50/70">
+                          <td className="py-3 px-4 font-bold text-slate-900">{std.name}</td>
+                          <td className="py-3 px-3 font-mono text-slate-500">{std.roll}</td>
+                          <td className="py-3 px-3 text-slate-700">{std.gender}</td>
+                          <td className="py-3 px-3">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Active Pupil
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right space-x-2">
+                            <button
+                              onClick={() => {
+                                setSelectedStudentForRemark(std.id);
+                                setRemarkText(std.remark);
+                                setConductRating(std.conduct);
+                                setActiveTab('remarks');
+                              }}
+                              className="text-xs font-semibold text-blue-600 hover:underline"
+                            >
+                              Enter Remarks
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       )}
 

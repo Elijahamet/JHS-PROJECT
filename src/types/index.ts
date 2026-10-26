@@ -91,6 +91,7 @@ export interface Teacher {
   email: string;
   phone: string;
   qualification: string;
+  teacherType?: 'Class Teacher' | 'Subject Teacher';
   classesAssigned: string[];
   subjectsAssigned: string[];
   isClassTeacherOf?: string; // e.g. "JHS 2A"

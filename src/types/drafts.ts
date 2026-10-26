@@ -46,6 +46,7 @@ export interface TeacherFormData {
   email: string;
   phone: string;
   qualification: string;
+  teacherType: 'Class Teacher' | 'Subject Teacher';
   isClassTeacherOf: string;
   classesAssigned?: string[];
   status: 'Active' | 'On Leave';
@@ -58,6 +59,7 @@ export const DEFAULT_TEACHER_FORM: TeacherFormData = {
   email: '',
   phone: '',
   qualification: 'B.Ed. Basic Education',
+  teacherType: 'Class Teacher',
   isClassTeacherOf: '',
   classesAssigned: [],
   status: 'Active',

@@ -12,6 +12,7 @@ export const AddTeacherModal: React.FC = () => {
     email: '',
     phone: '',
     qualification: 'B.Ed. Basic Education',
+    teacherType: 'Class Teacher' as 'Class Teacher' | 'Subject Teacher',
     isClassTeacherOf: '',
     status: 'Active' as 'Active' | 'On Leave',
     subjectsAssigned: [] as string[],
@@ -54,8 +55,9 @@ export const AddTeacherModal: React.FC = () => {
       email: formData.email.trim() || 'teacher@brightfuture.edu.gh',
       phone: formData.phone.trim() || '+233 24 000 0000',
       qualification: formData.qualification,
-      isClassTeacherOf: formData.isClassTeacherOf || undefined,
-      classesAssigned: formData.isClassTeacherOf ? [formData.isClassTeacherOf] : [],
+      teacherType: formData.teacherType,
+      isClassTeacherOf: formData.teacherType === 'Class Teacher' ? (formData.isClassTeacherOf || undefined) : undefined,
+      classesAssigned: formData.teacherType === 'Class Teacher' && formData.isClassTeacherOf ? [formData.isClassTeacherOf] : [],
       subjectsAssigned: formData.subjectsAssigned,
       status: formData.status,
     });
@@ -68,6 +70,7 @@ export const AddTeacherModal: React.FC = () => {
       email: '',
       phone: '',
       qualification: 'B.Ed. Basic Education',
+      teacherType: 'Class Teacher',
       isClassTeacherOf: '',
       status: 'Active',
       subjectsAssigned: [],
@@ -169,6 +172,39 @@ export const AddTeacherModal: React.FC = () => {
             2. Academic Qualification & Role
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Teacher Role Type */}
+            <div className="col-span-1 sm:col-span-2 space-y-1.5">
+              <label className="block text-slate-700 font-medium text-xs">
+                Faculty Role Type *
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, teacherType: 'Class Teacher' })}
+                  className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
+                    formData.teacherType === 'Class Teacher'
+                      ? 'border-indigo-600 bg-indigo-50 font-bold text-indigo-900'
+                      : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <div>Class Teacher (Form Master)</div>
+                  <div className="text-[10px] text-slate-500 font-normal">Assigned to a class stream</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, teacherType: 'Subject Teacher', isClassTeacherOf: '' })}
+                  className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
+                    formData.teacherType === 'Subject Teacher'
+                      ? 'border-purple-600 bg-purple-50 font-bold text-purple-900'
+                      : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <div>Subject Teacher</div>
+                  <div className="text-[10px] text-slate-500 font-normal">Curriculum only (no class assigned)</div>
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="block text-slate-700 font-medium mb-1">
                 Highest Qualification
@@ -188,36 +224,44 @@ export const AddTeacherModal: React.FC = () => {
                 <option value="Diploma in Basic Education (DBE)">Diploma in Basic Education (DBE)</option>
               </select>
             </div>
-            <div>
-              <label className="block text-slate-700 font-medium mb-1">
-                Assigned Class / Form Stream *
-              </label>
-              {classes.length === 0 ? (
-                <button
-                  type="button"
-                  onClick={seedStandardGhanaianClasses}
-                  className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-xs shadow-xs"
-                >
-                  + Generate Standard Ghanaian Classes
-                </button>
-              ) : (
-                <select
-                  required
-                  value={formData.isClassTeacherOf}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isClassTeacherOf: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
-                >
-                  <option value="">-- Select Class Stream ({classes.length} Available) * --</option>
-                  {classes.map((cls) => (
-                    <option key={cls.id} value={cls.name}>
-                      {cls.name} ({cls.stage})
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
+
+            {/* Only Class Teachers are assigned a class */}
+            {formData.teacherType === 'Class Teacher' ? (
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Assigned Class Stream *
+                </label>
+                {classes.length === 0 ? (
+                  <button
+                    type="button"
+                    onClick={seedStandardGhanaianClasses}
+                    className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-xs shadow-xs"
+                  >
+                    + Generate Standard Ghanaian Classes
+                  </button>
+                ) : (
+                  <select
+                    required
+                    value={formData.isClassTeacherOf}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isClassTeacherOf: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
+                  >
+                    <option value="">-- Select Class Stream ({classes.length} Available) * --</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} ({cls.stage})
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            ) : (
+              <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-lg text-[11px] text-purple-900 self-center">
+                <strong>Subject Teacher:</strong> No class stream assigned. The app will inform them of their Subject Teacher role upon login.
+              </div>
+            )}
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FormPageLayout } from '../common/FormPageLayout';
 import { useApp } from '../../context/AppContext';
 import { Teacher } from '../../types';
-import { UserPlus, Award, BookOpen, AlertCircle, CheckCircle2, Check, Copy, ArrowRight, School } from 'lucide-react';
+import { UserPlus, Award, BookOpen, AlertCircle, CheckCircle2, Check, Copy, ArrowRight, School, GraduationCap } from 'lucide-react';
 
 interface AddTeacherViewProps {
   onBack: () => void;
@@ -64,9 +64,16 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
       return;
     }
 
-    if (classes.length > 0 && !formData.isClassTeacherOf) {
-      setFormError('Please assign a class to this teacher from the list of available classes.');
-      return;
+    if (formData.teacherType === 'Class Teacher') {
+      if (classes.length > 0 && !formData.isClassTeacherOf) {
+        setFormError('Please assign a class to this Class Teacher from the list of available classes.');
+        return;
+      }
+    } else {
+      if (formData.subjectsAssigned.length === 0) {
+        setFormError('Please select at least one curriculum subject for this Subject Teacher.');
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -78,8 +85,9 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
         email: formData.email.trim() || `${formData.fullName.toLowerCase().replace(/[^a-z]/g, '') || 'teacher'}@brightfuture.edu.gh`,
         phone: formData.phone.trim() || '+233 24 000 0000',
         qualification: formData.qualification,
-        isClassTeacherOf: formData.isClassTeacherOf || undefined,
-        classesAssigned: formData.isClassTeacherOf ? [formData.isClassTeacherOf] : formData.classesAssigned,
+        teacherType: formData.teacherType,
+        isClassTeacherOf: formData.teacherType === 'Class Teacher' ? (formData.isClassTeacherOf || undefined) : undefined,
+        classesAssigned: formData.teacherType === 'Class Teacher' && formData.isClassTeacherOf ? [formData.isClassTeacherOf] : [],
         subjectsAssigned: formData.subjectsAssigned,
         status: formData.status,
       });
@@ -223,8 +231,66 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
               2
             </span>
             <h3 className="text-sm font-bold text-slate-900 tracking-tight">
-              Academic Qualification & Class Leadership
+              Academic Qualification & Faculty Role Appointment
             </h3>
+          </div>
+
+          {/* Teacher Appointment Type Selector */}
+          <div className="space-y-2">
+            <label className="block text-slate-700 font-semibold mb-1">
+              Faculty Appointment Type *
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, teacherType: 'Class Teacher' })}
+                className={`p-3.5 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer ${
+                  formData.teacherType === 'Class Teacher'
+                    ? 'border-indigo-600 bg-indigo-50/70 shadow-xs ring-2 ring-indigo-600/20'
+                    : 'border-slate-200 hover:bg-slate-50 bg-white'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  formData.teacherType === 'Class Teacher' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  <GraduationCap className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-xs text-slate-900">Class Teacher (Form Master)</span>
+                    <span className="text-[10px] bg-indigo-100 text-indigo-800 font-semibold px-1.5 py-0.5 rounded">Assigned Class</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Appointed to manage a specific class stream, take roll call, and supervise pupil report cards.
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, teacherType: 'Subject Teacher', isClassTeacherOf: '', classesAssigned: [] })}
+                className={`p-3.5 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer ${
+                  formData.teacherType === 'Subject Teacher'
+                    ? 'border-purple-600 bg-purple-50/70 shadow-xs ring-2 ring-purple-600/20'
+                    : 'border-slate-200 hover:bg-slate-50 bg-white'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  formData.teacherType === 'Subject Teacher' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-xs text-slate-900">Subject Teacher</span>
+                    <span className="text-[10px] bg-purple-100 text-purple-800 font-semibold px-1.5 py-0.5 rounded">No Class Assigned</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Instructs specialized curriculum subjects without a form master stream.
+                  </p>
+                </div>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -247,55 +313,66 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
                 <option value="Diploma in Basic Education (DBE)">Diploma in Basic Education (DBE)</option>
               </select>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-slate-700 font-semibold">
-                  Assigned Class / Form Stream *
-                </label>
-                <span className="text-[10px] text-indigo-700 font-bold bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded">
-                  Required
+
+            {/* Conditional Class Assignment: ONLY for Class Teachers */}
+            {formData.teacherType === 'Class Teacher' ? (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-slate-700 font-semibold">
+                    Assigned Class Stream *
+                  </label>
+                  <span className="text-[10px] text-indigo-700 font-bold bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded">
+                    Required for Class Teachers
+                  </span>
+                </div>
+                {classes.length === 0 ? (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
+                    <p className="text-[11px] text-amber-800">
+                      No classes available yet in your school. Generate standard streams first:
+                    </p>
+                    <button
+                      type="button"
+                      onClick={seedStandardGhanaianClasses}
+                      className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shadow-xs cursor-pointer"
+                    >
+                      + Generate Standard Ghanaian Classes (KG 1 - JHS 3)
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={formData.isClassTeacherOf}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        isClassTeacherOf: e.target.value,
+                        classesAssigned: e.target.value ? [e.target.value] : [],
+                      })
+                    }
+                    className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-xs bg-white font-medium ${
+                      !formData.isClassTeacherOf ? 'border-amber-300' : 'border-slate-200'
+                    }`}
+                  >
+                    <option value="">-- Select Available Class from School ({classes.length} Streams) * --</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} ({cls.stage}) — Room: {cls.roomNumber || 'General'}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <p className="text-[11px] text-slate-500 mt-1">
+                  This educator will be the official Form Class Master for this stream.
+                </p>
+              </div>
+            ) : (
+              <div className="p-3 bg-purple-50/80 border border-purple-200 rounded-xl flex items-center gap-2.5 text-xs text-purple-900 self-center">
+                <BookOpen className="w-4 h-4 text-purple-600 shrink-0" />
+                <span className="leading-relaxed">
+                  <strong>Subject Teacher Notice:</strong> Only Class Teachers are assigned a class stream. When this teacher enters their Staff ID, the app will inform them that they are a Subject Teacher.
                 </span>
               </div>
-              {classes.length === 0 ? (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
-                  <p className="text-[11px] text-amber-800">
-                    No classes available yet in your school. Generate standard streams first:
-                  </p>
-                  <button
-                    type="button"
-                    onClick={seedStandardGhanaianClasses}
-                    className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shadow-xs cursor-pointer"
-                  >
-                    + Generate Standard Ghanaian Classes (KG 1 - JHS 3)
-                  </button>
-                </div>
-              ) : (
-                <select
-                  required
-                  value={formData.isClassTeacherOf}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      isClassTeacherOf: e.target.value,
-                      classesAssigned: e.target.value ? [e.target.value] : [],
-                    })
-                  }
-                  className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-xs bg-white font-medium ${
-                    !formData.isClassTeacherOf ? 'border-amber-300' : 'border-slate-200'
-                  }`}
-                >
-                  <option value="">-- Select Available Class from School ({classes.length} Streams) * --</option>
-                  {classes.map((cls) => (
-                    <option key={cls.id} value={cls.name}>
-                      {cls.name} ({cls.stage}) — Room: {cls.roomNumber || 'General'}
-                    </option>
-                  ))}
-                </select>
-              )}
-              <p className="text-[11px] text-slate-500 mt-1">
-                This teacher will be assigned to this class and will access its students in the teacher dashboard.
-              </p>
-            </div>
+            )}
           </div>
         </div>
 
@@ -361,10 +438,26 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
                 <span className="font-bold text-slate-900">{createdTeacher.fullName}</span>
               </div>
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                <span className="text-slate-500 font-medium">Assigned Class:</span>
-                <span className="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-200">
-                  {createdTeacher.isClassTeacherOf || createdTeacher.classesAssigned?.[0]}
+                <span className="text-slate-500 font-medium">Faculty Role:</span>
+                <span className={`font-bold px-2.5 py-0.5 rounded text-[11px] ${
+                  createdTeacher.teacherType === 'Subject Teacher'
+                    ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                    : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                }`}>
+                  {createdTeacher.teacherType || 'Class Teacher'}
                 </span>
+              </div>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                <span className="text-slate-500 font-medium">Assigned Class:</span>
+                {createdTeacher.isClassTeacherOf ? (
+                  <span className="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-200">
+                    {createdTeacher.isClassTeacherOf}
+                  </span>
+                ) : (
+                  <span className="text-slate-500 italic bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+                    None (Subject Teacher)
+                  </span>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-medium">Staff ID Given:</span>
@@ -391,7 +484,12 @@ export const AddTeacherView: React.FC<AddTeacherViewProps> = ({ onBack }) => {
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <p className="text-[11px] leading-relaxed">
-                <strong>Next Step:</strong> Give this Staff ID (<strong className="font-mono">{createdTeacher.staffId}</strong>) to the teacher. When they input it at login or in the teacher dashboard, they will immediately see their assigned class (<strong className="text-indigo-700">{createdTeacher.isClassTeacherOf || createdTeacher.classesAssigned?.[0]}</strong>) and the enrolled students.
+                <strong>Next Step:</strong> Give this Staff ID (<strong className="font-mono">{createdTeacher.staffId}</strong>) to the educator.
+                {createdTeacher.isClassTeacherOf ? (
+                  <> As an appointed <strong>Class Teacher</strong>, when they enter this ID they will see their assigned class (<strong className="text-indigo-700">{createdTeacher.isClassTeacherOf}</strong>) and enrolled students.</>
+                ) : (
+                  <> As a <strong>Subject Teacher</strong>, when they enter this ID the app will notify them that they are a Subject Teacher and direct them to their curriculum marks entry desk.</>
+                )}
               </p>
             </div>
 
