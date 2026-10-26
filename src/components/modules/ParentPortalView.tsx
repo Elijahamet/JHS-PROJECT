@@ -51,7 +51,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
 
   // Primary linked student for parent persona
   const child = students.find((s) => s.id === currentUser?.linkedStudentId) || students[0];
-  const childTuitionBilled = child ? (child.totalBilledSchoolFee || getClassFee(child.className) || 2000) : 2000;
+  const childTuitionBilled = child ? (child.totalBilledSchoolFee ?? getClassFee(child.className) ?? 0) : 0;
 
   // Online Payment Simulation States
   const [payCategory, setPayCategory] = useState<'School Fees' | 'Feeding Fees'>('Feeding Fees');

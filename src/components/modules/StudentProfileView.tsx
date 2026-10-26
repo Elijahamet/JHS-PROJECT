@@ -532,7 +532,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
 
         {/* TAB 5: SCHOOL FEES */}
         {activeTab === 'fees' && (() => {
-          const totalTuitionBilled = student.totalBilledSchoolFee || getClassFee(student.className) || 2000;
+          const totalTuitionBilled = student.totalBilledSchoolFee ?? getClassFee(student.className) ?? 0;
           const totalTuitionPaid = Math.max(0, totalTuitionBilled - student.schoolFeeBalance);
 
           return (

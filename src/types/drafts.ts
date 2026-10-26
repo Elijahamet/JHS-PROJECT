@@ -84,7 +84,7 @@ export const DEFAULT_CLASS_FORM: ClassFormData = {
   roomNumber: '',
   capacity: 35,
   selectedTeacherId: '',
-  termFee: 1500,
+  termFee: 0,
   selectedSubjects: [
     'English Language',
     'Mathematics',

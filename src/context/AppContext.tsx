@@ -740,7 +740,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const getClassFee = (classNameOrId: string): number => {
-    if (!classNameOrId) return 1500;
+    if (!classNameOrId) return 0;
     // 1. Matching class room configured termFee
     const matchedClass = classes.find(
       (c) =>
@@ -766,18 +766,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return matchedFee.amount;
     }
 
-    // 3. Fallback stage defaults
-    const stage =
-      matchedClass?.stage ||
-      (classNameOrId.toUpperCase().startsWith('KG') ||
-      classNameOrId.toUpperCase().startsWith('NUR') ||
-      classNameOrId.toUpperCase().startsWith('CR')
-        ? 'Kindergarten'
-        : classNameOrId.toUpperCase().startsWith('JHS')
-        ? 'JHS'
-        : 'Primary');
-
-    return stage === 'Kindergarten' ? 1200 : stage === 'JHS' ? 2000 : 1500;
+    // 3. Fallback: No tuition fee is preset. Admin sets it manually.
+    return 0;
   };
 
   const updateClassFee = (
@@ -839,7 +829,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setStudents((prev) =>
         prev.map((s) => {
           if (s.classId === targetClass.id || s.className === targetClass.name) {
-            const oldTotal = s.totalBilledSchoolFee || getClassFee(s.className) || 2000;
+            const oldTotal = s.totalBilledSchoolFee ?? getClassFee(s.className) ?? 0;
             const previouslyPaid = Math.max(0, oldTotal - s.schoolFeeBalance);
             const newBalance = Math.max(0, parsedFee - previouslyPaid);
             return {
@@ -1370,7 +1360,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ? ['English Language', 'Mathematics', 'Integrated Science', 'Social Studies', 'Religious and Moral Education', 'Ghanaian Language', 'Career Technology', 'Creative Arts & Design', 'Computing', 'French']
       : ['English Language', 'Mathematics', 'Natural Science', 'Our World Our People', 'Religious and Moral Education', 'Ghanaian Language (Twi/Ga)', 'Creative Arts & Design', 'Computing'];
 
-    const termFee = classData.termFee || getClassFee(classData.name || '');
+    const termFee = classData.termFee !== undefined ? Number(classData.termFee) : 0;
 
     const newClass: ClassRoom = {
       id: newId,
@@ -1425,17 +1415,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const seedStandardGhanaianClasses = () => {
     const standardStreams: Partial<ClassRoom>[] = [
-      { name: 'KG 1', code: 'KG1', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG1', termFee: 1200 },
-      { name: 'KG 2', code: 'KG2', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG2', termFee: 1200 },
-      { name: 'Basic 1', code: 'B1', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 1', termFee: 1500 },
-      { name: 'Basic 2', code: 'B2', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 2', termFee: 1500 },
-      { name: 'Basic 3', code: 'B3', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 3', termFee: 1500 },
-      { name: 'Basic 4', code: 'B4', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 4', termFee: 1600 },
-      { name: 'Basic 5', code: 'B5', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 5', termFee: 1600 },
-      { name: 'Basic 6', code: 'B6', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 6', termFee: 1600 },
-      { name: 'JHS 1', code: 'JHS1', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS1', termFee: 2000 },
-      { name: 'JHS 2', code: 'JHS2', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS2', termFee: 2100 },
-      { name: 'JHS 3', code: 'JHS3', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS3', termFee: 2200 },
+      { name: 'KG 1', code: 'KG1', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG1', termFee: 0 },
+      { name: 'KG 2', code: 'KG2', stage: 'Kindergarten', capacity: 25, roomNumber: 'Block A - Room KG2', termFee: 0 },
+      { name: 'Basic 1', code: 'B1', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 1', termFee: 0 },
+      { name: 'Basic 2', code: 'B2', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 2', termFee: 0 },
+      { name: 'Basic 3', code: 'B3', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 3', termFee: 0 },
+      { name: 'Basic 4', code: 'B4', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 4', termFee: 0 },
+      { name: 'Basic 5', code: 'B5', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 5', termFee: 0 },
+      { name: 'Basic 6', code: 'B6', stage: 'Primary', capacity: 35, roomNumber: 'Block B - Room 6', termFee: 0 },
+      { name: 'JHS 1', code: 'JHS1', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS1', termFee: 0 },
+      { name: 'JHS 2', code: 'JHS2', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS2', termFee: 0 },
+      { name: 'JHS 3', code: 'JHS3', stage: 'JHS', capacity: 40, roomNumber: 'Block C - Room JHS3', termFee: 0 },
     ];
 
     standardStreams.forEach((st) => addClass(st));
@@ -1486,12 +1476,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setNotifications((prev) => [newNotif, ...prev]);
   };
 
-  const updateClass = (classId: string, updates: Partial<ClassRoom>) => {
+  const updateClass = (classId: string, updates: Partial<ClassRoom>, applyFeeToEnrolled = true) => {
     setClasses((prevClasses) =>
       prevClasses.map((c) => (c.id === classId ? { ...c, ...updates } : c))
     );
     if (updates.termFee !== undefined && !isNaN(Number(updates.termFee))) {
-      updateClassFee(classId, Number(updates.termFee), false);
+      updateClassFee(classId, Number(updates.termFee), applyFeeToEnrolled);
     }
   };
 

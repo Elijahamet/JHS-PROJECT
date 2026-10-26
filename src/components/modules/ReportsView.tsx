@@ -225,7 +225,7 @@ export const ReportsView: React.FC = () => {
                   classes.slice(0, 8).map((c, idx) => {
                     const classPupils = students.filter((s) => s.className === c.name || s.classId === c.id);
                     const classFee = c.termFee ?? getClassFee(c.name);
-                    const classBilled = classPupils.reduce((sum, s) => sum + (s.totalBilledSchoolFee || classFee), 0);
+                    const classBilled = classPupils.reduce((sum, s) => sum + (s.totalBilledSchoolFee ?? classFee ?? 0), 0);
                     const classArrears = classPupils.reduce((sum, s) => sum + (s.schoolFeeBalance || 0), 0);
                     const classCollected = Math.max(0, classBilled - classArrears);
                     const recPct = classBilled > 0 ? `${Math.round((classCollected / classBilled) * 100)}%` : '0%';

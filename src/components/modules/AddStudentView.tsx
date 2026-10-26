@@ -393,11 +393,19 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
                     <span>Tuition Fee Billing Schedule (Manual Admin Control)</span>
                   </label>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Fees are manually set by the admin. Standard class tuition: <strong className="text-emerald-700 font-bold">GH₵ {standardClassFee.toLocaleString()}</strong> / term.
+                    {standardClassFee > 0 ? (
+                      <>Fees are manually set by the admin. Standard class tuition: <strong className="text-emerald-700 font-bold">GH₵ {standardClassFee.toLocaleString()}</strong> / term.</>
+                    ) : (
+                      <>Fees are set manually by the admin. Class tuition is currently <strong className="text-amber-700 font-bold">Not Set (GH₵ 0)</strong>. Admin can enter a pupil fee below or set the class fee under School Fees.</>
+                    )}
                   </p>
                 </div>
-                <span className="px-2.5 py-1 text-[11px] font-semibold bg-emerald-100/70 text-emerald-800 rounded-lg border border-emerald-200 self-start sm:self-auto">
-                  Standard: GH₵ {standardClassFee}
+                <span className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg border self-start sm:self-auto ${
+                  standardClassFee > 0 
+                    ? 'bg-emerald-100/70 text-emerald-800 border-emerald-200' 
+                    : 'bg-amber-100/70 text-amber-800 border-amber-200'
+                }`}>
+                  {standardClassFee > 0 ? `Standard: GH₵ ${standardClassFee}` : 'Standard: Not Set (GH₵ 0)'}
                 </span>
               </div>
 
@@ -415,11 +423,13 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
                       const val = e.target.value === '' ? undefined : Number(e.target.value);
                       setFormData({ ...formData, customSchoolFee: val });
                     }}
-                    placeholder={`Inherit standard (GH₵ ${standardClassFee})`}
+                    placeholder={standardClassFee > 0 ? `Inherit standard (GH₵ ${standardClassFee})` : 'Enter student fee or leave blank (0)'}
                     className="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 text-xs bg-white font-semibold text-slate-900"
                   />
                   <p className="text-[10px] text-slate-500 mt-1">
-                    Leave blank to apply the standard class fee (GH₵ {standardClassFee}), or enter a custom amount for scholarship/special rate.
+                    {standardClassFee > 0 
+                      ? `Leave blank to apply the standard class fee (GH₵ ${standardClassFee}), or enter a custom amount for scholarship/special rate.`
+                      : 'No class fee is preset. Enter a fee for this pupil or leave blank (GH₵ 0) until the admin configures class tuition.'}
                   </p>
                 </div>
                 <div className="bg-white/80 p-3 rounded-xl border border-emerald-100 text-slate-600 text-[11px] flex flex-col justify-center">

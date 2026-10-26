@@ -68,7 +68,7 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
   const [name, setName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [capacity, setCapacity] = useState(40);
-  const [termFee, setTermFee] = useState<number>(2000);
+  const [termFee, setTermFee] = useState<number>(0);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [subjects, setSubjects] = useState<string[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -78,7 +78,7 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
       setName(classRoom.name);
       setRoomNumber(classRoom.roomNumber);
       setCapacity(classRoom.capacity);
-      setTermFee(classRoom.termFee ?? 2000);
+      setTermFee(classRoom.termFee ?? 0);
       setSelectedTeacherId(classRoom.classTeacherId || '');
       setSubjects(classRoom.subjects || []);
       setShowDeleteConfirm(false);
@@ -267,10 +267,10 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
               type="number"
               min="0"
               step="50"
-              value={termFee}
-              onChange={(e) => setTermFee(Number(e.target.value))}
+              value={termFee === 0 ? '' : termFee}
+              onChange={(e) => setTermFee(e.target.value === '' ? 0 : Number(e.target.value))}
+              placeholder="0 (Not Set)"
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white font-semibold text-emerald-700"
-              required
             />
           </div>
         </div>

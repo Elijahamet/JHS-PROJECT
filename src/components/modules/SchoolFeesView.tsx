@@ -65,7 +65,7 @@ export const SchoolFeesView: React.FC = () => {
   );
 
   const totalBilled = students.reduce((sum, s) => {
-    const studentCharge = s.totalBilledSchoolFee || getClassFee(s.className) || 2000;
+    const studentCharge = s.totalBilledSchoolFee ?? getClassFee(s.className) ?? 0;
     return sum + studentCharge;
   }, 0);
 
@@ -259,10 +259,16 @@ export const SchoolFeesView: React.FC = () => {
                         {cls.classTeacherName || 'Unassigned'}
                       </td>
                       <td className="py-3 px-3 font-bold text-slate-900 text-right font-mono">
-                        {formatCurrency(currentClassFee)}
+                        {currentClassFee > 0 ? (
+                          formatCurrency(currentClassFee)
+                        ) : (
+                          <span className="px-2 py-0.5 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-md">
+                            Fee Not Set
+                          </span>
+                        )}
                       </td>
                       <td className="py-3 px-3 text-slate-600 text-right">
-                        {formatCurrency(potentialTotal)}
+                        {currentClassFee > 0 ? formatCurrency(potentialTotal) : '—'}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <button
@@ -271,7 +277,7 @@ export const SchoolFeesView: React.FC = () => {
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
                         >
                           <Edit2 className="w-3 h-3" />
-                          Set Fee
+                          {currentClassFee > 0 ? 'Edit Fee' : 'Set Fee'}
                         </button>
                       </td>
                     </tr>
@@ -414,7 +420,7 @@ export const SchoolFeesView: React.FC = () => {
                 </tr>
               ) : (
                 filteredStudents.map((s) => {
-                  const studentCharge = s.totalBilledSchoolFee || getClassFee(s.className) || 2000;
+                  const studentCharge = s.totalBilledSchoolFee ?? getClassFee(s.className) ?? 0;
                   const paidSoFar = Math.max(0, studentCharge - (s.schoolFeeBalance || 0));
 
                   return (

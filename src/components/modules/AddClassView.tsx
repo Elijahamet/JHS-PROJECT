@@ -63,7 +63,7 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
   const capacity = classDraft.capacity;
   const selectedTeacherId = classDraft.selectedTeacherId;
   const selectedSubjects = classDraft.selectedSubjects;
-  const termFee = classDraft.termFee ?? 2000;
+  const termFee = classDraft.termFee ?? 0;
 
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -339,7 +339,7 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
             </div>
             <div className="sm:col-span-2">
               <label className="block text-slate-700 font-semibold mb-1.5 flex items-center justify-between">
-                <span>Term Tuition Fee (GH₵) *</span>
+                <span>Term Tuition Fee (GH₵)</span>
                 <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                   Manual Admin Pricing
                 </span>
@@ -348,14 +348,13 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
                 type="number"
                 min="0"
                 step="50"
-                required
-                value={termFee}
-                onChange={(e) => setTermFee(Number(e.target.value))}
-                placeholder="e.g. 2000"
+                value={termFee === 0 ? '' : termFee}
+                onChange={(e) => setTermFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                placeholder="Leave blank (GH₵ 0) or enter custom fee"
                 className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all text-xs bg-slate-50/50 hover:bg-white font-semibold text-slate-900"
               />
               <p className="text-[10px] text-slate-500 mt-1">
-                Admin sets base school fees per term for this class. Automatic fee assignment is disabled.
+                Admin sets base school fees per term for this class. Automatic fee assignment is disabled. If left at 0, admin can set it anytime under School Fees.
               </p>
             </div>
           </div>
