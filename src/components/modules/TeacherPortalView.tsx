@@ -22,6 +22,8 @@ import {
   Send,
   Smartphone,
   Mail,
+  GraduationCap,
+  UserPlus,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
@@ -38,9 +40,12 @@ interface TeacherPortalProps {
 export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit' }) => {
   const {
     currentUser,
+    setCurrentUser,
     setCurrentNav,
     setIsReportCardModalOpen,
     setSelectedStudentId,
+    setIsAddStudentOpen,
+    setEnrollTargetClass,
     announcements,
     reportCards,
     students,
@@ -66,23 +71,116 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
     setActiveTab(tab);
   }, [tab]);
 
+  // Active Staff ID state (allows teacher to input ID given at any time)
+  const initialStaffId = (currentUser as any).teacherStaffId || '';
+  const [inputStaffId, setInputStaffId] = useState<string>(initialStaffId);
+  const [activeStaffId, setActiveStaffId] = useState<string>(initialStaffId);
+  const [idLookupError, setIdLookupError] = useState<string>('');
+  const [selectedClassIndex, setSelectedClassIndex] = useState<number>(0);
+
+  // Sync when currentUser.teacherStaffId changes
+  React.useEffect(() => {
+    if ((currentUser as any).teacherStaffId && (currentUser as any).teacherStaffId !== activeStaffId) {
+      setActiveStaffId((currentUser as any).teacherStaffId);
+      setInputStaffId((currentUser as any).teacherStaffId);
+    }
+  }, [(currentUser as any).teacherStaffId]);
+
+  // Lookup teacher by entered Staff ID / ID given
+  const handleLookupTeacher = (overrideId?: string) => {
+    const query = (overrideId !== undefined ? overrideId : inputStaffId).trim();
+    if (!query) {
+      setIdLookupError('Please enter a Teacher Staff ID (e.g. STF-2025-001).');
+      return;
+    }
+    const matched = teachers.find(
+      (t) =>
+        t.staffId.toLowerCase() === query.toLowerCase() ||
+        t.id.toLowerCase() === query.toLowerCase() ||
+        t.email.toLowerCase() === query.toLowerCase() ||
+        t.fullName.toLowerCase() === query.toLowerCase()
+    );
+    if (matched) {
+      setActiveStaffId(matched.staffId);
+      setInputStaffId(matched.staffId);
+      setIdLookupError('');
+      setSelectedClassIndex(0);
+      setCurrentUser({
+        ...currentUser,
+        id: matched.id,
+        name: matched.fullName,
+        email: matched.email,
+        role: 'teacher',
+        teacherStaffId: matched.staffId,
+      });
+      setSaveToast(`Staff ID Verified: ${matched.fullName} • Loaded class ${matched.isClassTeacherOf || 'assigned stream'} and pupils.`);
+      setTimeout(() => setSaveToast(null), 3500);
+    } else {
+      const availableList = teachers.map((t) => t.staffId).filter(Boolean).join(', ');
+      setIdLookupError(
+        `No teacher found with ID "${query}". Available Staff IDs in system: ${availableList || 'None registered yet'}`
+      );
+    }
+  };
+
   // Current logged in teacher identity
-  const currentTeacher = teachers.find(
-    (t) => t.id === currentUser.id ||
-           t.fullName === currentUser.name ||
-           (currentUser.email && t.email?.toLowerCase() === currentUser.email?.toLowerCase()) ||
-           t.staffId === (currentUser as any).teacherStaffId
-  );
+  const currentTeacher =
+    (activeStaffId ? teachers.find((t) => t.staffId.toLowerCase() === activeStaffId.toLowerCase() || t.id === activeStaffId) : null) ||
+    teachers.find(
+      (t) =>
+        t.staffId === (currentUser as any).teacherStaffId ||
+        t.id === currentUser.id ||
+        t.fullName === currentUser.name ||
+        (currentUser.email && t.email?.toLowerCase() === currentUser.email?.toLowerCase())
+    ) ||
+    (teachers.length > 0 ? teachers[0] : undefined);
 
   // Dynamic assigned classes for this teacher
   const teacherAssignedClasses = classes.filter(
-    (c) => c.classTeacherId === currentTeacher?.id ||
-           c.classTeacherName === currentTeacher?.fullName ||
-           (currentTeacher?.classesAssigned && currentTeacher.classesAssigned.includes(c.name))
+    (c) =>
+      c.classTeacherId === currentTeacher?.id ||
+      c.classTeacherName === currentTeacher?.fullName ||
+      (currentTeacher?.classesAssigned && currentTeacher.classesAssigned.includes(c.name)) ||
+      (currentTeacher?.isClassTeacherOf && (currentTeacher.isClassTeacherOf === c.name || currentTeacher.isClassTeacherOf === c.id))
   );
 
-  const teacherClasses = teacherAssignedClasses.map((cls) => {
-    const classPupils = students.filter((s) => s.classId === cls.id || s.className === cls.name);
+  // If teacher has assigned class name that is not yet in classes list (e.g. newly typed)
+  const effectiveAssignedClasses = teacherAssignedClasses.length > 0
+    ? teacherAssignedClasses
+    : (currentTeacher?.isClassTeacherOf
+        ? [{
+            id: `cls_virtual_${currentTeacher.id}`,
+            name: currentTeacher.isClassTeacherOf,
+            code: currentTeacher.isClassTeacherOf.replace(/\s+/g, '').toUpperCase(),
+            stage: 'Primary' as const,
+            classTeacherId: currentTeacher.id,
+            classTeacherName: currentTeacher.fullName,
+            studentCount: 0,
+            capacity: 35,
+            roomNumber: 'Assigned Classroom',
+            averageAttendance: 100,
+            subjects: currentTeacher.subjectsAssigned || ['Core Subjects'],
+          }]
+        : []);
+
+  const formClass = effectiveAssignedClasses[selectedClassIndex] || effectiveAssignedClasses[0];
+  const formClassName = formClass ? formClass.name : (currentTeacher?.isClassTeacherOf || 'Unassigned');
+
+  const classStudents = students.filter(
+    (s) =>
+      formClass &&
+      (s.classId === formClass.id ||
+       s.className === formClass.name ||
+       (s.className && formClass.name && s.className.toLowerCase().trim() === formClass.name.toLowerCase().trim()))
+  );
+
+  const teacherClasses = effectiveAssignedClasses.map((cls) => {
+    const classPupils = students.filter(
+      (s) =>
+        s.classId === cls.id ||
+        s.className === cls.name ||
+        (s.className && cls.name && s.className.toLowerCase().trim() === cls.name.toLowerCase().trim())
+    );
     const classAtt = attendance.filter((a) => classPupils.some((s) => s.id === a.studentId));
     const present = classAtt.filter((a) => a.status === 'Present').length;
     const attText = classPupils.length > 0
@@ -96,16 +194,6 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
       attendanceToday: attText,
     };
   });
-
-  const formClass = teacherAssignedClasses.find(
-    (c) => c.classTeacherId === currentTeacher?.id || c.classTeacherName === currentTeacher?.fullName
-  ) || teacherAssignedClasses[0];
-
-  const formClassName = formClass ? formClass.name : 'Unassigned';
-
-  const classStudents = students.filter(
-    (s) => formClass && (s.classId === formClass.id || s.className === formClass.name)
-  );
 
   // Dynamic roster for the form class
   const [jhsStudents, setJhsStudents] = useState<Array<{
@@ -227,6 +315,130 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
         </div>
       )}
 
+      {/* Teacher Staff ID Input & Verification Bar */}
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-600 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Teacher Staff ID
+                </span>
+                {currentTeacher ? (
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    ID: {currentTeacher.staffId}
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                    ID Required
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-600 font-medium mt-0.5">
+                {currentTeacher ? (
+                  <>
+                    Logged in as <strong>{currentTeacher.fullName}</strong> • Assigned Class:{' '}
+                    <strong className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                      {formClassName}
+                    </strong>{' '}
+                    ({classStudents.length} enrolled pupils)
+                  </>
+                ) : (
+                  'Input the ID given after registration to view your assigned class and students.'
+                )}
+              </p>
+            </div>
+          </div>
+
+          {/* Input Form to enter the ID given */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLookupTeacher();
+            }}
+            className="flex items-center gap-2 flex-wrap"
+          >
+            <div className="relative">
+              <input
+                type="text"
+                value={inputStaffId}
+                onChange={(e) => {
+                  setInputStaffId(e.target.value);
+                  setIdLookupError('');
+                }}
+                placeholder="Enter Staff ID (e.g. STF-2025-001)"
+                className="w-52 sm:w-60 px-3.5 py-2 text-xs font-mono font-bold text-slate-900 bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all placeholder:font-sans placeholder:font-normal placeholder:text-slate-400"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Load My Class</span>
+            </button>
+            {teachers.length > 1 && (
+              <select
+                value={currentTeacher?.id || ''}
+                onChange={(e) => {
+                  const t = teachers.find((tch) => tch.id === e.target.value);
+                  if (t) {
+                    setInputStaffId(t.staffId);
+                    handleLookupTeacher(t.staffId);
+                  }
+                }}
+                className="px-2.5 py-2 text-xs font-medium border border-slate-200 rounded-xl bg-slate-50 text-slate-700 focus:outline-none focus:border-indigo-600 transition-all cursor-pointer"
+              >
+                <option value="" disabled>
+                  Quick switch staff...
+                </option>
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.fullName} ({t.staffId}) — {t.isClassTeacherOf || 'Subject'}
+                  </option>
+                ))}
+              </select>
+            )}
+          </form>
+        </div>
+
+        {idLookupError && (
+          <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2 animate-fadeIn">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{idLookupError}</span>
+          </div>
+        )}
+
+        {/* Assigned Classes selector tabs if teacher has multiple classes */}
+        {effectiveAssignedClasses.length > 1 && (
+          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Assigned Classes:
+            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {effectiveAssignedClasses.map((cls, idx) => (
+                <button
+                  key={cls.id || idx}
+                  type="button"
+                  onClick={() => setSelectedClassIndex(idx)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    selectedClassIndex === idx
+                      ? 'bg-indigo-600 text-white shadow-2xs'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {cls.name} ({students.filter((s) => s.classId === cls.id || s.className === cls.name).length} pupils)
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Teacher Top Workbench Banner */}
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl border border-blue-800/60">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -238,7 +450,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               <span className="text-xs text-blue-200">• Form Master: <strong>{formClassName}</strong></span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white">
-              Welcome, {currentUser.name}
+              Welcome, {currentTeacher?.fullName || currentUser.name}
             </h1>
             <p className="text-xs text-blue-200 max-w-2xl leading-relaxed">
               Faculty Desk • Manage your assigned classes, take morning roll call, grade continuous assessments, and formulate terminal remarks.
@@ -246,6 +458,17 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setActiveTab('classes')}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'classes'
+                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-md'
+                  : 'bg-white/10 hover:bg-white/20 text-white'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>My Class & Pupils ({classStudents.length})</span>
+            </button>
             <button
               onClick={() => setActiveTab('attendance')}
               className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
@@ -443,6 +666,125 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               )}
             </div>
           </div>
+
+          {/* Active Class & Enrolled Students Section */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-bold">
+                  <Users className="w-4 h-4 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Students Enrolled in {formClassName}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Instructional pupils registered under {currentTeacher?.fullName || 'this teacher'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={classStudents.length > 0 ? "success" : "warning"}>
+                  {classStudents.length} Registered Pupils
+                </Badge>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (formClass) setEnrollTargetClass(formClass);
+                    setIsAddStudentOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Enroll Pupil to {formClassName}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Students Table */}
+            {classStudents.length === 0 ? (
+              <div className="py-8 text-center space-y-2 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                <Users className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs font-semibold text-slate-700">
+                  No pupils currently enrolled in {formClassName}.
+                </p>
+                <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
+                  Click below to enroll students directly into {formClassName} so they appear on your daily roll call and grade sheets.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (formClass) setEnrollTargetClass(formClass);
+                    setIsAddStudentOpen(true);
+                  }}
+                  className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Enroll First Student</span>
+                </button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+                      <th className="py-2.5 px-3 font-semibold">Student Name</th>
+                      <th className="py-2.5 px-2.5 font-semibold">Roll ID</th>
+                      <th className="py-2.5 px-2.5 font-semibold">Gender</th>
+                      <th className="py-2.5 px-2.5 font-semibold">Assigned Class</th>
+                      <th className="py-2.5 px-2.5 font-semibold">Guardian Contact</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {classStudents.map((std) => (
+                      <tr key={std.id} className="hover:bg-slate-50/70">
+                        <td className="py-2.5 px-3 font-bold text-slate-900">
+                          {std.firstName} {std.lastName}
+                        </td>
+                        <td className="py-2.5 px-2.5 font-mono text-slate-500">
+                          {std.studentId}
+                        </td>
+                        <td className="py-2.5 px-2.5 text-slate-700">
+                          {std.gender}
+                        </td>
+                        <td className="py-2.5 px-2.5">
+                          <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 text-[11px]">
+                            {std.className}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-2.5 text-slate-600 font-mono text-[11px]">
+                          {std.emergencyContact || '—'}
+                        </td>
+                        <td className="py-2.5 px-3 text-right space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedStudentForRemark(std.id);
+                              setActiveTab('remarks');
+                            }}
+                            className="text-xs font-semibold text-blue-600 hover:underline"
+                          >
+                            Remarks
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedStudentId(std.id);
+                              setIsReportCardModalOpen(true);
+                            }}
+                            className="text-xs font-semibold text-indigo-600 hover:underline"
+                          >
+                            Report Card
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -456,7 +798,22 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
               <h2 className="text-lg font-bold text-slate-900">Form Class Student Roster • {formClassName}</h2>
               <p className="text-xs text-slate-500">Student records, emergency contacts, and academic averages for your form class.</p>
             </div>
-            <Badge variant="success">{classStudents.length} Registered Pupils</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant={classStudents.length > 0 ? "success" : "warning"}>
+                {classStudents.length} Registered Pupils
+              </Badge>
+              <button
+                type="button"
+                onClick={() => {
+                  if (formClass) setEnrollTargetClass(formClass);
+                  setIsAddStudentOpen(true);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Enroll Student</span>
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">

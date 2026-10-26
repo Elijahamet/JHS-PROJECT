@@ -60,7 +60,7 @@ import {
 interface AppContextType {
   currentUser: User;
   setCurrentUser: (user: User) => void;
-  setUserRole: (role: UserRole) => void;
+  setUserRole: (role: UserRole, customUser?: Partial<User>) => void;
   schools: School[];
   currentSchool: School;
   setCurrentSchool: (school: School) => void;
@@ -84,7 +84,7 @@ interface AppContextType {
   parents: Parent[];
   deleteParent: (parentId: string) => void;
   teachers: Teacher[];
-  addTeacher: (teacherData: Partial<Teacher>) => void;
+  addTeacher: (teacherData: Partial<Teacher>) => Teacher;
   deleteTeacher: (teacherId: string) => void;
   classes: ClassRoom[];
   addClass: (classData: Partial<ClassRoom>, assignTeacherId?: string) => void;
@@ -695,15 +695,36 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
 
   // Switch role helper
-  const setUserRole = (role: UserRole) => {
-    const matchedUser = mockUsers.find((u) => u.role === role);
-    if (matchedUser) {
-      setCurrentUser(matchedUser);
-    } else {
-      setCurrentUser({
-        ...currentUser,
+  const setUserRole = (role: UserRole, customUser?: Partial<User>) => {
+    if (customUser) {
+      setCurrentUser((prev) => ({
+        ...prev,
+        ...customUser,
         role,
-      });
+      }));
+    } else {
+      const matchedUser = mockUsers.find((u) => u.role === role);
+      if (role === 'teacher' && teachers.length > 0) {
+        const activeTch = teachers.find(
+          (t) => t.id === currentUser.id || t.staffId === (currentUser as any).teacherStaffId
+        ) || teachers[0];
+        setCurrentUser({
+          id: activeTch.id,
+          name: activeTch.fullName,
+          email: activeTch.email,
+          role: 'teacher',
+          schoolId: currentSchool.id,
+          schoolName: currentSchool.name,
+          teacherStaffId: activeTch.staffId,
+        });
+      } else if (matchedUser) {
+        setCurrentUser(matchedUser);
+      } else {
+        setCurrentUser({
+          ...currentUser,
+          role,
+        });
+      }
     }
 
     // Auto-redirect to dedicated role cockpit
@@ -1236,9 +1257,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setNotifications((prev) => [notif, ...prev]);
   };
 
-  const addTeacher = (teacherData: Partial<Teacher>) => {
+  const addTeacher = (teacherData: Partial<Teacher>): Teacher => {
     const newId = `tch_${Date.now()}`;
     const staffId = teacherData.staffId || `STF-2025-${String(teachers.length + 1).padStart(3, '0')}`;
+    const primaryClass = teacherData.isClassTeacherOf || (teacherData.classesAssigned && teacherData.classesAssigned[0]) || '';
+    const classesAssigned = teacherData.classesAssigned && teacherData.classesAssigned.length > 0
+      ? teacherData.classesAssigned
+      : (primaryClass ? [primaryClass] : []);
+
     const newTeacher: Teacher = {
       id: newId,
       staffId,
@@ -1246,18 +1272,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       email: teacherData.email || 'teacher@brightfuture.edu.gh',
       phone: teacherData.phone || '+233 24 000 0000',
       qualification: teacherData.qualification || 'B.Ed. Education',
-      classesAssigned: teacherData.classesAssigned || ['JHS 1A'],
-      subjectsAssigned: teacherData.subjectsAssigned || ['General Science'],
-      isClassTeacherOf: teacherData.isClassTeacherOf,
+      classesAssigned,
+      subjectsAssigned: teacherData.subjectsAssigned && teacherData.subjectsAssigned.length > 0
+        ? teacherData.subjectsAssigned
+        : ['General Science'],
+      isClassTeacherOf: primaryClass || undefined,
       status: teacherData.status || 'Active',
       joinDate: new Date().toISOString().split('T')[0],
     };
     setTeachers([newTeacher, ...teachers]);
 
+    // Automatically sync the class stream so its classTeacher points to newTeacher
+    if (primaryClass) {
+      setClasses((prevClasses) =>
+        prevClasses.map((c) =>
+          c.name === primaryClass || c.id === primaryClass
+            ? { ...c, classTeacherId: newId, classTeacherName: newTeacher.fullName }
+            : c
+        )
+      );
+    }
+
     const newNotif: SchoolNotification = {
       id: `notif_${Date.now()}`,
       title: `Teacher Appointed — ${newTeacher.fullName}`,
-      message: `${newTeacher.fullName} (${staffId}) was registered successfully to academic staff.`,
+      message: `${newTeacher.fullName} (Staff ID: ${staffId}) was registered and appointed to ${primaryClass || 'instructional class'}.`,
       type: 'system',
       timestamp: 'Just now',
       isRead: false,
@@ -1265,6 +1304,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setNotifications([newNotif, ...notifications]);
     clearTeacherDraft();
+    return newTeacher;
   };
 
   const deleteTeacher = (teacherId: string) => {

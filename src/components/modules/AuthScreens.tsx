@@ -27,7 +27,7 @@ import { useApp } from '../../context/AppContext';
 import { School } from '../../types';
 
 export const AuthScreens: React.FC = () => {
-  const { authScreen, setAuthScreen, setUserRole, setCurrentSchool, setCurrentUser } = useApp();
+  const { authScreen, setAuthScreen, setUserRole, setCurrentSchool, setCurrentUser, currentSchool, teachers } = useApp();
 
   // Selected portal role for login
   const [selectedPortalRole, setSelectedPortalRole] = useState<'school_admin' | 'teacher' | 'accountant' | 'parent'>('school_admin');
@@ -71,7 +71,11 @@ export const AuthScreens: React.FC = () => {
         setLoginPassword('password123');
         break;
       case 'teacher':
-        setLoginEmail('darko@brightfutureacademy.edu.gh');
+        if (teachers.length > 0) {
+          setLoginEmail(teachers[0].staffId || teachers[0].email);
+        } else {
+          setLoginEmail('STF-2025-001');
+        }
         setLoginPassword('password123');
         break;
       case 'accountant':
@@ -88,12 +92,40 @@ export const AuthScreens: React.FC = () => {
   // Handle Login
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const em = loginEmail.toLowerCase();
-    if (em.includes('teacher') || em.includes('darko')) {
-      setUserRole('teacher');
-    } else if (em.includes('bursar') || em.includes('accountant') || em.includes('boakye')) {
+    const query = loginEmail.trim();
+    const queryLower = query.toLowerCase();
+
+    // Check if query matches any teacher by staffId, id, email, or fullName
+    const matchedTeacher = teachers.find(
+      (t) =>
+        t.staffId.toLowerCase() === queryLower ||
+        t.id.toLowerCase() === queryLower ||
+        t.email.toLowerCase() === queryLower ||
+        t.fullName.toLowerCase() === queryLower
+    );
+
+    if (matchedTeacher || selectedPortalRole === 'teacher' || queryLower.includes('teacher') || queryLower.includes('darko') || queryLower.startsWith('stf-')) {
+      const activeTch = matchedTeacher || (teachers.length > 0 ? teachers[0] : null);
+      if (activeTch) {
+        setUserRole('teacher', {
+          id: activeTch.id,
+          name: activeTch.fullName,
+          email: activeTch.email,
+          role: 'teacher',
+          schoolId: currentSchool.id,
+          schoolName: currentSchool.name,
+          teacherStaffId: activeTch.staffId,
+        });
+      } else {
+        setUserRole('teacher');
+      }
+      setAuthScreen('authenticated');
+      return;
+    }
+
+    if (queryLower.includes('bursar') || queryLower.includes('accountant') || queryLower.includes('boakye') || selectedPortalRole === 'accountant') {
       setUserRole('accountant');
-    } else if (em.includes('parent') || em.includes('osei')) {
+    } else if (queryLower.includes('parent') || queryLower.includes('osei') || selectedPortalRole === 'parent') {
       setUserRole('parent');
     } else {
       setUserRole(selectedPortalRole);
@@ -437,11 +469,11 @@ export const AuthScreens: React.FC = () => {
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
-                      type="email"
+                      type="text"
                       required
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      placeholder="e.g. admin@brightfutureacademy.edu.gh"
+                      placeholder={selectedPortalRole === 'teacher' ? "e.g. STF-2025-001 or teacher email" : "e.g. admin@brightfutureacademy.edu.gh or Staff ID"}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                     />
                   </div>

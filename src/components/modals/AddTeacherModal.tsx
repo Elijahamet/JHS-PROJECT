@@ -4,7 +4,7 @@ import { Button } from '../common/Button';
 import { useApp } from '../../context/AppContext';
 
 export const AddTeacherModal: React.FC = () => {
-  const { isAddTeacherOpen, setIsAddTeacherOpen, addTeacher, classes } = useApp();
+  const { isAddTeacherOpen, setIsAddTeacherOpen, addTeacher, classes, seedStandardGhanaianClasses } = useApp();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -55,6 +55,7 @@ export const AddTeacherModal: React.FC = () => {
       phone: formData.phone.trim() || '+233 24 000 0000',
       qualification: formData.qualification,
       isClassTeacherOf: formData.isClassTeacherOf || undefined,
+      classesAssigned: formData.isClassTeacherOf ? [formData.isClassTeacherOf] : [],
       subjectsAssigned: formData.subjectsAssigned,
       status: formData.status,
     });
@@ -189,22 +190,33 @@ export const AddTeacherModal: React.FC = () => {
             </div>
             <div>
               <label className="block text-slate-700 font-medium mb-1">
-                Class Teacher Appointment
+                Assigned Class / Form Stream *
               </label>
-              <select
-                value={formData.isClassTeacherOf}
-                onChange={(e) =>
-                  setFormData({ ...formData, isClassTeacherOf: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
-              >
-                <option value="">None (Subject Teacher Only)</option>
-                {classes.map((cls) => (
-                  <option key={cls.id} value={cls.name}>
-                    Class Teacher of {cls.name}
-                  </option>
-                ))}
-              </select>
+              {classes.length === 0 ? (
+                <button
+                  type="button"
+                  onClick={seedStandardGhanaianClasses}
+                  className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-xs shadow-xs"
+                >
+                  + Generate Standard Ghanaian Classes
+                </button>
+              ) : (
+                <select
+                  required
+                  value={formData.isClassTeacherOf}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isClassTeacherOf: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-white"
+                >
+                  <option value="">-- Select Class Stream ({classes.length} Available) * --</option>
+                  {classes.map((cls) => (
+                    <option key={cls.id} value={cls.name}>
+                      {cls.name} ({cls.stage})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
         </div>
