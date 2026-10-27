@@ -121,3 +121,55 @@ export const DEFAULT_PAYMENT_FORM: PaymentFormData = {
   reference: '',
   notes: '',
 };
+
+export interface AdmissionIntakeFormData {
+  applicantFirstName: string;
+  applicantLastName: string;
+  gender: 'Male' | 'Female';
+  dateOfBirth: string;
+  applyingForClass: string;
+  classId: string;
+  termAdmitted: 'Term 1' | 'Term 2' | 'Term 3';
+  academicYear: string;
+  admissionDate: string;
+  previousSchool: string;
+  residentialAddress: string;
+  medicalNotes: string;
+  parentName: string;
+  parentRelationship: string;
+  parentPhone: string;
+  parentEmail: string;
+  emergencyContact: string;
+  participatesInFeeding: boolean;
+  busRouteId: string;
+  busRouteName: string;
+  customSchoolFee?: number;
+  documentsSubmitted: string[];
+  admissionNotes: string;
+}
+
+export const DEFAULT_ADMISSION_INTAKE_FORM: AdmissionIntakeFormData = {
+  applicantFirstName: '',
+  applicantLastName: '',
+  gender: 'Male',
+  dateOfBirth: '',
+  applyingForClass: '',
+  classId: '',
+  termAdmitted: 'Term 2',
+  academicYear: '2024 / 2025',
+  admissionDate: new Date().toISOString().split('T')[0],
+  previousSchool: '',
+  residentialAddress: '',
+  medicalNotes: '',
+  parentName: '',
+  parentRelationship: 'Father',
+  parentPhone: '',
+  parentEmail: '',
+  emergencyContact: '',
+  participatesInFeeding: true,
+  busRouteId: '',
+  busRouteName: '',
+  customSchoolFee: undefined,
+  documentsSubmitted: ['Birth Certificate', '2 Passport Photos'],
+  admissionNotes: '',
+};

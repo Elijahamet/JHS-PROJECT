@@ -32,6 +32,8 @@ import {
   DEFAULT_CLASS_FORM,
   PaymentFormData,
   DEFAULT_PAYMENT_FORM,
+  AdmissionIntakeFormData,
+  DEFAULT_ADMISSION_INTAKE_FORM,
 } from '../types/drafts';
 import { detectAcademicStage, getSubjectsForStage } from '../utils/curriculum';
 import {
@@ -129,6 +131,8 @@ interface AppContextType {
   updateRouteStatus: (routeId: string, status: TransportRoute['status']) => void;
   applications: AdmissionApplication[];
   updateApplicationStatus: (appId: string, status: AdmissionApplication['status']) => void;
+  recordNewAdmission: (data: AdmissionIntakeFormData) => { studentId: string; applicationId: string };
+  enrollAcceptedApplication: (applicationId: string) => void;
   inventory: InventoryItem[];
   announcements: AnnouncementItem[];
   addAnnouncement: (announcement: Omit<AnnouncementItem, 'id' | 'publishDate' | 'authorName' | 'authorRole'>) => void;
@@ -180,6 +184,8 @@ interface AppContextType {
   setIsAddTeacherOpen: (open: boolean) => void;
   isAddTransportOpen: boolean;
   setIsAddTransportOpen: (open: boolean) => void;
+  isAddAdmissionOpen: boolean;
+  setIsAddAdmissionOpen: (open: boolean) => void;
   isRecordPaymentOpen: boolean;
   setIsRecordPaymentOpen: (open: boolean) => void;
   isCreateAnnouncementOpen: boolean;
@@ -215,6 +221,12 @@ interface AppContextType {
   updatePaymentDraft: (fields: Partial<PaymentFormData>) => void;
   clearPaymentDraft: () => void;
   hasPaymentDraft: boolean;
+
+  admissionDraft: AdmissionIntakeFormData;
+  setAdmissionDraft: React.Dispatch<React.SetStateAction<AdmissionIntakeFormData>>;
+  updateAdmissionDraft: (fields: Partial<AdmissionIntakeFormData>) => void;
+  clearAdmissionDraft: () => void;
+  hasAdmissionDraft: boolean;
 
   resetAllDataToCleanSlate: () => void;
 }
@@ -410,7 +422,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(mockAttendanceToday);
   const [buses, setBuses] = useState<TransportBus[]>(mockBuses);
   const [routes, setRoutes] = useState<TransportRoute[]>(mockRoutes);
-  const [applications, setApplications] = useState<AdmissionApplication[]>(mockApplications);
+  const [applications, setApplications] = useState<AdmissionApplication[]>(() => {
+    try {
+      const saved = localStorage.getItem('schoolos_applications_v9_clean');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Failed to parse cached applications', e);
+    }
+    return mockApplications;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('schoolos_applications_v9_clean', JSON.stringify(applications));
+    } catch (e) {
+      console.warn('Failed to save applications to storage', e);
+    }
+  }, [applications]);
   const [inventory] = useState<InventoryItem[]>(mockInventory);
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(mockAnnouncements);
   const [notifications, setNotifications] = useState<SchoolNotification[]>(mockNotifications);
@@ -637,6 +667,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const hasPaymentDraft = Boolean(paymentDraft.notes.trim() || paymentDraft.reference.trim());
 
+  // Admission Intake Draft
+  const [admissionDraft, setAdmissionDraft] = useState<AdmissionIntakeFormData>(() => {
+    try {
+      const saved = sessionStorage.getItem('schoolos_draft_admission');
+      return saved ? JSON.parse(saved) : DEFAULT_ADMISSION_INTAKE_FORM;
+    } catch {
+      return DEFAULT_ADMISSION_INTAKE_FORM;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('schoolos_draft_admission', JSON.stringify(admissionDraft));
+    } catch {}
+  }, [admissionDraft]);
+
+  const updateAdmissionDraft = (fields: Partial<AdmissionIntakeFormData>) => {
+    setAdmissionDraft((prev) => ({ ...prev, ...fields }));
+  };
+
+  const clearAdmissionDraft = () => {
+    setAdmissionDraft(DEFAULT_ADMISSION_INTAKE_FORM);
+    try {
+      sessionStorage.removeItem('schoolos_draft_admission');
+    } catch {}
+  };
+
+  const hasAdmissionDraft = Boolean(
+    admissionDraft.applicantFirstName.trim() ||
+    admissionDraft.applicantLastName.trim() ||
+    admissionDraft.parentName.trim() ||
+    admissionDraft.parentPhone.trim() ||
+    admissionDraft.previousSchool.trim()
+  );
+
   // Navigation-Aware Modal & Page View Triggers
   const [isAddStudentOpen, setIsAddStudentOpenRaw] = useState(false);
   const setIsAddStudentOpen = (open: boolean) => {
@@ -709,6 +774,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setIsAddTransportOpenRaw(open);
     if (open) {
       setCurrentNav('transport');
+    }
+  };
+
+  const [isAddAdmissionOpen, setIsAddAdmissionOpenRaw] = useState(false);
+  const setIsAddAdmissionOpen = (open: boolean) => {
+    setIsAddAdmissionOpenRaw(open);
+    if (open) {
+      setCurrentNav('admissions');
     }
   };
 
@@ -1981,6 +2054,358 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   };
 
+  const recordNewAdmission = (data: AdmissionIntakeFormData): { studentId: string; applicationId: string } => {
+    const studentDbId = `std_${Date.now()}`;
+    const studentCode = `BFA-2025-${String(students.length + 1).padStart(4, '0')}`;
+    const appDbId = `app_${Date.now()}`;
+    const appCode = `ADM-2025-${String(applications.length + 1).padStart(4, '0')}`;
+
+    const studentFullName = `${data.applicantFirstName || 'New'} ${data.applicantLastName || 'Pupil'}`.trim();
+    const rawParentName = (data.parentName || '').trim();
+    const rawParentPhone = (data.parentPhone || '').trim();
+    const rawParentEmail = (data.parentEmail || '').trim();
+    const rawParentAddress = (data.residentialAddress || 'Accra, Ghana').trim();
+    const rawParentRel = (data.parentRelationship as 'Father' | 'Mother' | 'Guardian') || 'Father';
+
+    // 1. Resolve or Create Parent Account
+    let resolvedParentId = '';
+    const existingParent = parents.find((p) => {
+      if (rawParentPhone && p.phone && p.phone.replace(/[\s\-()]/g, '') === rawParentPhone.replace(/[\s\-()]/g, '')) return true;
+      if (rawParentName && p.fullName.toLowerCase().trim() === rawParentName.toLowerCase().trim()) return true;
+      return false;
+    });
+
+    if (existingParent) {
+      resolvedParentId = existingParent.id;
+      setParents((prevParents) =>
+        prevParents.map((p) => {
+          if (p.id === existingParent.id) {
+            const updatedChildrenIds = p.childrenIds.includes(studentDbId)
+              ? p.childrenIds
+              : [...p.childrenIds, studentDbId];
+            const updatedChildrenNames = p.childrenNames.includes(studentFullName)
+              ? p.childrenNames
+              : [...p.childrenNames, studentFullName];
+            return {
+              ...p,
+              phone: rawParentPhone || p.phone,
+              email: rawParentEmail || p.email,
+              residentialAddress: rawParentAddress || p.residentialAddress,
+              childrenIds: updatedChildrenIds,
+              childrenNames: updatedChildrenNames,
+              totalBalanceDue: p.totalBalanceDue + 2600,
+            };
+          }
+          return p;
+        })
+      );
+    } else if (rawParentName) {
+      resolvedParentId = `par_${Date.now()}`;
+      const newParentRecord: Parent = {
+        id: resolvedParentId,
+        fullName: rawParentName,
+        phone: rawParentPhone || '+233 24 000 0000',
+        email: rawParentEmail || `${rawParentName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@gmail.com`,
+        residentialAddress: rawParentAddress,
+        occupation: 'Parent / Guardian',
+        relationship: rawParentRel,
+        childrenIds: [studentDbId],
+        childrenNames: [studentFullName],
+        totalBalanceDue: 2600,
+      };
+      setParents((prevParents) => [newParentRecord, ...prevParents]);
+    }
+
+    // 2. Resolve Class Assignment & Automatically Place into Class Stream
+    const rawClassName = (data.applyingForClass || '').trim();
+    const targetClassId = data.classId || '';
+    let matchedClass = classes.find(
+      (c) => (targetClassId && c.id === targetClassId) ||
+             (rawClassName && c.name.toLowerCase() === rawClassName.toLowerCase())
+    );
+
+    let finalClassId = targetClassId;
+    let finalClassName = rawClassName;
+    let resolvedStage: 'Kindergarten' | 'Primary' | 'JHS' = 'Primary';
+
+    if (matchedClass) {
+      finalClassId = matchedClass.id;
+      finalClassName = matchedClass.name;
+      resolvedStage = matchedClass.stage;
+
+      setClasses((prevClasses) =>
+        prevClasses.map((cls) =>
+          cls.id === matchedClass!.id
+            ? { ...cls, studentCount: cls.studentCount + 1 }
+            : cls
+        )
+      );
+    } else {
+      finalClassName = rawClassName || (classes.length > 0 ? classes[0].name : 'Basic 1');
+      resolvedStage = detectAcademicStage(finalClassName);
+      finalClassId = `cls_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+      const newClassRoom: ClassRoom = {
+        id: finalClassId,
+        name: finalClassName,
+        code: finalClassName.replace(/\s+/g, '').toUpperCase(),
+        stage: resolvedStage,
+        classTeacherId: '',
+        classTeacherName: 'Unassigned',
+        studentCount: 1,
+        capacity: resolvedStage === 'Kindergarten' ? 25 : resolvedStage === 'Primary' ? 35 : 40,
+        roomNumber: `Block ${resolvedStage === 'JHS' ? 'C' : resolvedStage === 'Primary' ? 'B' : 'A'} - ${classes.length + 101}`,
+        averageAttendance: 100,
+        subjects: getSubjectsForStage(resolvedStage),
+      };
+      setClasses((prevClasses) => [...prevClasses, newClassRoom]);
+    }
+
+    // 3. Compute Tuition & Fees
+    const classTuitionFee = data.customSchoolFee !== undefined && !isNaN(Number(data.customSchoolFee))
+      ? Number(data.customSchoolFee)
+      : getClassFee(finalClassName);
+
+    const classFeedingFee = data.participatesInFeeding
+      ? (matchedClass?.feedingFee !== undefined && matchedClass.feedingFee > 0 ? matchedClass.feedingFee : 600)
+      : 0;
+
+    // 4. Create Active Student Record
+    const newStudent: Student = {
+      id: studentDbId,
+      studentId: studentCode,
+      firstName: data.applicantFirstName.trim(),
+      lastName: data.applicantLastName.trim(),
+      gender: data.gender,
+      dateOfBirth: data.dateOfBirth || '2012-01-01',
+      classId: finalClassId,
+      className: finalClassName,
+      stage: resolvedStage,
+      admissionDate: data.admissionDate || new Date().toISOString().split('T')[0],
+      admissionYear: data.academicYear || '2024 / 2025',
+      status: 'Active',
+      photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
+      parentId: resolvedParentId || (existingParent ? existingParent.id : 'par_01'),
+      parentName: existingParent ? existingParent.fullName : rawParentName || 'Parent Guardian',
+      parentPhone: rawParentPhone || (existingParent ? existingParent.phone : '+233 24 000 0000'),
+      parentEmail: rawParentEmail || (existingParent ? existingParent.email : 'parent@example.com'),
+      parentRelationship: rawParentRel,
+      residentialAddress: rawParentAddress,
+      emergencyContact: data.emergencyContact || rawParentPhone || '+233 20 000 0000',
+      medicalNotes: data.medicalNotes || 'None',
+      participatesInFeeding: data.participatesInFeeding ?? true,
+      busRouteId: data.busRouteId || undefined,
+      busRouteName: data.busRouteName || undefined,
+      totalBilledSchoolFee: classTuitionFee,
+      schoolFeeBalance: classTuitionFee,
+      feedingFeeBalance: classFeedingFee,
+      attendanceRate: 100,
+      lastGradeAverage: 0,
+    };
+
+    setStudents((prev) => [newStudent, ...prev]);
+
+    // 5. Create Admission Application Record with status 'Accepted'
+    const newApplication: AdmissionApplication = {
+      id: appDbId,
+      applicationId: appCode,
+      applicantFirstName: data.applicantFirstName.trim(),
+      applicantLastName: data.applicantLastName.trim(),
+      dateOfBirth: data.dateOfBirth || '2012-01-01',
+      gender: data.gender,
+      applyingForClass: finalClassName,
+      assignedClassId: finalClassId,
+      enrolledStudentId: studentDbId,
+      termAdmitted: data.termAdmitted,
+      parentName: rawParentName || 'Parent Guardian',
+      parentPhone: rawParentPhone || '+233 24 000 0000',
+      parentEmail: rawParentEmail || 'parent@example.com',
+      applicationDate: data.admissionDate || new Date().toISOString().split('T')[0],
+      status: 'Accepted',
+      notes: data.admissionNotes || `Admitted for ${data.termAdmitted} (${data.academicYear}). Previous school: ${data.previousSchool || 'N/A'}.`,
+      documentsSubmitted: data.documentsSubmitted && data.documentsSubmitted.length > 0
+        ? data.documentsSubmitted
+        : ['Birth Certificate', '2 Passport Photos'],
+      residentialAddress: rawParentAddress,
+      previousSchool: data.previousSchool,
+      emergencyContact: data.emergencyContact,
+    };
+
+    setApplications((prev) => [newApplication, ...prev]);
+
+    // 6. Push System Notification
+    setNotifications((prev) => [
+      {
+        id: `notif_${Date.now()}_adm`,
+        title: `Pupil Admitted & Enrolled: ${studentFullName}`,
+        message: `${studentFullName} was admitted for ${data.termAdmitted} (${data.academicYear}) and automatically placed in ${finalClassName} (ID: ${studentCode}). Fees scheduled.`,
+        type: 'admission',
+        timestamp: new Date().toISOString(),
+        isRead: false,
+        linkTo: 'admissions',
+      },
+      ...prev,
+    ]);
+
+    clearAdmissionDraft();
+    return { studentId: studentDbId, applicationId: appDbId };
+  };
+
+  const enrollAcceptedApplication = (appId: string) => {
+    const app = applications.find((a) => a.id === appId);
+    if (!app) return;
+
+    if (app.enrolledStudentId) {
+      updateApplicationStatus(appId, 'Accepted');
+      return;
+    }
+
+    const studentDbId = `std_${Date.now()}`;
+    const studentCode = `BFA-2025-${String(students.length + 1).padStart(4, '0')}`;
+    const studentFullName = `${app.applicantFirstName} ${app.applicantLastName}`.trim();
+
+    const targetClassName = app.applyingForClass || 'Basic 1';
+    let matchedClass = classes.find(
+      (c) => (app.assignedClassId && c.id === app.assignedClassId) ||
+             (targetClassName && c.name.toLowerCase() === targetClassName.toLowerCase())
+    );
+
+    let finalClassId = app.assignedClassId || '';
+    let finalClassName = targetClassName;
+    let resolvedStage: 'Kindergarten' | 'Primary' | 'JHS' = 'Primary';
+
+    if (matchedClass) {
+      finalClassId = matchedClass.id;
+      finalClassName = matchedClass.name;
+      resolvedStage = matchedClass.stage;
+
+      setClasses((prevClasses) =>
+        prevClasses.map((cls) =>
+          cls.id === matchedClass!.id
+            ? { ...cls, studentCount: cls.studentCount + 1 }
+            : cls
+        )
+      );
+    } else {
+      finalClassName = targetClassName;
+      resolvedStage = detectAcademicStage(finalClassName);
+      finalClassId = `cls_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+      const newClassRoom: ClassRoom = {
+        id: finalClassId,
+        name: finalClassName,
+        code: finalClassName.replace(/\s+/g, '').toUpperCase(),
+        stage: resolvedStage,
+        classTeacherId: '',
+        classTeacherName: 'Unassigned',
+        studentCount: 1,
+        capacity: resolvedStage === 'Kindergarten' ? 25 : resolvedStage === 'Primary' ? 35 : 40,
+        roomNumber: `Block ${resolvedStage === 'JHS' ? 'C' : resolvedStage === 'Primary' ? 'B' : 'A'} - ${classes.length + 101}`,
+        averageAttendance: 100,
+        subjects: getSubjectsForStage(resolvedStage),
+      };
+      setClasses((prevClasses) => [...prevClasses, newClassRoom]);
+    }
+
+    let resolvedParentId = '';
+    const existingParent = parents.find(
+      (p) =>
+        (app.parentPhone && p.phone && p.phone.replace(/[\s\-()]/g, '') === app.parentPhone.replace(/[\s\-()]/g, '')) ||
+        (app.parentName && p.fullName.toLowerCase().trim() === app.parentName.toLowerCase().trim())
+    );
+
+    if (existingParent) {
+      resolvedParentId = existingParent.id;
+      setParents((prev) =>
+        prev.map((p) =>
+          p.id === existingParent.id
+            ? {
+                ...p,
+                childrenIds: [...p.childrenIds, studentDbId],
+                childrenNames: [...p.childrenNames, studentFullName],
+              }
+            : p
+        )
+      );
+    } else if (app.parentName) {
+      resolvedParentId = `par_${Date.now()}`;
+      setParents((prev) => [
+        {
+          id: resolvedParentId,
+          fullName: app.parentName,
+          phone: app.parentPhone || '+233 24 000 0000',
+          email: app.parentEmail || `${app.parentName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@gmail.com`,
+          residentialAddress: app.residentialAddress || 'Accra, Ghana',
+          occupation: 'Parent / Guardian',
+          relationship: 'Guardian',
+          childrenIds: [studentDbId],
+          childrenNames: [studentFullName],
+          totalBalanceDue: 2600,
+        },
+        ...prev,
+      ]);
+    }
+
+    const tuition = getClassFee(finalClassName);
+    const newStudent: Student = {
+      id: studentDbId,
+      studentId: studentCode,
+      firstName: app.applicantFirstName,
+      lastName: app.applicantLastName,
+      gender: app.gender,
+      dateOfBirth: app.dateOfBirth,
+      classId: finalClassId,
+      className: finalClassName,
+      stage: resolvedStage,
+      admissionDate: app.applicationDate || new Date().toISOString().split('T')[0],
+      admissionYear: '2025',
+      status: 'Active',
+      photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
+      parentId: resolvedParentId || 'par_01',
+      parentName: app.parentName || 'Parent Guardian',
+      parentPhone: app.parentPhone || '+233 24 000 0000',
+      parentEmail: app.parentEmail || 'parent@example.com',
+      parentRelationship: 'Parent / Guardian',
+      residentialAddress: app.residentialAddress || 'Accra, Ghana',
+      emergencyContact: app.emergencyContact || app.parentPhone || '+233 20 000 0000',
+      medicalNotes: 'None',
+      participatesInFeeding: true,
+      totalBilledSchoolFee: tuition,
+      schoolFeeBalance: tuition,
+      feedingFeeBalance: 600,
+      attendanceRate: 100,
+      lastGradeAverage: 0,
+    };
+
+    setStudents((prev) => [newStudent, ...prev]);
+
+    setApplications((prev) =>
+      prev.map((a) =>
+        a.id === appId
+          ? {
+              ...a,
+              status: 'Accepted',
+              enrolledStudentId: studentDbId,
+              assignedClassId: finalClassId,
+            }
+          : a
+      )
+    );
+
+    setNotifications((prev) => [
+      {
+        id: `notif_${Date.now()}_enrolled`,
+        title: `Application Accepted & Enrolled: ${studentFullName}`,
+        message: `${studentFullName} (${app.applicationId}) was accepted and automatically added to ${finalClassName} roster (ID: ${studentCode}).`,
+        type: 'admission',
+        timestamp: new Date().toISOString(),
+        isRead: false,
+        linkTo: 'admissions',
+      },
+      ...prev,
+    ]);
+  };
+
   const markNotificationRead = (id: string) => {
     setNotifications(
       notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n))
@@ -2417,6 +2842,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateRouteStatus,
         applications,
         updateApplicationStatus,
+        recordNewAdmission,
+        enrollAcceptedApplication,
         inventory,
         announcements,
         addAnnouncement,
@@ -2460,6 +2887,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setIsAddTeacherOpen,
         isAddTransportOpen,
         setIsAddTransportOpen,
+        isAddAdmissionOpen,
+        setIsAddAdmissionOpen,
         isRecordPaymentOpen,
         setIsRecordPaymentOpen,
         isCreateAnnouncementOpen,
@@ -2490,6 +2919,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updatePaymentDraft,
         clearPaymentDraft,
         hasPaymentDraft,
+        admissionDraft,
+        setAdmissionDraft,
+        updateAdmissionDraft,
+        clearAdmissionDraft,
+        hasAdmissionDraft,
         resetAllDataToCleanSlate,
       }}
     >

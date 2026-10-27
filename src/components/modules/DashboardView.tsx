@@ -15,6 +15,7 @@ import {
   FileCheck2,
   Bus,
   Coins,
+  UserCheck,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../common/StatCard';
@@ -35,6 +36,7 @@ export const DashboardView: React.FC = () => {
     openSetClassFees,
     setIsAddTeacherOpen,
     setIsAddTransportOpen,
+    setIsAddAdmissionOpen,
     setIsRecordPaymentOpen,
     setIsCreateAnnouncementOpen,
     setCurrentNav,
@@ -102,6 +104,14 @@ export const DashboardView: React.FC = () => {
             onClick={() => setIsAddStudentOpen(true)}
           >
             Enroll Student
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            icon={UserCheck}
+            onClick={() => setIsAddAdmissionOpen(true)}
+          >
+            Admission Desk
           </Button>
           <Button
             size="sm"

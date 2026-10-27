@@ -18,6 +18,7 @@ import { AddTransportView } from './components/modules/AddTransportView';
 import { CreateAnnouncementView } from './components/modules/CreateAnnouncementView';
 import { SendParentNotificationView } from './components/modules/SendParentNotificationView';
 import { SetClassFeesView } from './components/modules/SetClassFeesView';
+import { AddAdmissionView } from './components/modules/AddAdmissionView';
 
 // Admin Platform Views
 import { DashboardView } from './components/modules/DashboardView';
@@ -68,6 +69,8 @@ export const AppContent: React.FC = () => {
     setIsRecordPaymentOpen,
     isAddTransportOpen,
     setIsAddTransportOpen,
+    isAddAdmissionOpen,
+    setIsAddAdmissionOpen,
     isCreateAnnouncementOpen,
     setIsCreateAnnouncementOpen,
     isSendParentNotificationOpen,
@@ -183,6 +186,9 @@ export const AppContent: React.FC = () => {
         if (isSetClassFeesOpen) {
           return <SetClassFeesView onBack={() => setIsSetClassFeesOpen(false)} />;
         }
+        if (isAddAdmissionOpen) {
+          return <AddAdmissionView onBack={() => setIsAddAdmissionOpen(false)} />;
+        }
         switch (currentNav) {
           case 'students':
             if (isAddStudentOpen) {
@@ -255,6 +261,9 @@ export const AppContent: React.FC = () => {
             }
             return <TransportView />;
           case 'admissions':
+            if (isAddAdmissionOpen) {
+              return <AddAdmissionView onBack={() => setIsAddAdmissionOpen(false)} />;
+            }
             return <AdmissionsView />;
           case 'inventory':
             return <InventoryView />;

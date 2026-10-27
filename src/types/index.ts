@@ -295,6 +295,13 @@ export interface AdmissionApplication {
   interviewDate?: string;
   notes?: string;
   documentsSubmitted: string[];
+  termAdmitted?: string;
+  residentialAddress?: string;
+  previousSchool?: string;
+  emergencyContact?: string;
+  assignedClassId?: string;
+  enrolledStudentId?: string;
+  admissionFeePaid?: number;
 }
 
 export interface InventoryItem {
