@@ -143,6 +143,124 @@
   animation: shimmer 3s infinite;
 }
 
+/* =========================================================================
+   3D PERSPECTIVE & TRANSFORMS
+   ========================================================================= */
+.perspective-800 {
+  perspective: 800px;
+}
+.perspective-1000 {
+  perspective: 1000px;
+}
+.perspective-1200 {
+  perspective: 1200px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+@keyframes float3D {
+  0%, 100% {
+    transform: perspective(1200px) rotateY(-8deg) rotateX(4deg) translateY(0px);
+  }
+  50% {
+    transform: perspective(1200px) rotateY(-3deg) rotateX(7deg) translateY(-14px);
+  }
+}
+
+@keyframes float3DReverse {
+  0%, 100% {
+    transform: perspective(1200px) rotateY(8deg) rotateX(-3deg) translateY(0px);
+  }
+  50% {
+    transform: perspective(1200px) rotateY(3deg) rotateX(-6deg) translateY(-12px);
+  }
+}
+
+@keyframes floatBadge1 {
+  0%, 100% {
+    transform: translateZ(40px) translateY(0px) rotate(-1deg);
+  }
+  50% {
+    transform: translateZ(55px) translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes floatBadge2 {
+  0%, 100% {
+    transform: translateZ(35px) translateY(0px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateZ(50px) translateY(10px) rotate(-0.5deg);
+  }
+}
+
+@keyframes floatBadge3 {
+  0%, 100% {
+    transform: translateZ(30px) translateY(0px);
+  }
+  50% {
+    transform: translateZ(45px) translateY(-8px);
+  }
+}
+
+@keyframes glintEffect {
+  0% {
+    transform: translateX(-150%) rotate(25deg);
+  }
+  30%, 100% {
+    transform: translateX(250%) rotate(25deg);
+  }
+}
+
+.animate-float-3d {
+  animation: float3D 8s ease-in-out infinite;
+}
+
+.animate-float-3d-reverse {
+  animation: float3DReverse 9s ease-in-out infinite;
+}
+
+.animate-float-badge-1 {
+  animation: floatBadge1 5s ease-in-out infinite;
+}
+
+.animate-float-badge-2 {
+  animation: floatBadge2 6s ease-in-out infinite 0.7s;
+}
+
+.animate-float-badge-3 {
+  animation: floatBadge3 7s ease-in-out infinite 1.2s;
+}
+
+.animate-glint {
+  animation: glintEffect 4s ease-in-out infinite;
+}
+
+/* 3D Interactive Card Classes */
+.card-3d-interactive {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+  transform-style: preserve-3d;
+}
+
+.card-3d-interactive:hover {
+  transform: perspective(1000px) translateY(-10px) rotateX(3deg) rotateY(-3deg) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.22), 0 0 25px rgba(59, 130, 246, 0.18);
+}
+
+.picture-3d-container {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.picture-3d-container:hover {
+  transform: perspective(1200px) rotateY(-2deg) rotateX(2deg) scale(1.025);
+  box-shadow: 0 35px 70px -15px rgba(11, 37, 69, 0.4), 0 0 40px rgba(59, 130, 246, 0.25);
+}
+
 /* Scroll snap utilities */
 .page-snap-container {
   scroll-snap-type: y mandatory;

@@ -24,6 +24,11 @@ import {
   Phone,
   Mail,
   MapPin,
+  Coins,
+  UserCheck,
+  UserPlus,
+  CheckCircle2,
+  Layers,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -172,15 +177,83 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Hero Visual with Real Pupils */}
-            <div className="lg:col-span-6 relative w-full flex items-center justify-center">
-              {/* Authentic Photo of Ghanaian Pupils - Sized Elegantly */}
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 w-full max-w-sm sm:max-w-md lg:max-w-[440px] relative group">
-                <img
-                  src="/assets/ghana_students_hero.jpg"
-                  alt="Ghanaian school pupils smiling together in school courtyard"
-                  className="w-full h-64 sm:h-76 lg:h-[350px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+            {/* Right Column: Hero Visual with Real Pupils in 3D Perspective */}
+            <div className="lg:col-span-6 relative w-full flex items-center justify-center perspective-1200 py-8 lg:py-12">
+              {/* Glowing Background Radial Halo */}
+              <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-blue-500/25 via-indigo-500/20 to-teal-400/20 blur-3xl pointer-events-none -z-10" />
+
+              {/* 3D Floating Picture Card Container */}
+              <div className="relative preserve-3d animate-float-3d w-full max-w-sm sm:max-w-md lg:max-w-[460px]">
+                
+                {/* Main 3D Framed Photo */}
+                <div className="picture-3d-container rounded-3xl overflow-hidden shadow-[0_25px_60px_-15px_rgba(11,37,69,0.35)] border-2 border-white/80 bg-white ring-1 ring-slate-900/10 relative group">
+                  <img
+                    src="/assets/ghana_students_hero.jpg"
+                    alt="Ghanaian school pupils smiling together in school courtyard"
+                    className="w-full h-72 sm:h-80 lg:h-[370px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+
+                  {/* Dynamic Shimmer Glint Sheen across 3D photo */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                  {/* Bottom Vignette with Badge */}
+                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent flex items-center justify-between text-white text-xs">
+                    <span className="font-bold flex items-center gap-1.5 text-slate-100 text-[11px]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      Active Academic Session 2024/2025
+                    </span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded-full border border-white/30 text-white">
+                      Basic 1 – JHS 3
+                    </span>
+                  </div>
+                </div>
+
+                {/* Floating 3D Badge 1: Top-Left - New Pupil Admitted & Enrolled */}
+                <div className="absolute -top-4 -left-4 sm:-left-8 preserve-3d animate-float-badge-1 z-20 pointer-events-none">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-[0_15px_35px_rgba(15,23,42,0.18)] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/30 shrink-0">
+                      <UserCheck className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                          Term Intake
+                        </span>
+                      </div>
+                      <p className="font-bold text-slate-900 text-xs">Kwame Asante</p>
+                      <p className="text-[10px] text-blue-600 font-semibold">Enrolled in Basic 4A</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating 3D Badge 2: Bottom-Right - MoMo Fee Sync */}
+                <div className="absolute -bottom-5 -right-4 sm:-right-8 preserve-3d animate-float-badge-2 z-20 pointer-events-none">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-[#0B2545]/95 backdrop-blur-md border border-slate-700/80 shadow-[0_20px_40px_rgba(0,0,0,0.35)] text-white flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center shrink-0">
+                      <Coins className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                          MoMo Received
+                        </span>
+                      </div>
+                      <p className="font-extrabold text-white text-xs">GH₵ 1,850.00</p>
+                      <p className="text-[10px] text-slate-300">Term 2 School Fees</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating 3D Badge 3: Center-Left - Attendance Rate */}
+                <div className="absolute top-1/2 -left-6 sm:-left-12 -translate-y-1/2 preserve-3d animate-float-badge-3 z-20 pointer-events-none hidden sm:block">
+                  <div className="px-3 py-2 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-lg text-slate-800 flex items-center gap-2">
+                    <CalendarCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span className="text-[11px] font-bold text-slate-900">98.4% Roll Present</span>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -292,13 +365,33 @@ export const LandingPageView: React.FC = () => {
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
               Say goodbye to fragmented paper registers and manual spreadsheets. SchoolOS brings every Ghanaian school workflow into one connected, intuitive dashboard.
             </p>
+
+            {/* Interactive 3D Feature Highlight Tags */}
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold">
+              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs text-slate-700 flex items-center gap-1.5 hover:border-blue-300 transition-colors">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Real-Time Ghana MoMo Sync
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs text-slate-700 flex items-center gap-1.5 hover:border-blue-300 transition-colors">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                GES Term 1/2/3 Fee Distribution
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs text-slate-700 flex items-center gap-1.5 hover:border-blue-300 transition-colors">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                Automated Class Stream Enrollment
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs text-slate-700 flex items-center gap-1.5 hover:border-blue-300 transition-colors">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                Official Stamped Terminal Reports
+              </span>
+            </div>
           </div>
 
-          {/* 8 Features Grid (4 x 2) with Interactive Card Effects */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 3D Interactive Features Grid (3 x 3) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* 1. Student Management */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-blue-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-blue-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-blue-500/10" />
               <Users className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -330,7 +423,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* 2. Attendance */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-emerald-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-emerald-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-emerald-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-emerald-500/10" />
               <CalendarCheck className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -362,7 +455,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* 3. Results & Reports */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-amber-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-amber-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-amber-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-amber-500/10" />
               <Award className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -394,7 +487,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* 4. School Fees */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-indigo-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-indigo-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-indigo-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-indigo-500/10" />
               <CreditCard className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -426,7 +519,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* 5. Feeding Fees */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-rose-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-rose-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-rose-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-rose-500/10" />
               <Utensils className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -458,7 +551,7 @@ export const LandingPageView: React.FC = () => {
             </div>
 
             {/* 6. Transport */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-cyan-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-cyan-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-cyan-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-cyan-500/10" />
               <Bus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -489,26 +582,26 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* 7. Admissions */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-violet-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-violet-300">
+            {/* 7. Admissions & Automated Class Stream Placement */}
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-violet-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-violet-500/10" />
-              <FilePlus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+              <UserPlus className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
               <div className="relative z-10 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-violet-500/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                    <FilePlus className="w-6 h-6 stroke-[2.2]" />
+                    <UserPlus className="w-6 h-6 stroke-[2.2]" />
                   </div>
-                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-600 group-hover:bg-[#0B2545] group-hover:text-white transition-colors duration-300 border border-slate-200/60">
-                    Intake Pipeline
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-violet-50 text-violet-700 group-hover:bg-violet-600 group-hover:text-white transition-colors duration-300 border border-violet-200/60">
+                    Auto-Enrollment
                   </span>
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-violet-700 transition-colors">
-                    Admissions
+                    Admission Desk & Placement
                   </h3>
                   <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
-                    Simplify prospective pupil applications, review submission files, and seamlessly enroll pupils into active classrooms.
+                    Record newly admitted pupils within the term. The system automatically places them in active class rosters, initializes attendance registers, and schedules class fees.
                   </p>
                 </div>
               </div>
@@ -516,13 +609,13 @@ export const LandingPageView: React.FC = () => {
               <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
                 <span className="font-semibold text-slate-600 text-[11px]">
-                  Instant Class Allocation
+                  Automatic Class Stream Roster
                 </span>
               </div>
             </div>
 
             {/* 8. Communication */}
-            <div className="group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:shadow-teal-900/10 hover:-translate-y-2.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden cursor-default hover:border-teal-300">
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-teal-300 flex flex-col justify-between overflow-hidden cursor-default">
               <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-teal-500/10" />
               <MessageSquare className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
 
@@ -553,6 +646,38 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
+            {/* 9. Class Fee Schedule & Component Distribution */}
+            <div className="card-3d-interactive group relative rounded-3xl bg-white/95 backdrop-blur-xs border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-default">
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-blue-500/10" />
+              <Layers className="absolute -right-4 -top-4 w-28 h-28 text-slate-900 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none" />
+
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-700 to-indigo-800 text-white flex items-center justify-center shadow-lg shadow-blue-600/25 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <Layers className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-blue-50 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 border border-blue-200/60">
+                    Dynamic Distribution
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#0B2545] tracking-tight group-hover:text-blue-700 transition-colors">
+                    Fee Distribution by Class
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed font-normal mt-1.5">
+                    Configure separate fee distributions for School Fees, Bus Fee, and Feeding Fees for every class stream with automatic total calculation and real-time revenue projections.
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative z-10 pt-4 mt-5 border-t border-slate-100 flex items-center gap-2 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                <span className="font-semibold text-slate-600 text-[11px]">
+                  Tuition, Bus & Feeding Breakdown
+                </span>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -568,14 +693,55 @@ export const LandingPageView: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
-            {/* Left Photo: Ghanaian Pupil in Uniform Holding Books */}
-            <div className="lg:col-span-4 flex justify-center w-full">
-              <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/10 w-full max-w-[280px] sm:max-w-xs group bg-slate-900">
-                <img
-                  src="/assets/ghana_pupil_books.jpg"
-                  alt="Ghanaian primary school pupil smiling with textbooks"
-                  className="w-full h-80 sm:h-96 lg:h-[410px] object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+            {/* Left Photo in 3D Perspective: Ghanaian Pupil in Uniform Holding Books */}
+            <div className="lg:col-span-4 flex justify-center w-full perspective-1200 py-6">
+              <div className="relative preserve-3d animate-float-3d-reverse w-full max-w-[280px] sm:max-w-xs">
+                
+                {/* 3D Framed Photo */}
+                <div className="picture-3d-container rounded-3xl overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] border-2 border-white/20 bg-slate-900 relative group ring-1 ring-white/10">
+                  <img
+                    src="/assets/ghana_pupil_books.jpg"
+                    alt="Ghanaian primary school pupil smiling with textbooks"
+                    className="w-full h-80 sm:h-96 lg:h-[420px] object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  {/* Subtle 3D Glassmorphic Lighting Sheen */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B2545]/90 via-transparent to-transparent pointer-events-none" />
+                </div>
+
+                {/* 3D Floating Badge 1: Top-Right - NaCCA Curriculum Compliant */}
+                <div className="absolute -top-3 -right-4 sm:-right-6 preserve-3d animate-float-badge-1 z-20 pointer-events-none">
+                  <div className="p-2.5 sm:p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl text-slate-900 flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-blue-600 block">
+                        GES & NaCCA
+                      </span>
+                      <span className="font-bold text-slate-900 text-[11px] block">
+                        Standard JHS Syllabus
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3D Floating Badge 2: Bottom-Left - Terminal Report Card */}
+                <div className="absolute -bottom-4 -left-4 sm:-left-6 preserve-3d animate-float-badge-2 z-20 pointer-events-none">
+                  <div className="p-3 rounded-2xl bg-slate-900/95 backdrop-blur-md border border-white/20 shadow-2xl text-white flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center shrink-0">
+                      <Award className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-emerald-300 block uppercase">
+                        Terminal Report
+                      </span>
+                      <span className="font-bold text-white text-[11px] block">
+                        94.2% Class Distinction
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -630,10 +796,10 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: Dual Device Previews (Desktop Analytics + Mobile Smartphone) */}
-            <div className="lg:col-span-4 flex items-center justify-center relative w-full overflow-hidden sm:overflow-visible py-4">
-              {/* Desktop Dashboard Card with Subtle Inverse Float */}
-              <div className="w-48 sm:w-56 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl p-3.5 space-y-2 opacity-95 hidden sm:block animate-float-reverse shrink-0">
+            {/* Right: Dual Device Previews (Desktop Analytics + Mobile Smartphone) with 3D Depth */}
+            <div className="lg:col-span-4 flex items-center justify-center relative w-full overflow-hidden sm:overflow-visible py-6 perspective-1000">
+              {/* Desktop Dashboard Card with 3D Depth */}
+              <div className="w-48 sm:w-56 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-3.5 space-y-2 opacity-95 hidden sm:block animate-float-reverse shrink-0 preserve-3d hover:scale-105 transition-transform duration-300">
                 <div className="flex items-center justify-between pb-1.5 border-b border-white/10 text-[11px] font-bold text-white">
                   <span>Class Performance</span>
                   <span className="text-emerald-400 text-[10px] flex items-center gap-1 font-semibold">
@@ -660,8 +826,8 @@ export const LandingPageView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Mobile Phone Device Mockup with Float Animation */}
-              <div className="w-52 sm:w-56 -ml-8 sm:-ml-12 rounded-[2.2rem] bg-white border-4 border-slate-900 shadow-2xl p-3 space-y-2.5 z-10 ring-4 sm:ring-8 ring-white/10 animate-float-slow shrink-0 text-slate-900">
+              {/* Mobile Phone Device Mockup with 3D Perspective and Float Animation */}
+              <div className="w-52 sm:w-56 -ml-8 sm:-ml-12 rounded-[2.2rem] bg-white border-4 border-slate-900 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] p-3 space-y-2.5 z-10 ring-4 sm:ring-8 ring-white/10 animate-float-slow shrink-0 text-slate-900 preserve-3d hover:rotate-1 hover:scale-105 transition-all duration-300">
                 <div className="w-12 h-1 bg-slate-900 rounded-full mx-auto mb-1"></div>
                 <div className="flex justify-between items-center text-[9px] text-slate-400 px-1">
                   <span className="font-extrabold text-[#0B2545]">SchoolOS Mobile</span>
@@ -958,9 +1124,9 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Photo Strip & Slogan */}
-            <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-6 w-full">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full max-w-xs group">
+            {/* Right Photo Strip & Slogan with 3D Tilt */}
+            <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-6 w-full perspective-800">
+              <div className="picture-3d-container rounded-2xl overflow-hidden shadow-2xl border border-white/20 w-full max-w-xs group animate-float-3d">
                 <img
                   src="/assets/ghana_students_hero.jpg"
                   alt="Ghanaian school pupils"
