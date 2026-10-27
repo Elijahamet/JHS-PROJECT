@@ -74,6 +74,9 @@ export interface ClassFormData {
   capacity: number;
   selectedTeacherId: string;
   selectedSubjects: string[];
+  tuitionFee?: number;
+  feedingFee?: number;
+  busFee?: number;
   termFee: number;
 }
 
@@ -84,6 +87,9 @@ export const DEFAULT_CLASS_FORM: ClassFormData = {
   roomNumber: '',
   capacity: 35,
   selectedTeacherId: '',
+  tuitionFee: 0,
+  feedingFee: 0,
+  busFee: 0,
   termFee: 0,
   selectedSubjects: [
     'English Language',

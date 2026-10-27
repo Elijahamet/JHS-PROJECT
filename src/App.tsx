@@ -17,6 +17,7 @@ import { RecordPaymentView } from './components/modules/RecordPaymentView';
 import { AddTransportView } from './components/modules/AddTransportView';
 import { CreateAnnouncementView } from './components/modules/CreateAnnouncementView';
 import { SendParentNotificationView } from './components/modules/SendParentNotificationView';
+import { SetClassFeesView } from './components/modules/SetClassFeesView';
 
 // Admin Platform Views
 import { DashboardView } from './components/modules/DashboardView';
@@ -61,6 +62,8 @@ export const AppContent: React.FC = () => {
     setIsAddTeacherOpen,
     isAddClassOpen,
     setIsAddClassOpen,
+    isSetClassFeesOpen,
+    setIsSetClassFeesOpen,
     isRecordPaymentOpen,
     setIsRecordPaymentOpen,
     isAddTransportOpen,
@@ -119,6 +122,9 @@ export const AppContent: React.FC = () => {
       // 2. ACCOUNTANT / BURSAR PLATFORM
       // ==========================================
       case 'accountant': {
+        if (isSetClassFeesOpen) {
+          return <SetClassFeesView onBack={() => setIsSetClassFeesOpen(false)} />;
+        }
         switch (currentNav) {
           case 'accountant-fees':
             if (isRecordPaymentOpen) {
@@ -174,6 +180,9 @@ export const AppContent: React.FC = () => {
       // ==========================================
       case 'school_admin':
       default: {
+        if (isSetClassFeesOpen) {
+          return <SetClassFeesView onBack={() => setIsSetClassFeesOpen(false)} />;
+        }
         switch (currentNav) {
           case 'students':
             if (isAddStudentOpen) {

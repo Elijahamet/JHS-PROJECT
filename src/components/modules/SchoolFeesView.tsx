@@ -31,7 +31,9 @@ export const SchoolFeesView: React.FC = () => {
     addFeeStructureItem,
     deleteFeeStructureItem,
     getClassFee,
+    getClassFeeBreakdown,
     updateClassFee,
+    openSetClassFees,
     payments,
     setIsRecordPaymentOpen,
     setSelectedStudentId,
@@ -152,6 +154,14 @@ export const SchoolFeesView: React.FC = () => {
           <Button
             size="sm"
             variant="outline"
+            icon={Coins}
+            onClick={() => openSetClassFees()}
+          >
+            Configure Class Fees
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
             icon={Plus}
             onClick={() => setIsAddFeeModalOpen(true)}
           >
@@ -201,21 +211,30 @@ export const SchoolFeesView: React.FC = () => {
       {/* 1. CLASS-BY-CLASS TUITION FEE CONFIGURATION (ADMIN FEE SETTING) */}
       {/* ========================================================================= */}
       <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs">
-        <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-gradient-to-r from-slate-50 to-blue-50/30">
+        <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-slate-50 to-blue-50/30">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
               <Coins className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Class-by-Class School Fees Configuration
+                Class-by-Class Fee Breakdown & Configuration
               </h3>
               <p className="text-[11px] text-slate-500">
-                Administrators have complete autonomy to specify tuition fees for each individual class stream.
+                Administrators set distributed fees into School Fees, Bus Fee, and Feeding Fees for each stream.
               </p>
             </div>
           </div>
-          <Badge variant="navy">Admin Fee Authority</Badge>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="primary"
+              icon={Coins}
+              onClick={() => openSetClassFees()}
+            >
+              Configure / Distribute Class Fees
+            </Button>
+          </div>
         </div>
 
         {classes.length === 0 ? (
@@ -229,18 +248,20 @@ export const SchoolFeesView: React.FC = () => {
                 <tr className="bg-slate-50/70 text-slate-500 border-b border-slate-200 text-[11px] uppercase tracking-wider">
                   <th className="py-2.5 px-4 font-semibold">Class Stream</th>
                   <th className="py-2.5 px-3 font-semibold">Stage</th>
-                  <th className="py-2.5 px-3 font-semibold">Enrolled Students</th>
-                  <th className="py-2.5 px-3 font-semibold">Class Teacher</th>
-                  <th className="py-2.5 px-3 font-bold text-right">Term School Fee</th>
-                  <th className="py-2.5 px-3 font-semibold text-right">Class Potential Total</th>
+                  <th className="py-2.5 px-3 font-semibold">Enrolled</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">School Fees</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Bus Fee</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Feeding Fee</th>
+                  <th className="py-2.5 px-3 font-bold text-right">Total Class Fee</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Potential Total</th>
                   <th className="py-2.5 px-4 font-semibold text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {classes.map((cls) => {
-                  const currentClassFee = cls.termFee || getClassFee(cls.name);
+                  const breakdown = getClassFeeBreakdown(cls.id);
                   const enrolledCount = cls.studentCount || students.filter((s) => s.className === cls.name || s.classId === cls.id).length;
-                  const potentialTotal = enrolledCount * currentClassFee;
+                  const potentialTotal = enrolledCount * breakdown.totalFee;
 
                   return (
                     <tr key={cls.id} className="hover:bg-slate-50/60 transition-colors">
@@ -255,29 +276,37 @@ export const SchoolFeesView: React.FC = () => {
                       <td className="py-3 px-3 text-slate-700">
                         <span className="font-semibold text-slate-900">{enrolledCount}</span> pupils
                       </td>
-                      <td className="py-3 px-3 text-slate-600">
-                        {cls.classTeacherName || 'Unassigned'}
+                      <td className="py-3 px-3 text-slate-800 text-right font-mono">
+                        {breakdown.tuitionFee > 0 ? formatCurrency(breakdown.tuitionFee) : '—'}
+                      </td>
+                      <td className="py-3 px-3 text-slate-800 text-right font-mono">
+                        {breakdown.busFee > 0 ? formatCurrency(breakdown.busFee) : '—'}
+                      </td>
+                      <td className="py-3 px-3 text-slate-800 text-right font-mono">
+                        {breakdown.feedingFee > 0 ? formatCurrency(breakdown.feedingFee) : '—'}
                       </td>
                       <td className="py-3 px-3 font-bold text-slate-900 text-right font-mono">
-                        {currentClassFee > 0 ? (
-                          formatCurrency(currentClassFee)
+                        {breakdown.totalFee > 0 ? (
+                          <span className="text-emerald-700 font-bold">
+                            {formatCurrency(breakdown.totalFee)}
+                          </span>
                         ) : (
                           <span className="px-2 py-0.5 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-md">
                             Fee Not Set
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-3 text-slate-600 text-right">
-                        {currentClassFee > 0 ? formatCurrency(potentialTotal) : '—'}
+                      <td className="py-3 px-3 text-slate-600 text-right font-mono">
+                        {breakdown.totalFee > 0 ? formatCurrency(potentialTotal) : '—'}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
-                          onClick={() => handleOpenEditClassFee(cls)}
+                          onClick={() => openSetClassFees(cls)}
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
                         >
-                          <Edit2 className="w-3 h-3" />
-                          {currentClassFee > 0 ? 'Edit Fee' : 'Set Fee'}
+                          <Coins className="w-3 h-3" />
+                          {breakdown.totalFee > 0 ? 'Edit Breakdown' : 'Set Fees'}
                         </button>
                       </td>
                     </tr>

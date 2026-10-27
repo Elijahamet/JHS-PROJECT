@@ -97,7 +97,17 @@ interface AppContextType {
   addFeeStructureItem: (feeItem: Omit<FeeStructureItem, 'id'>) => void;
   deleteFeeStructureItem: (feeId: string) => void;
   getClassFee: (classNameOrId: string) => number;
-  updateClassFee: (classIdOrName: string, newFee: number, applyToEnrolledStudents?: boolean) => void;
+  getClassFeeBreakdown: (classNameOrId: string) => {
+    tuitionFee: number;
+    feedingFee: number;
+    busFee: number;
+    totalFee: number;
+  };
+  updateClassFee: (
+    classIdOrName: string,
+    newFee: number | { tuitionFee: number; feedingFee: number; busFee: number },
+    applyToEnrolledStudents?: boolean
+  ) => void;
   payments: PaymentRecord[];
   deletePayment: (paymentId: string) => void;
   addPayment: (paymentData: {
@@ -161,6 +171,11 @@ interface AppContextType {
   seedStandardGhanaianClasses: () => void;
   isAddClassOpen: boolean;
   setIsAddClassOpen: (open: boolean) => void;
+  isSetClassFeesOpen: boolean;
+  setIsSetClassFeesOpen: (open: boolean) => void;
+  selectedClassForFeeConfig: ClassRoom | null;
+  setSelectedClassForFeeConfig: (cls: ClassRoom | null) => void;
+  openSetClassFees: (cls?: ClassRoom | string) => void;
   isAddTeacherOpen: boolean;
   setIsAddTeacherOpen: (open: boolean) => void;
   isAddTransportOpen: boolean;
@@ -653,6 +668,34 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
+  const [isSetClassFeesOpen, setIsSetClassFeesOpenRaw] = useState(false);
+  const [selectedClassForFeeConfig, setSelectedClassForFeeConfig] = useState<ClassRoom | null>(null);
+
+  const setIsSetClassFeesOpen = (open: boolean) => {
+    setIsSetClassFeesOpenRaw(open);
+    if (open) {
+      if (currentUser.role === 'accountant') {
+        setCurrentNav('accountant-fees');
+      } else {
+        setCurrentNav('fees');
+      }
+    }
+  };
+
+  const openSetClassFees = (cls?: ClassRoom | string) => {
+    if (typeof cls === 'string') {
+      const found = classes.find(
+        (c) => c.id === cls || c.name.toLowerCase().trim() === cls.toLowerCase().trim()
+      );
+      setSelectedClassForFeeConfig(found || null);
+    } else if (cls) {
+      setSelectedClassForFeeConfig(cls);
+    } else {
+      setSelectedClassForFeeConfig(classes.length > 0 ? classes[0] : null);
+    }
+    setIsSetClassFeesOpen(true);
+  };
+
   const [isAddTeacherOpen, setIsAddTeacherOpenRaw] = useState(false);
   const setIsAddTeacherOpen = (open: boolean) => {
     setIsAddTeacherOpenRaw(open);
@@ -743,14 +786,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const getClassFee = (classNameOrId: string): number => {
     if (!classNameOrId) return 0;
-    // 1. Matching class room configured termFee
+    // 1. Matching class room configured tuitionFee or termFee
     const matchedClass = classes.find(
       (c) =>
         c.id === classNameOrId ||
         c.name.toLowerCase().trim() === classNameOrId.toLowerCase().trim()
     );
-    if (matchedClass && matchedClass.termFee !== undefined && matchedClass.termFee > 0) {
-      return matchedClass.termFee;
+    if (matchedClass) {
+      if (matchedClass.tuitionFee !== undefined && matchedClass.tuitionFee > 0) {
+        return matchedClass.tuitionFee;
+      }
+      if (matchedClass.termFee !== undefined && matchedClass.termFee > 0) {
+        return matchedClass.termFee;
+      }
     }
 
     // 2. Matching fee structure entry
@@ -772,12 +820,77 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return 0;
   };
 
+  const getClassFeeBreakdown = (classNameOrId: string) => {
+    if (!classNameOrId) {
+      return { tuitionFee: 0, feedingFee: 0, busFee: 0, totalFee: 0 };
+    }
+    const matchedClass = classes.find(
+      (c) =>
+        c.id === classNameOrId ||
+        c.name.toLowerCase().trim() === classNameOrId.toLowerCase().trim()
+    );
+
+    let tuitionFee = matchedClass?.tuitionFee ?? 0;
+    let feedingFee = matchedClass?.feedingFee ?? 0;
+    let busFee = matchedClass?.busFee ?? 0;
+
+    // If tuitionFee was not recorded separately but termFee exists
+    if (!tuitionFee && matchedClass && matchedClass.termFee && matchedClass.termFee > 0) {
+      tuitionFee = matchedClass.termFee;
+    }
+
+    // Fallbacks from feeStructures schedules if class does not store directly
+    if (!tuitionFee) {
+      const matchedTuitionFee = feeStructures.find(
+        (f) =>
+          f.category === 'School Fees' &&
+          f.status === 'Active' &&
+          ((matchedClass &&
+            (f.applicableClass === matchedClass.name ||
+              f.applicableClass === matchedClass.stage ||
+              f.applicableClass === 'All')) ||
+            f.applicableClass.toLowerCase().trim() === classNameOrId.toLowerCase().trim())
+      );
+      if (matchedTuitionFee) tuitionFee = matchedTuitionFee.amount;
+    }
+
+    if (!feedingFee) {
+      const matchedFeedingFee = feeStructures.find(
+        (f) =>
+          f.category === 'Feeding Fees' &&
+          f.status === 'Active' &&
+          ((matchedClass &&
+            (f.applicableClass === matchedClass.name ||
+              f.applicableClass === matchedClass.stage ||
+              f.applicableClass === 'All')) ||
+            f.applicableClass.toLowerCase().trim() === classNameOrId.toLowerCase().trim())
+      );
+      if (matchedFeedingFee) feedingFee = matchedFeedingFee.amount;
+    }
+
+    if (!busFee) {
+      const matchedBusFee = feeStructures.find(
+        (f) =>
+          f.category === 'Transport' &&
+          f.status === 'Active' &&
+          ((matchedClass &&
+            (f.applicableClass === matchedClass.name ||
+              f.applicableClass === matchedClass.stage ||
+              f.applicableClass === 'All')) ||
+            f.applicableClass.toLowerCase().trim() === classNameOrId.toLowerCase().trim())
+      );
+      if (matchedBusFee) busFee = matchedBusFee.amount;
+    }
+
+    const totalFee = tuitionFee + feedingFee + busFee;
+    return { tuitionFee, feedingFee, busFee, totalFee };
+  };
+
   const updateClassFee = (
     classIdOrName: string,
-    newFee: number,
+    newFee: number | { tuitionFee: number; feedingFee: number; busFee: number },
     applyToEnrolledStudents = false
   ) => {
-    const parsedFee = Math.max(0, Number(newFee));
     const targetClass = classes.find(
       (c) =>
         c.id === classIdOrName ||
@@ -785,59 +898,137 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
     const className = targetClass ? targetClass.name : classIdOrName;
 
-    // 1. Update ClassRoom object in classes
+    let tuitionFee = 0;
+    let feedingFee = 0;
+    let busFee = 0;
+    let totalFee = 0;
+
+    if (typeof newFee === 'number') {
+      tuitionFee = Math.max(0, Number(newFee));
+      feedingFee = targetClass?.feedingFee || 0;
+      busFee = targetClass?.busFee || 0;
+      totalFee = tuitionFee + feedingFee + busFee;
+    } else {
+      tuitionFee = Math.max(0, Number(newFee.tuitionFee) || 0);
+      feedingFee = Math.max(0, Number(newFee.feedingFee) || 0);
+      busFee = Math.max(0, Number(newFee.busFee) || 0);
+      totalFee = tuitionFee + feedingFee + busFee;
+    }
+
+    // 1. Update ClassRoom object in classes state
     setClasses((prev) =>
       prev.map((c) =>
         c.id === classIdOrName || c.name.toLowerCase().trim() === classIdOrName.toLowerCase().trim()
-          ? { ...c, termFee: parsedFee }
+          ? { ...c, tuitionFee, feedingFee, busFee, termFee: totalFee }
           : c
       )
     );
 
-    // 2. Update or insert in feeStructures
+    // 2. Synchronize feeStructures items for School Fees, Feeding Fees, and Transport
     setFeeStructures((prev) => {
-      const existingIndex = prev.findIndex(
+      let updated = [...prev];
+
+      // Tuition / School Fees item
+      const tuitionIndex = updated.findIndex(
         (f) =>
           f.category === 'School Fees' &&
           (f.applicableClass === className || (targetClass && f.applicableClass === targetClass.stage))
       );
-      if (existingIndex >= 0) {
-        const copy = [...prev];
-        copy[existingIndex] = {
-          ...copy[existingIndex],
-          name: `${className} Term Tuition Fee`,
-          amount: parsedFee,
+      if (tuitionIndex >= 0) {
+        updated[tuitionIndex] = {
+          ...updated[tuitionIndex],
+          name: `${className} School Fees`,
+          amount: tuitionFee,
           applicableClass: className,
         };
-        return copy;
-      } else {
-        const newItem: FeeStructureItem = {
-          id: `fee_${Date.now()}`,
-          name: `${className} Term Tuition Fee`,
+      } else if (tuitionFee > 0) {
+        updated.push({
+          id: `fee_tuition_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          name: `${className} School Fees`,
           category: 'School Fees',
-          amount: parsedFee,
+          amount: tuitionFee,
           academicYear: '2024 / 2025',
           term: 'Term 2',
           applicableClass: className,
           dueDate: '2025-02-15',
           status: 'Active',
-        };
-        return [...prev, newItem];
+        });
       }
+
+      // Feeding Fees item
+      const feedingIndex = updated.findIndex(
+        (f) =>
+          f.category === 'Feeding Fees' &&
+          (f.applicableClass === className || (targetClass && f.applicableClass === targetClass.stage))
+      );
+      if (feedingIndex >= 0) {
+        updated[feedingIndex] = {
+          ...updated[feedingIndex],
+          name: `${className} Feeding Fee`,
+          amount: feedingFee,
+          applicableClass: className,
+        };
+      } else if (feedingFee > 0) {
+        updated.push({
+          id: `fee_feeding_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          name: `${className} Feeding Fee`,
+          category: 'Feeding Fees',
+          amount: feedingFee,
+          academicYear: '2024 / 2025',
+          term: 'Term 2',
+          applicableClass: className,
+          dueDate: '2025-02-15',
+          status: 'Active',
+        });
+      }
+
+      // Transport / Bus Fee item
+      const busIndex = updated.findIndex(
+        (f) =>
+          f.category === 'Transport' &&
+          (f.applicableClass === className || (targetClass && f.applicableClass === targetClass.stage))
+      );
+      if (busIndex >= 0) {
+        updated[busIndex] = {
+          ...updated[busIndex],
+          name: `${className} Bus / Transport Fee`,
+          amount: busFee,
+          applicableClass: className,
+        };
+      } else if (busFee > 0) {
+        updated.push({
+          id: `fee_bus_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          name: `${className} Bus / Transport Fee`,
+          category: 'Transport',
+          amount: busFee,
+          academicYear: '2024 / 2025',
+          term: 'Term 2',
+          applicableClass: className,
+          dueDate: '2025-02-15',
+          status: 'Active',
+        });
+      }
+
+      return updated;
     });
 
     // 3. If applyToEnrolledStudents is true, update the balances of all students in that class
     if (applyToEnrolledStudents && targetClass) {
       setStudents((prev) =>
         prev.map((s) => {
-          if (s.classId === targetClass.id || s.className === targetClass.name) {
+          if (
+            s.classId === targetClass.id ||
+            (s.className && s.className.toLowerCase().trim() === targetClass.name.toLowerCase().trim())
+          ) {
             const oldTotal = s.totalBilledSchoolFee ?? getClassFee(s.className) ?? 0;
-            const previouslyPaid = Math.max(0, oldTotal - s.schoolFeeBalance);
-            const newBalance = Math.max(0, parsedFee - previouslyPaid);
+            const previouslyPaid = Math.max(0, oldTotal - (s.schoolFeeBalance || 0));
+            const newBalance = Math.max(0, tuitionFee - previouslyPaid);
+            const newFeedingBalance = s.participatesInFeeding !== false ? feedingFee : 0;
             return {
               ...s,
-              totalBilledSchoolFee: parsedFee,
+              totalBilledSchoolFee: tuitionFee,
               schoolFeeBalance: newBalance,
+              feedingFeeBalance: newFeedingBalance,
             };
           }
           return s;
@@ -845,11 +1036,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       );
     }
 
-    // 4. Send notification
+    // 4. Send system notification
     const notif: SchoolNotification = {
       id: `notif_${Date.now()}`,
-      title: `Tuition Fee Updated — ${className}`,
-      message: `Term Tuition Fee for ${className} set to GH₵ ${parsedFee.toLocaleString()}${
+      title: `Fee Schedule Distributed — ${className}`,
+      message: `Fees for ${className} distributed: School Fees: GH₵ ${tuitionFee.toLocaleString()}, Bus Fee: GH₵ ${busFee.toLocaleString()}, Feeding Fee: GH₵ ${feedingFee.toLocaleString()} (Total Class Fee: GH₵ ${totalFee.toLocaleString()})${
         applyToEnrolledStudents ? ' and updated for enrolled pupils.' : '.'
       }`,
       type: 'payment',
@@ -1065,7 +1256,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       schoolFeeBalance: studentData.customSchoolFee !== undefined && !isNaN(Number(studentData.customSchoolFee))
         ? Number(studentData.customSchoolFee)
         : getClassFee(finalClassName),
-      feedingFeeBalance: studentData.participatesInFeeding ? 600 : 0,
+      feedingFeeBalance: studentData.participatesInFeeding
+        ? (matchedClass?.feedingFee !== undefined && matchedClass.feedingFee > 0 ? matchedClass.feedingFee : 600)
+        : 0,
       attendanceRate: 100,
       lastGradeAverage: 0,
     };
@@ -1362,7 +1555,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ? ['English Language', 'Mathematics', 'Integrated Science', 'Social Studies', 'Religious and Moral Education', 'Ghanaian Language', 'Career Technology', 'Creative Arts & Design', 'Computing', 'French']
       : ['English Language', 'Mathematics', 'Natural Science', 'Our World Our People', 'Religious and Moral Education', 'Ghanaian Language (Twi/Ga)', 'Creative Arts & Design', 'Computing'];
 
-    const termFee = classData.termFee !== undefined ? Number(classData.termFee) : 0;
+    const tuitionFee = classData.tuitionFee !== undefined ? Number(classData.tuitionFee) : 0;
+    const feedingFee = classData.feedingFee !== undefined ? Number(classData.feedingFee) : 0;
+    const busFee = classData.busFee !== undefined ? Number(classData.busFee) : 0;
+    const computedTotal = tuitionFee + feedingFee + busFee;
+    const termFee = classData.termFee !== undefined && classData.termFee > 0 ? Number(classData.termFee) : computedTotal;
 
     const newClass: ClassRoom = {
       id: newId,
@@ -1376,6 +1573,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       roomNumber: classData.roomNumber || (stage === 'Kindergarten' ? 'KG Department - Room 1' : 'Block B - Room 101'),
       averageAttendance: 100,
       subjects: classData.subjects && classData.subjects.length > 0 ? classData.subjects : defaultSubjects,
+      tuitionFee,
+      feedingFee,
+      busFee,
       termFee,
     };
 
@@ -1482,7 +1682,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setClasses((prevClasses) =>
       prevClasses.map((c) => (c.id === classId ? { ...c, ...updates } : c))
     );
-    if (updates.termFee !== undefined && !isNaN(Number(updates.termFee))) {
+    if (updates.tuitionFee !== undefined || updates.feedingFee !== undefined || updates.busFee !== undefined) {
+      updateClassFee(
+        classId,
+        {
+          tuitionFee: updates.tuitionFee ?? 0,
+          feedingFee: updates.feedingFee ?? 0,
+          busFee: updates.busFee ?? 0,
+        },
+        applyFeeToEnrolled
+      );
+    } else if (updates.termFee !== undefined && !isNaN(Number(updates.termFee))) {
       updateClassFee(classId, Number(updates.termFee), applyFeeToEnrolled);
     }
   };
@@ -2191,6 +2401,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addFeeStructureItem,
         deleteFeeStructureItem,
         getClassFee,
+        getClassFeeBreakdown,
         updateClassFee,
         payments,
         deletePayment,
@@ -2240,6 +2451,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         seedStandardGhanaianClasses,
         isAddClassOpen,
         setIsAddClassOpen,
+        isSetClassFeesOpen,
+        setIsSetClassFeesOpen,
+        selectedClassForFeeConfig,
+        setSelectedClassForFeeConfig,
+        openSetClassFees,
         isAddTeacherOpen,
         setIsAddTeacherOpen,
         isAddTransportOpen,

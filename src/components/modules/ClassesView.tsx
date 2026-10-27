@@ -16,12 +16,14 @@ import {
   UserPlus,
   GraduationCap,
   Trash2,
+  Coins,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { ClassRoom, AcademicStage } from '../../types';
 import { ManageClassModal } from '../modals/ManageClassModal';
+import { formatCurrency } from '../../utils/formatters';
 
 export const ClassesView: React.FC = () => {
   const {
@@ -32,6 +34,8 @@ export const ClassesView: React.FC = () => {
     setIsAddStudentOpen,
     setCurrentNav,
     setIsAddClassOpen,
+    openSetClassFees,
+    getClassFeeBreakdown,
     teachers,
     deleteClass,
     assignTeacherToClass,
@@ -121,6 +125,14 @@ export const ClassesView: React.FC = () => {
               Seed Standard Classes
             </Button>
           )}
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Coins}
+            onClick={() => openSetClassFees()}
+          >
+            Configure Class Fees
+          </Button>
           <Button
             size="sm"
             variant="secondary"
@@ -360,6 +372,7 @@ export const ClassesView: React.FC = () => {
           const isEditingTeacher = editingTeacherClassId === cls.id;
           const isUnassigned =
             !cls.classTeacherName || cls.classTeacherName === 'Unassigned';
+          const clsBreakdown = getClassFeeBreakdown(cls.id);
 
           // Dynamically compute students assigned to this class
           const classStudents = students.filter(
@@ -514,6 +527,30 @@ export const ClassesView: React.FC = () => {
                     <span className="font-semibold text-emerald-700">
                       {cls.averageAttendance}%
                     </span>
+                  </div>
+
+                  {/* Distributed Fee Schedule Summary */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-slate-500 block text-[10px] uppercase font-semibold">
+                        Term Fee Total:
+                      </span>
+                      <span className="font-bold text-slate-900 font-mono text-xs">
+                        {clsBreakdown.totalFee > 0 ? (
+                          <span className="text-emerald-700">{formatCurrency(clsBreakdown.totalFee)}</span>
+                        ) : (
+                          <span className="text-amber-600 font-normal italic">Not Set</span>
+                        )}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => openSetClassFees(cls)}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-md transition-colors cursor-pointer"
+                    >
+                      <Coins className="w-3 h-3" />
+                      <span>{clsBreakdown.totalFee > 0 ? 'Edit Fees' : 'Set Fees'}</span>
+                    </button>
                   </div>
                 </div>
 

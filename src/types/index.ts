@@ -112,6 +112,9 @@ export interface ClassRoom {
   averageAttendance: number;
   subjects: string[];
   termFee?: number;
+  tuitionFee?: number; // Base School / Tuition Fee
+  feedingFee?: number; // Term Feeding Fee
+  busFee?: number;     // Term Bus / Transport Fee
 }
 
 export interface AttendanceRecord {

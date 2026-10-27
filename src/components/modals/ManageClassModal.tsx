@@ -63,12 +63,14 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
   onClose,
   classRoom,
 }) => {
-  const { teachers, updateClass, deleteClass, assignTeacherToClass, setCurrentNav, setSelectedClassFilter } = useApp();
+  const { teachers, updateClass, deleteClass, assignTeacherToClass, setCurrentNav, setSelectedClassFilter, openSetClassFees } = useApp();
 
   const [name, setName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [capacity, setCapacity] = useState(40);
-  const [termFee, setTermFee] = useState<number>(0);
+  const [tuitionFee, setTuitionFee] = useState<number>(0);
+  const [busFee, setBusFee] = useState<number>(0);
+  const [feedingFee, setFeedingFee] = useState<number>(0);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [subjects, setSubjects] = useState<string[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -78,7 +80,9 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
       setName(classRoom.name);
       setRoomNumber(classRoom.roomNumber);
       setCapacity(classRoom.capacity);
-      setTermFee(classRoom.termFee ?? 0);
+      setTuitionFee(classRoom.tuitionFee ?? classRoom.termFee ?? 0);
+      setBusFee(classRoom.busFee ?? 0);
+      setFeedingFee(classRoom.feedingFee ?? 0);
       setSelectedTeacherId(classRoom.classTeacherId || '');
       setSubjects(classRoom.subjects || []);
       setShowDeleteConfirm(false);
@@ -99,13 +103,17 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
     e.preventDefault();
     if (!name.trim()) return;
 
+    const totalFee = (Number(tuitionFee) || 0) + (Number(busFee) || 0) + (Number(feedingFee) || 0);
     // Update class room details
     updateClass(classRoom.id, {
       name: name.trim(),
       roomNumber: roomNumber.trim() || classRoom.roomNumber,
       capacity: Number(capacity) || classRoom.capacity,
       subjects: subjects.length > 0 ? subjects : classRoom.subjects,
-      termFee: Number(termFee) || 0,
+      tuitionFee: Number(tuitionFee) || 0,
+      busFee: Number(busFee) || 0,
+      feedingFee: Number(feedingFee) || 0,
+      termFee: totalFee,
     });
 
     // If teacher assignment changed
@@ -258,20 +266,94 @@ export const ManageClassModal: React.FC<ManageClassModalProps> = ({
             />
           </div>
 
-          <div>
-            <label className="block text-slate-700 font-semibold mb-1 flex items-center justify-between">
-              <span>Term Tuition (GH₵)</span>
-              <span className="text-[10px] text-emerald-600 font-bold">Admin Set</span>
-            </label>
-            <input
-              type="number"
-              min="0"
-              step="50"
-              value={termFee === 0 ? '' : termFee}
-              onChange={(e) => setTermFee(e.target.value === '' ? 0 : Number(e.target.value))}
-              placeholder="0 (Not Set)"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white font-semibold text-emerald-700"
-            />
+          <div className="sm:col-span-3 pt-2 border-t border-slate-200">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-slate-800 font-bold text-xs">
+                Term Fee Breakdown & Distribution (GH₵)
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  openSetClassFees(classRoom);
+                }}
+                className="text-[11px] text-emerald-700 hover:text-emerald-900 font-bold hover:underline cursor-pointer"
+              >
+                Open Full Fee Config Form →
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="p-2.5 bg-blue-50/60 rounded-lg border border-blue-100">
+                <label className="block text-[11px] font-bold text-blue-900 mb-1">
+                  School Fees (Tuition)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-2.5 top-1.5 text-[11px] font-bold text-slate-400">
+                    GH₵
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="50"
+                    value={tuitionFee === 0 ? '' : tuitionFee}
+                    onChange={(e) => setTuitionFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                    placeholder="0"
+                    className="w-full pl-9 pr-2 py-1 border border-slate-200 rounded text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-amber-50/60 rounded-lg border border-amber-100">
+                <label className="block text-[11px] font-bold text-amber-900 mb-1">
+                  Bus Fee (Transport)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-2.5 top-1.5 text-[11px] font-bold text-slate-400">
+                    GH₵
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="20"
+                    value={busFee === 0 ? '' : busFee}
+                    onChange={(e) => setBusFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                    placeholder="0"
+                    className="w-full pl-9 pr-2 py-1 border border-slate-200 rounded text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-emerald-50/60 rounded-lg border border-emerald-100">
+                <label className="block text-[11px] font-bold text-emerald-900 mb-1">
+                  Feeding Fees
+                </label>
+                <div className="relative">
+                  <span className="absolute left-2.5 top-1.5 text-[11px] font-bold text-slate-400">
+                    GH₵
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="20"
+                    value={feedingFee === 0 ? '' : feedingFee}
+                    onChange={(e) => setFeedingFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                    placeholder="0"
+                    className="w-full pl-9 pr-2 py-1 border border-slate-200 rounded text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Auto Sum */}
+            <div className="mt-2.5 p-2 bg-slate-900 text-white rounded-lg flex items-center justify-between text-xs">
+              <span className="text-slate-300 text-[11px]">
+                Total Class Fee (Auto-Calculated):
+              </span>
+              <span className="font-extrabold text-emerald-400 font-mono">
+                GH₵ {((Number(tuitionFee) || 0) + (Number(busFee) || 0) + (Number(feedingFee) || 0)).toLocaleString()}
+              </span>
+            </div>
           </div>
         </div>
 

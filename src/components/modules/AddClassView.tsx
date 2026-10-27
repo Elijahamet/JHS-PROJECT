@@ -63,14 +63,31 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
   const capacity = classDraft.capacity;
   const selectedTeacherId = classDraft.selectedTeacherId;
   const selectedSubjects = classDraft.selectedSubjects;
-  const termFee = classDraft.termFee ?? 0;
+  const tuitionFee = classDraft.tuitionFee ?? 0;
+  const busFee = classDraft.busFee ?? 0;
+  const feedingFee = classDraft.feedingFee ?? 0;
+  const totalTermFee = (Number(tuitionFee) || 0) + (Number(busFee) || 0) + (Number(feedingFee) || 0);
 
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setRoomNumber = (val: string) => setClassDraft((prev) => ({ ...prev, roomNumber: val }));
   const setCapacity = (val: number) => setClassDraft((prev) => ({ ...prev, capacity: val }));
-  const setTermFee = (val: number) => setClassDraft((prev) => ({ ...prev, termFee: val }));
+  const setTuitionFee = (val: number) => setClassDraft((prev) => ({
+    ...prev,
+    tuitionFee: val,
+    termFee: val + (prev.busFee || 0) + (prev.feedingFee || 0),
+  }));
+  const setBusFee = (val: number) => setClassDraft((prev) => ({
+    ...prev,
+    busFee: val,
+    termFee: (prev.tuitionFee || 0) + val + (prev.feedingFee || 0),
+  }));
+  const setFeedingFee = (val: number) => setClassDraft((prev) => ({
+    ...prev,
+    feedingFee: val,
+    termFee: (prev.tuitionFee || 0) + (prev.busFee || 0) + val,
+  }));
   const setSelectedTeacherId = (val: string) => setClassDraft((prev) => ({ ...prev, selectedTeacherId: val }));
 
   const handleStageChange = (newStage: AcademicStage) => {
@@ -146,7 +163,10 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
           roomNumber: roomNumber.trim() || `R-${Math.floor(10 + Math.random() * 89)}`,
           capacity: Number(capacity) || 35,
           subjects: selectedSubjects,
-          termFee: Number(termFee) || 0,
+          tuitionFee: Number(tuitionFee) || 0,
+          busFee: Number(busFee) || 0,
+          feedingFee: Number(feedingFee) || 0,
+          termFee: totalTermFee,
         },
         selectedTeacherId || undefined
       );
@@ -337,25 +357,96 @@ export const AddClassView: React.FC<AddClassViewProps> = ({ onBack }) => {
                 ))}
               </select>
             </div>
-            <div className="sm:col-span-2">
-              <label className="block text-slate-700 font-semibold mb-1.5 flex items-center justify-between">
-                <span>Term Tuition Fee (GH₵)</span>
+            <div className="sm:col-span-2 pt-2 border-t border-slate-100">
+              <label className="block text-slate-800 font-bold mb-1 flex items-center justify-between">
+                <span>Fee Distribution & Pricing (GH₵)</span>
                 <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                  Manual Admin Pricing
+                  Auto-Summed Total
                 </span>
               </label>
-              <input
-                type="number"
-                min="0"
-                step="50"
-                value={termFee === 0 ? '' : termFee}
-                onChange={(e) => setTermFee(e.target.value === '' ? 0 : Number(e.target.value))}
-                placeholder="Leave blank (GH₵ 0) or enter custom fee"
-                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all text-xs bg-slate-50/50 hover:bg-white font-semibold text-slate-900"
-              />
-              <p className="text-[10px] text-slate-500 mt-1">
-                Admin sets base school fees per term for this class. Automatic fee assignment is disabled. If left at 0, admin can set it anytime under School Fees.
+              <p className="text-[11px] text-slate-500 mb-3">
+                Distribute class charges into School Fees, Bus Fee, and Feeding Fees. The total is calculated automatically.
               </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-100 space-y-1">
+                  <label className="block text-[11px] font-bold text-blue-900">
+                    School Fees (Tuition)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-2 text-[11px] font-bold text-slate-400">
+                      GH₵
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="50"
+                      value={tuitionFee === 0 ? '' : tuitionFee}
+                      onChange={(e) => setTuitionFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                      placeholder="0"
+                      className="w-full pl-9 pr-2.5 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100 space-y-1">
+                  <label className="block text-[11px] font-bold text-amber-900">
+                    Bus Fee (Transport)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-2 text-[11px] font-bold text-slate-400">
+                      GH₵
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="20"
+                      value={busFee === 0 ? '' : busFee}
+                      onChange={(e) => setBusFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                      placeholder="0"
+                      className="w-full pl-9 pr-2.5 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 space-y-1">
+                  <label className="block text-[11px] font-bold text-emerald-900">
+                    Feeding Fees
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-2 text-[11px] font-bold text-slate-400">
+                      GH₵
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="20"
+                      value={feedingFee === 0 ? '' : feedingFee}
+                      onChange={(e) => setFeedingFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                      placeholder="0"
+                      className="w-full pl-9 pr-2.5 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Auto-Calculated Total Card */}
+              <div className="mt-3 p-3 bg-slate-900 text-white rounded-xl flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                    Calculated Total Class Term Fee
+                  </span>
+                  <span className="text-[11px] text-slate-300">
+                    Sum of Tuition (GH₵ {Number(tuitionFee) || 0}) + Bus (GH₵ {Number(busFee) || 0}) + Feeding (GH₵ {Number(feedingFee) || 0})
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-base font-extrabold text-emerald-400 font-mono">
+                    GH₵ {totalTermFee.toLocaleString()}
+                  </span>
+                  <span className="text-[10px] text-slate-400 block">per pupil</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

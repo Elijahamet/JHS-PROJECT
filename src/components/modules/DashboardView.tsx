@@ -14,6 +14,7 @@ import {
   AlertCircle,
   FileCheck2,
   Bus,
+  Coins,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../common/StatCard';
@@ -31,6 +32,7 @@ export const DashboardView: React.FC = () => {
     attendance,
     setIsAddStudentOpen,
     setIsAddClassOpen,
+    openSetClassFees,
     setIsAddTeacherOpen,
     setIsAddTransportOpen,
     setIsRecordPaymentOpen,
@@ -124,6 +126,14 @@ export const DashboardView: React.FC = () => {
             onClick={() => setIsAddTransportOpen(true)}
           >
             Fleet / Transport
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            icon={Coins}
+            onClick={() => openSetClassFees()}
+          >
+            Configure Class Fees
           </Button>
           <Button
             size="sm"
@@ -269,13 +279,25 @@ export const DashboardView: React.FC = () => {
                 Strict separation between Tuition/School Fees & Feeding Programme
               </p>
             </div>
-            <button
-              onClick={() => setCurrentNav('payments')}
-              className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1"
-            >
-              <span>View Ledger</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => openSetClassFees()}
+                className="text-xs text-emerald-700 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Coins className="w-3.5 h-3.5" />
+                <span>Configure Fees</span>
+              </button>
+              <span className="text-slate-300">|</span>
+              <button
+                type="button"
+                onClick={() => setCurrentNav('payments')}
+                className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>View Ledger</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
