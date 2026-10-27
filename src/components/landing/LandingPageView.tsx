@@ -554,34 +554,6 @@ export const LandingPageView: React.FC = () => {
             </div>
 
           </div>
-
-          {/* Interactive Reassurance Banner */}
-          <div className="mt-14 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#0B2545] via-slate-900 to-[#0B2545] text-white shadow-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            <div className="absolute right-0 top-0 w-80 h-full bg-blue-500/10 blur-2xl pointer-events-none" />
-            <div className="space-y-1.5 text-center md:text-left relative z-10">
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                100% GES & NaCCA Compliant
-              </div>
-              <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-                Ready to experience SchoolOS in real-time?
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-xl font-normal">
-                Explore live pupil records, fee registers, and terminal report card generation with real Ghanaian school data.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0 relative z-10">
-              <button
-                type="button"
-                onClick={() => handleLaunchRoleDemo('school_admin')}
-                className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition-all hover:scale-105 flex items-center gap-2 cursor-pointer"
-              >
-                <span>Launch Interactive Demo</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
         </div>
       </section>
 
