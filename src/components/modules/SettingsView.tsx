@@ -6,15 +6,17 @@ import {
   Save,
   CheckCircle2,
   Lock,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 
 export const SettingsView: React.FC = () => {
-  const { currentSchool, currentUser, setCurrentSchool } = useApp();
+  const { currentSchool, currentUser, setCurrentSchool, resetAllDataToCleanSlate } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'school' | 'roles' | 'security'>('school');
+  const [activeTab, setActiveTab] = useState<'school' | 'roles' | 'security' | 'data'>('school');
   const [isSaved, setIsSaved] = useState(false);
 
   const [schoolData, setSchoolData] = useState({
@@ -118,6 +120,16 @@ export const SettingsView: React.FC = () => {
           }`}
         >
           User & Security
+        </button>
+        <button
+          onClick={() => setActiveTab('data')}
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+            activeTab === 'data'
+              ? 'bg-slate-900 text-white font-bold'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Data & Storage
         </button>
       </div>
 
@@ -344,6 +356,48 @@ export const SettingsView: React.FC = () => {
             <Button size="sm" variant="outline" icon={Lock} onClick={() => alert('Password updated')}>
               Change Password
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: DATA & STORAGE MANAGEMENT */}
+      {activeTab === 'data' && (
+        <div className="bg-white border border-slate-200/80 rounded-xl p-6 shadow-2xs space-y-6 text-xs">
+          <div>
+            <h3 className="font-bold text-slate-900 mb-1">Local Storage & Cache Management</h3>
+            <p className="text-slate-500 text-[11px]">
+              Manage offline browser storage, reset cached records, and restore the platform to a clean slate.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl border border-rose-200 bg-rose-50/50 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="font-bold text-rose-950">Clear All Stored Records (Clean Slate)</h4>
+                <p className="text-slate-600 leading-relaxed text-[11px]">
+                  This action permanently purges all cached students, teachers, classes, payments, assessments, announcements, and local messages from your browser storage and restores SchoolOS to a completely fresh initial state.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex items-center gap-3">
+              <Button
+                size="sm"
+                variant="danger"
+                icon={Trash2}
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to clear all data and reset to a clean slate? This action cannot be undone.')) {
+                    resetAllDataToCleanSlate();
+                    alert('All data has been cleared and reset to clean slate.');
+                  }
+                }}
+              >
+                Clear All Data & Reset Slate
+              </Button>
+            </div>
           </div>
         </div>
       )}

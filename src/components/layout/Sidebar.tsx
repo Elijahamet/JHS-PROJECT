@@ -64,6 +64,8 @@ export const Sidebar: React.FC = () => {
     setIsAddClassOpen,
     isRecordPaymentOpen,
     setIsRecordPaymentOpen,
+    notifications,
+    chatMessages,
   } = useApp();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -133,7 +135,7 @@ export const Sidebar: React.FC = () => {
           id: 'communications',
           label: 'Chat & Parent Alerts',
           icon: MessageSquare,
-          badge: 2,
+          badge: chatMessages.length > 0 ? chatMessages.length : undefined,
           badgeColor: 'bg-emerald-500',
           color: 'text-cyan-400',
           activeGradient: 'from-cyan-600 to-blue-600',
@@ -223,7 +225,7 @@ export const Sidebar: React.FC = () => {
           id: 'notifications',
           label: 'Notifications',
           icon: Bell,
-          badge: 3,
+          badge: notifications.filter((n) => !n.isRead).length > 0 ? notifications.filter((n) => !n.isRead).length : undefined,
           badgeColor: 'bg-rose-500',
           color: 'text-rose-400',
           activeGradient: 'from-rose-600 to-pink-600',

@@ -1438,7 +1438,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                                     Awaiting Admin Inspection
                                   </span>
                                   <p className="text-[11px] text-amber-700 italic">
-                                    Under review by Headmistress Mrs. Cynthia Arthur
+                                    Under review by School Administration
                                   </p>
                                 </div>
                               )}
@@ -1453,7 +1453,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                                     &ldquo;{report.headteacherRemarks}&rdquo;
                                   </p>
                                   <span className="text-[10px] text-emerald-700 font-semibold block">
-                                    Approved by {report.inspectedBy || 'Mrs. Cynthia Arthur'} ({report.inspectedAt})
+                                    Approved by {report.inspectedBy || 'Headteacher'} ({report.inspectedAt})
                                   </span>
                                 </div>
                               )}
@@ -1716,8 +1716,8 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
             </div>
           </div>
           <PortalChatView
-            partnerName="Mrs. Cynthia Arthur"
-            partnerRole="School Headmistress & Administration"
+            partnerName="School Administration"
+            partnerRole="School Administration Desk"
             partnerSubtitle="Direct executive line • Headteacher Desk"
           />
         </div>
@@ -1806,7 +1806,7 @@ export const TeacherPortalView: React.FC<TeacherPortalProps> = ({ tab = 'cockpit
                 <div>
                   <span className="font-bold block text-xs">Official Administrative Clearance Verified</span>
                   <p className="text-[11px] text-emerald-700 mt-0.5">
-                    Inspected & digitally endorsed by <strong>{dispatchModalReport.inspectedBy || 'Mrs. Cynthia Arthur (Headmistress)'}</strong> on {dispatchModalReport.inspectedAt || 'Recently'}.
+                    Inspected & digitally endorsed by <strong>{dispatchModalReport.inspectedBy || 'Headteacher'}</strong> on {dispatchModalReport.inspectedAt || 'Recently'}.
                   </p>
                 </div>
               </div>

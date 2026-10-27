@@ -52,7 +52,7 @@ export const Header: React.FC = () => {
   const getRoleLabel = () => {
     switch (currentUser.role) {
       case 'teacher':
-        return 'Class Teacher (JHS 2A)';
+        return 'Class Teacher';
       case 'accountant':
         return 'Chief Accountant / Bursar';
       case 'parent':

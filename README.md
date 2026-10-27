@@ -101,7 +101,7 @@ JHS-PROJECT/
 │   │   ├── modals/        # AddStudentModal, RecordPaymentModal, ReceiptModal, etc.
 │   │   └── modules/       # Full view modules (Dashboard, Fees, Attendance, Results, Portals)
 │   ├── context/           # AppContext state store (collections, auth, current view)
-│   ├── data/              # Rich mock data tailored to Ghanaian Basic & JHS curriculum
+│   ├── data/              # Clean initial schemas and models for Ghanaian Basic & JHS curriculum
 │   ├── types/             # Comprehensive TypeScript data interfaces
 │   ├── utils/             # Currency formatters (GHS) and date helpers
 │   ├── App.tsx            # View router & layout orchestrator

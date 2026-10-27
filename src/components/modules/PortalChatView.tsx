@@ -22,8 +22,8 @@ interface PortalChatViewProps {
 }
 
 export const PortalChatView: React.FC<PortalChatViewProps> = ({
-  partnerName = 'Mrs. Cynthia Arthur',
-  partnerRole = 'School Headmistress & Administration',
+  partnerName = 'School Administration',
+  partnerRole = 'School Administration Desk',
   partnerSubtitle = 'Direct line to School Executive Office',
 }) => {
   const {

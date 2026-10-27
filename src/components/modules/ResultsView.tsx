@@ -390,10 +390,10 @@ export const ResultsView: React.FC = () => {
             <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div>
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Terminal Report Cards Roster • Form Class: JHS 2A
+                  Terminal Report Cards Inspection Desk
                 </h3>
                 <p className="text-[11px] text-slate-500">
-                  Form Master: Mr. Emmanuel Darko • Headmistress: Mrs. Cynthia Arthur
+                  Review student continuous assessment grades, teacher remarks, and administrative endorsements.
                 </p>
               </div>
               <span className="text-xs font-semibold text-slate-600">
@@ -886,7 +886,7 @@ export const ResultsView: React.FC = () => {
                   &ldquo;{selectedReportForInspect.classTeacherRemarks}&rdquo;
                 </p>
                 <span className="text-[10px] text-slate-500 font-semibold block pt-0.5">
-                  Signed: {selectedReportForInspect.classTeacherName || 'Mr. Emmanuel Darko (Form Master)'}
+                  Signed: {selectedReportForInspect.classTeacherName || 'Form Master'}
                 </span>
               </div>
 

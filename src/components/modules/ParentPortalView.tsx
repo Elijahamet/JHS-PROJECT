@@ -370,10 +370,10 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                       <span className="text-xs text-slate-300">• Verified by Administration</span>
                     </div>
                     <h3 className="text-base font-bold text-white mt-0.5">
-                      Inspected & Approved by Headmistress {childReport.inspectedBy || 'Mrs. Cynthia Arthur'}
+                      Inspected & Approved by {childReport.inspectedBy || 'Headteacher'}
                     </h3>
                     <p className="text-[11px] text-emerald-200">
-                      Dispatched by {childReport.sentByTeacher || 'Mr. Emmanuel Darko (Form Master)'} on {childReport.sentAt || 'Recently'} via {childReport.sentChannels?.join(', ') || 'Portal & SMS'}.
+                      Dispatched by {childReport.sentByTeacher || 'Form Master'} on {childReport.sentAt || 'Recently'} via {childReport.sentChannels?.join(', ') || 'Portal & SMS'}.
                     </p>
                   </div>
                 </div>
@@ -402,7 +402,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     &ldquo;{childReport.teacherNoteToParent}&rdquo;
                   </p>
                   <span className="text-[10px] text-slate-500 block pt-0.5">
-                    — {childReport.sentByTeacher || 'Mr. Emmanuel Darko (Form Master)'}
+                    — {childReport.sentByTeacher || 'Form Master'}
                   </span>
                 </div>
               )}
@@ -479,7 +479,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     &ldquo;{childReport.classTeacherRemarks}&rdquo;
                   </p>
                   <p className="text-[11px] text-slate-500 font-medium pt-1">
-                    — {childReport.classTeacherName || 'Mr. Emmanuel Darko (Form Master)'}
+                    — {childReport.classTeacherName || 'Form Master'}
                   </p>
                 </div>
 
@@ -497,7 +497,7 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     &ldquo;{childReport.headteacherRemarks}&rdquo;
                   </p>
                   <p className="text-[11px] text-emerald-800 font-bold pt-1">
-                    ✓ {childReport.inspectedBy || 'Mrs. Cynthia Arthur (Headmistress)'} • {childReport.inspectedAt || 'Endorsed'}
+                    ✓ {childReport.inspectedBy || 'Headteacher'} • {childReport.inspectedAt || 'Endorsed'}
                   </p>
                 </div>
               </div>
@@ -605,11 +605,11 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
                     Official Endorsement Protocol Active
                   </h4>
                   <p className="text-[11px] leading-relaxed">
-                    Under school governance, terminal report cards remain confidential until they have been officially inspected by the Headmistress (Mrs. Cynthia Arthur) and subsequently dispatched by the Form Teacher (Mr. Emmanuel Darko) directly to your parent account.
+                    Under school governance, terminal report cards remain confidential until they have been officially inspected by the Headteacher and subsequently dispatched by the Form Teacher directly to your parent account.
                   </p>
                   {childReport?.status === 'inspected_approved' && (
                     <p className="text-[11px] font-semibold text-emerald-800 pt-1">
-                      Good news: Headmistress Mrs. Cynthia Arthur has already inspected and endorsed this report card! The form teacher can now release it to your portal and phone at any moment.
+                      Good news: The Headteacher has already inspected and endorsed this report card! The form teacher can now release it to your portal and phone at any moment.
                     </p>
                   )}
                 </div>
@@ -948,13 +948,13 @@ export const ParentPortalView: React.FC<ParentPortalProps> = ({ tab = 'overview'
             <div>
               <h2 className="text-lg font-bold text-slate-900">Direct Parent-to-School Chat</h2>
               <p className="text-xs text-slate-500">
-                Direct inquiry desk with Mrs. Cynthia Arthur (Headmistress). Fully offline enabled with local sync.
+                Direct inquiry desk with School Administration. Fully offline enabled with local sync.
               </p>
             </div>
           </div>
           <PortalChatView
-            partnerName="Mrs. Cynthia Arthur"
-            partnerRole="School Headmistress & Administration"
+            partnerName="School Administration"
+            partnerRole="School Administration Desk"
             partnerSubtitle="Direct communication desk for parents & guardians"
           />
         </div>

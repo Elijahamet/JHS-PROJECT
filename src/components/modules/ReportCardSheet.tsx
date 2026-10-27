@@ -680,7 +680,7 @@ export const ReportCardSheet: React.FC<ReportCardSheetProps> = ({
                     Ghana Education Service • Official School Endorsement & Audit
                   </span>
                   <p className="text-xs font-bold text-slate-900 mt-0.5">
-                    Inspected & Endorsed by {matchingReport.inspectedBy || 'Mrs. Cynthia Arthur (Headmistress)'}
+                    Inspected & Endorsed by {matchingReport.inspectedBy || 'Headteacher'}
                   </p>
                   <p className="text-[11px] text-slate-600 italic mt-0.5">
                     &ldquo;{matchingReport.headteacherRemarks}&rdquo;

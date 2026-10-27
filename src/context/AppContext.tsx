@@ -200,6 +200,8 @@ interface AppContextType {
   updatePaymentDraft: (fields: Partial<PaymentFormData>) => void;
   clearPaymentDraft: () => void;
   hasPaymentDraft: boolean;
+
+  resetAllDataToCleanSlate: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -208,12 +210,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [schools] = useState<School[]>(mockSchoolsList);
   const [currentSchool, setCurrentSchoolState] = useState<School>(() => {
     try {
-      const savedSchool = localStorage.getItem('schoolos_current_school_v8_clean');
+      const savedSchool = localStorage.getItem('schoolos_current_school_v9_clean');
       if (savedSchool) {
         const parsed = JSON.parse(savedSchool);
         if (parsed && parsed.name) return parsed;
       }
-      const savedName = localStorage.getItem('schoolos_registered_school_name_v8_clean');
+      const savedName = localStorage.getItem('schoolos_registered_school_name_v9_clean');
       if (savedName) {
         return {
           ...mockCurrentSchool,
@@ -229,8 +231,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setCurrentSchool = (school: School) => {
     setCurrentSchoolState(school);
     try {
-      localStorage.setItem('schoolos_current_school_v8_clean', JSON.stringify(school));
-      localStorage.setItem('schoolos_registered_school_name_v8_clean', school.name);
+      localStorage.setItem('schoolos_current_school_v9_clean', JSON.stringify(school));
+      localStorage.setItem('schoolos_registered_school_name_v9_clean', school.name);
     } catch (e) {
       console.warn('Failed to persist current school', e);
     }
@@ -238,8 +240,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [currentUser, setCurrentUser] = useState<User>(() => {
     try {
-      const savedSchool = localStorage.getItem('schoolos_current_school_v8_clean');
-      const savedName = localStorage.getItem('schoolos_registered_school_name_v8_clean');
+      const savedSchool = localStorage.getItem('schoolos_current_school_v9_clean');
+      const savedName = localStorage.getItem('schoolos_registered_school_name_v9_clean');
       const activeSchoolName = savedSchool ? JSON.parse(savedSchool)?.name : savedName;
       if (activeSchoolName) {
         return {
@@ -273,7 +275,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith('schoolos_') && !key.endsWith('_v8_clean')) {
+        if (key.startsWith('schoolos_') && !key.endsWith('_v9_clean')) {
           localStorage.removeItem(key);
         }
       });
@@ -285,7 +287,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Data collections
   const [students, setStudents] = useState<Student[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_students_v8_clean');
+      const saved = localStorage.getItem('schoolos_students_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached students', e);
@@ -295,7 +297,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [parents, setParents] = useState<Parent[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_parents_v8_clean');
+      const saved = localStorage.getItem('schoolos_parents_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached parents', e);
@@ -304,7 +306,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
   const [teachers, setTeachers] = useState<Teacher[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_teachers_v8_clean');
+      const saved = localStorage.getItem('schoolos_teachers_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached teachers', e);
@@ -314,7 +316,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [classes, setClasses] = useState<ClassRoom[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_classes_v8_clean');
+      const saved = localStorage.getItem('schoolos_classes_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached classes', e);
@@ -324,7 +326,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_teachers_v8_clean', JSON.stringify(teachers));
+      localStorage.setItem('schoolos_teachers_v9_clean', JSON.stringify(teachers));
     } catch (e) {
       console.warn('Failed to save teachers to storage', e);
     }
@@ -332,7 +334,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_classes_v8_clean', JSON.stringify(classes));
+      localStorage.setItem('schoolos_classes_v9_clean', JSON.stringify(classes));
     } catch (e) {
       console.warn('Failed to save classes to storage', e);
     }
@@ -340,7 +342,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_students_v8_clean', JSON.stringify(students));
+      localStorage.setItem('schoolos_students_v9_clean', JSON.stringify(students));
     } catch (e) {
       console.warn('Failed to save students to storage', e);
     }
@@ -348,7 +350,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_parents_v8_clean', JSON.stringify(parents));
+      localStorage.setItem('schoolos_parents_v9_clean', JSON.stringify(parents));
     } catch (e) {
       console.warn('Failed to save parents to storage', e);
     }
@@ -356,7 +358,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [feeStructures, setFeeStructures] = useState<FeeStructureItem[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_fee_structures_v8_clean');
+      const saved = localStorage.getItem('schoolos_fee_structures_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached fee structures', e);
@@ -366,7 +368,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_fee_structures_v8_clean', JSON.stringify(feeStructures));
+      localStorage.setItem('schoolos_fee_structures_v9_clean', JSON.stringify(feeStructures));
     } catch (e) {
       console.warn('Failed to save fee structures to storage', e);
     }
@@ -374,7 +376,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const [payments, setPayments] = useState<PaymentRecord[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_payments_v8_clean');
+      const saved = localStorage.getItem('schoolos_payments_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached payments', e);
@@ -384,7 +386,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_payments_v8_clean', JSON.stringify(payments));
+      localStorage.setItem('schoolos_payments_v9_clean', JSON.stringify(payments));
     } catch (e) {
       console.warn('Failed to save payments to storage', e);
     }
@@ -413,7 +415,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Chat & Messaging (Offline-First Persistent Storage)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_chat_messages_v8_clean');
+      const saved = localStorage.getItem('schoolos_chat_messages_v9_clean');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -428,7 +430,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Sync to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_chat_messages_v8_clean', JSON.stringify(chatMessages));
+      localStorage.setItem('schoolos_chat_messages_v9_clean', JSON.stringify(chatMessages));
     } catch (e) {
       console.warn('Failed to cache chat messages locally', e);
     }
@@ -437,7 +439,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Listen to cross-tab storage changes
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'schoolos_chat_messages_v8_clean' && e.newValue) {
+      if (e.key === 'schoolos_chat_messages_v9_clean' && e.newValue) {
         try {
           setChatMessages(JSON.parse(e.newValue));
         } catch {}
@@ -482,7 +484,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Terminal Report Cards Inspection & Dispatch Workflow
   const [reportCards, setReportCards] = useState<StudentReportCardRecord[]>(() => {
     try {
-      const saved = localStorage.getItem('schoolos_report_cards_v8_clean');
+      const saved = localStorage.getItem('schoolos_report_cards_v9_clean');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to parse cached report cards', e);
@@ -492,7 +494,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     try {
-      localStorage.setItem('schoolos_report_cards_v8_clean', JSON.stringify(reportCards));
+      localStorage.setItem('schoolos_report_cards_v9_clean', JSON.stringify(reportCards));
     } catch (e) {
       console.warn('Failed to save report cards to storage', e);
     }
@@ -1790,7 +1792,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       recRole = teacher ? 'teacher' : 'parent';
     } else {
       // If teacher or parent is sending to Admin
-      recName = 'Mrs. Cynthia Arthur (Headmistress)';
+      recName = 'School Administration';
       recRole = 'school_admin';
     }
 
@@ -1881,7 +1883,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...notifData,
       id: `pnotif_${Date.now()}`,
       sentAt: 'Just now',
-      sentBy: currentUser.name || 'Mrs. Cynthia Arthur (Headmistress)',
+      sentBy: currentUser.name || 'School Administration',
       status: 'Delivered',
       recipientCount: count,
       deliveredCount: count,
@@ -1960,9 +1962,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             ...r,
             status: 'inspected_approved' as const,
             headteacherRemarks: headteacherRemarks || r.headteacherRemarks,
-            inspectedBy: currentUser.name || 'Mrs. Cynthia Arthur (Headmistress)',
+            inspectedBy: currentUser.name || 'Headteacher',
             inspectedAt: timestamp,
-            inspectionNotes: notes || 'Verified against continuous assessment marks and curriculum requirements. Endorsed by Headmistress.',
+            inspectionNotes: notes || 'Verified against continuous assessment marks and curriculum requirements. Endorsed by Headteacher.',
           };
         }
         return r;
@@ -1972,7 +1974,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const notif: SchoolNotification = {
       id: `notif_${Date.now()}`,
       title: 'Report Card Inspected & Approved',
-      message: `Headmistress Mrs. Cynthia Arthur has inspected and approved the terminal report for ${approvedStudent} (${approvedClass}). The Form Teacher may now dispatch this report to ${approvedParent}.`,
+      message: `Headteacher (${currentUser.name || 'Administration'}) has inspected and approved the terminal report for ${approvedStudent} (${approvedClass}). The Form Teacher may now dispatch this report to ${approvedParent}.`,
       type: 'system',
       timestamp: 'Just now',
       isRead: false,
@@ -2003,7 +2005,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           return {
             ...r,
             status: 'sent_to_parent' as const,
-            sentByTeacher: currentUser.name || 'Mr. Emmanuel Darko (Form Master)',
+            sentByTeacher: currentUser.name || 'Form Master',
             sentAt: timestamp,
             sentChannels: channels,
             teacherNoteToParent: teacherNote || `Official inspected terminal report card dispatched for ${r.studentName}.`,
@@ -2050,8 +2052,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           return {
             ...r,
             status: 'inspected_approved' as const,
-            headteacherRemarks: remarks || r.headteacherRemarks || 'Terminal marks and conduct inspected and approved by Headmistress.',
-            inspectedBy: currentUser.name || 'Mrs. Cynthia Arthur (Headmistress)',
+            headteacherRemarks: remarks || r.headteacherRemarks || 'Terminal marks and conduct inspected and approved by Headmaster/Headmistress.',
+            inspectedBy: currentUser.name || 'Headteacher',
             inspectedAt: timestamp,
             inspectionNotes: 'Bulk administrative inspection completed and signed.',
           };
@@ -2063,7 +2065,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const notif: SchoolNotification = {
       id: `notif_${Date.now()}`,
       title: 'Class Reports Inspected & Endorsed',
-      message: `All terminal reports for ${classId || 'JHS 2A'} have been approved by the Headmistress. Teachers can now send them to parents.`,
+      message: `All terminal reports for ${classId || 'class'} have been approved by the Administration. Teachers can now send them to parents.`,
       type: 'system',
       timestamp: 'Just now',
       isRead: false,
@@ -2082,7 +2084,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           return {
             ...r,
             status: 'sent_to_parent' as const,
-            sentByTeacher: currentUser.name || 'Mr. Emmanuel Darko (Form Master)',
+            sentByTeacher: currentUser.name || 'Form Master',
             sentAt: timestamp,
             sentChannels: channels,
             teacherNoteToParent: 'Official terminal report card dispatched to parent.',
@@ -2114,6 +2116,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setReportCards((prev) =>
       prev.map((r) => (r.id === reportId ? { ...r, ...updates } : r))
     );
+  };
+
+  const resetAllDataToCleanSlate = () => {
+    try {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('schoolos_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith('schoolos_')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    } catch (e) {
+      console.warn('Failed to clear storage', e);
+    }
+    setStudents([]);
+    setParents([]);
+    setTeachers([]);
+    setClasses([]);
+    setFeeStructures([]);
+    setPayments([]);
+    setAssessments([]);
+    setAttendance([]);
+    setBuses([]);
+    setRoutes([]);
+    setApplications([]);
+    setAnnouncements([]);
+    setNotifications([]);
+    setChatMessages([]);
+    setParentNotifications([]);
+    setReportCards([]);
+    setCurrentSchoolState(mockCurrentSchool);
+    setCurrentUser(mockUsers[0]);
   };
 
   return (
@@ -2237,6 +2274,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updatePaymentDraft,
         clearPaymentDraft,
         hasPaymentDraft,
+        resetAllDataToCleanSlate,
       }}
     >
       {children}

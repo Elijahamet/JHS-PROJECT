@@ -23,7 +23,7 @@ export const DEFAULT_STUDENT_FORM: StudentFormData = {
   firstName: '',
   lastName: '',
   gender: 'Male',
-  dateOfBirth: '2012-05-15',
+  dateOfBirth: '',
   className: 'Basic 1',
   classId: '',
   parentId: '',
@@ -110,7 +110,7 @@ export interface PaymentFormData {
 export const DEFAULT_PAYMENT_FORM: PaymentFormData = {
   selectedStudentId: '',
   category: 'School Fees',
-  amount: 500,
+  amount: 0,
   paymentMethod: 'Mobile Money (MoMo)',
   reference: '',
   notes: '',

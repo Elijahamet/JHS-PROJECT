@@ -33,8 +33,8 @@ export const AuthScreens: React.FC = () => {
   const [selectedPortalRole, setSelectedPortalRole] = useState<'school_admin' | 'teacher' | 'accountant' | 'parent'>('school_admin');
 
   // Login Form States
-  const [loginEmail, setLoginEmail] = useState('admin@brightfutureacademy.edu.gh');
-  const [loginPassword, setLoginPassword] = useState('password123');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
@@ -62,31 +62,11 @@ export const AuthScreens: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Auto-fill preset demo credentials per role
+  // Portal role selector
   const handleSelectPortalRole = (role: 'school_admin' | 'teacher' | 'accountant' | 'parent') => {
     setSelectedPortalRole(role);
-    switch (role) {
-      case 'school_admin':
-        setLoginEmail('admin@brightfutureacademy.edu.gh');
-        setLoginPassword('password123');
-        break;
-      case 'teacher':
-        if (teachers.length > 0) {
-          setLoginEmail(teachers[0].staffId || teachers[0].email);
-        } else {
-          setLoginEmail('STF-2025-001');
-        }
-        setLoginPassword('password123');
-        break;
-      case 'accountant':
-        setLoginEmail('bursar@brightfutureacademy.edu.gh');
-        setLoginPassword('password123');
-        break;
-      case 'parent':
-        setLoginEmail('parent@brightfutureacademy.edu.gh');
-        setLoginPassword('password123');
-        break;
-    }
+    setLoginEmail('');
+    setLoginPassword('');
   };
 
   // Handle Login
@@ -176,8 +156,8 @@ export const AuthScreens: React.FC = () => {
       };
       setCurrentSchool(registeredSchool);
       try {
-        localStorage.setItem('schoolos_current_school_v6', JSON.stringify(registeredSchool));
-        localStorage.setItem('schoolos_registered_school_name_v6', schoolName.trim());
+        localStorage.setItem('schoolos_current_school_v9_clean', JSON.stringify(registeredSchool));
+        localStorage.setItem('schoolos_registered_school_name_v9_clean', schoolName.trim());
       } catch (err) {
         console.warn('Failed to save registered school', err);
       }
@@ -445,16 +425,16 @@ export const AuthScreens: React.FC = () => {
                   })}
                 </div>
 
-                {/* Role Switcher Demo Credential Helper Banner */}
+                {/* Role Switcher Helper Banner */}
                 <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600">
                   <div className="flex items-center gap-1.5 truncate">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     <span className="truncate">
-                      Demo loaded for <strong className="text-slate-900">{portalRoles.find((r) => r.id === selectedPortalRole)?.title}</strong>
+                      Signing in as <strong className="text-slate-900">{portalRoles.find((r) => r.id === selectedPortalRole)?.title}</strong>
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
-                    Ready
+                  <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 shrink-0">
+                    Active
                   </span>
                 </div>
               </div>
@@ -473,7 +453,7 @@ export const AuthScreens: React.FC = () => {
                       required
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      placeholder={selectedPortalRole === 'teacher' ? "e.g. STF-2025-001 or teacher email" : "e.g. admin@brightfutureacademy.edu.gh or Staff ID"}
+                      placeholder={selectedPortalRole === 'teacher' ? "Enter Staff ID or teacher email" : "Enter email address or Staff ID"}
                       className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                     />
                   </div>
@@ -882,7 +862,7 @@ export const AuthScreens: React.FC = () => {
                             required
                             value={adminName}
                             onChange={(e) => setAdminName(e.target.value)}
-                            placeholder="e.g. Mrs. Cynthia Arthur"
+                            placeholder="e.g. Headteacher / Administrator"
                             className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0B2545] focus:ring-4 focus:ring-blue-100/50 shadow-xs transition-all font-medium"
                           />
                         </div>
