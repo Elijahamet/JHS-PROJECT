@@ -62,33 +62,28 @@ const SIGN_IN_IMAGES: SlideImage[] = [
 
 const SIGN_UP_IMAGES: SlideImage[] = [
   {
-    src: '/assets/signup-hero.jpg',
-    alt: 'Joyful Ghanaian pupils raising hands and singing in blue school uniforms',
+    src: '/assets/signup_user_1.jpg',
+    alt: 'Joyful school pupils raising hands and cheering enthusiastically in class',
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_headmistress_crisp.jpg',
-    alt: 'Welcoming school principal and leadership in Ghana',
+    src: '/assets/signup_user_2.png',
+    alt: 'Attentive students raising hands to answer questions in classroom',
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_roman_ridge.jpg',
-    alt: 'Vibrant school community and admitted pupils',
+    src: '/assets/signup_user_3.jpg',
+    alt: 'Enthusiastic primary school pupils participating actively at wooden desks',
     objectPosition: 'center',
   },
   {
-    src: '/assets/african_stem_lab.jpg',
-    alt: 'Modern science and academic curriculum in action',
+    src: '/assets/signup_user_4.png',
+    alt: 'Smiling young pupil in school uniform writing notes in classroom',
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_english_class.jpg',
-    alt: 'Classroom enrollment and daily engaged learning',
-    objectPosition: 'center',
-  },
-  {
-    src: '/assets/future_leaders_students.jpg',
-    alt: 'Empowering the next generation of Ghanaian learners',
+    src: '/assets/signup_user_5.png',
+    alt: 'School pupils seated together attentively in classroom',
     objectPosition: 'center',
   },
 ];
@@ -311,10 +306,10 @@ export const AuthScreens: React.FC = () => {
         <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden bg-white">
           {/* Left Hero Column: Authentic Editorial Brand Showcase */}
           <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full min-h-full self-stretch overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
-            {/* Background Image: 6 Rotating Photos changing every 6s */}
+            {/* Background Image: Rotating Photos changing every 5s */}
             <RotatingImage
               images={SIGN_IN_IMAGES}
-              interval={6000}
+              interval={5000}
               className="absolute inset-0 w-full h-full pointer-events-none"
               imageClassName="filter brightness-[0.95] contrast-[1.02]"
               showIndicators={false}
@@ -616,10 +611,10 @@ export const AuthScreens: React.FC = () => {
         <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden bg-white">
           {/* Left Column: Exclusive Institutional Registration Showcase */}
           <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full min-h-full self-stretch overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
-            {/* Background Image: 6 Rotating Photos changing every 6s */}
+            {/* Background Image: User Photos rotating every 5s */}
             <RotatingImage
               images={SIGN_UP_IMAGES}
-              interval={6000}
+              interval={5000}
               className="absolute inset-0 w-full h-full pointer-events-none"
               imageClassName="filter brightness-[0.95] contrast-[1.02]"
               showIndicators={false}
