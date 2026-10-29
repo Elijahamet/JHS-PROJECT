@@ -25,6 +25,106 @@ import {
   MapPin,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { RotatingImage, SlideImage } from '../common/RotatingImage';
+
+const HERO_IMAGES: SlideImage[] = [
+  {
+    src: '/assets/ghana_students_hero.jpg',
+    alt: 'Ghanaian school pupils smiling together in school courtyard',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_roman_ridge.jpg',
+    alt: 'Roman Ridge School Ghanaian elementary students in uniform',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/african_classroom_joy.jpg',
+    alt: 'Joyful students smiling together in modern classroom',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_english_class.jpg',
+    alt: 'Ghanaian school children during English class in Accra',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_jhs_winneba.jpg',
+    alt: 'Ghana Junior High School students at Winneba campus',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/african_stem_lab.jpg',
+    alt: 'Young students engaged in interactive science learning',
+    objectPosition: 'center',
+  },
+];
+
+const SOLUTIONS_IMAGES: SlideImage[] = [
+  {
+    src: '/assets/ghana_pupil_books.jpg',
+    alt: 'Ghanaian primary school pupil smiling with textbooks',
+    objectPosition: 'top',
+  },
+  {
+    src: '/assets/ghana_pupils_learning.jpg',
+    alt: 'Ghanaian pupils actively learning inside classroom',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_shs_class.jpg',
+    alt: 'Senior high school students engaged in coursework',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/african_library_study.jpg',
+    alt: 'Students learning with teacher in modern school library',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/pupils_outdoor_reading.jpg',
+    alt: 'Pupils reading storybooks outdoors in school yard',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/african_class_reading.jpg',
+    alt: 'Students actively reading textbooks in classroom',
+    objectPosition: 'center',
+  },
+];
+
+const CTA_IMAGES: SlideImage[] = [
+  {
+    src: '/assets/ghana_headmistress_students.jpg',
+    alt: 'Headmistress and primary school students together',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/african_graduation_success.jpg',
+    alt: 'Graduation, success, and academic achievement',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/school_assembly_learning.jpg',
+    alt: 'Whole school gathering and learning environment',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/future_leaders_students.jpg',
+    alt: 'Confident future leaders smiling proudly',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_classroom_crisp.jpg',
+    alt: 'Modern bright classroom environment in Ghana',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/pupils_learning_together.jpg',
+    alt: 'Students collaborating happily together',
+    objectPosition: 'center',
+  },
+];
 
 export const LandingPageView: React.FC = () => {
   const { setAuthScreen, setUserRole } = useApp();
@@ -170,16 +270,15 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Hero Visual with Real Pupils */}
+            {/* Right Column: Hero Visual with Real Pupils (6 Rotating Images Every 6s) */}
             <div className="lg:col-span-6 relative w-full flex items-center justify-center">
-              {/* Authentic Photo of Ghanaian Pupils - Sized Elegantly */}
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-100 w-full max-w-sm sm:max-w-md lg:max-w-[440px] relative group">
-                <img
-                  src="/assets/ghana_students_hero.jpg"
-                  alt="Ghanaian school pupils smiling together in school courtyard"
-                  className="w-full h-64 sm:h-76 lg:h-[350px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-              </div>
+              <RotatingImage
+                images={HERO_IMAGES}
+                interval={6000}
+                className="w-full max-w-sm sm:max-w-md lg:max-w-[440px] h-64 sm:h-76 lg:h-[350px] rounded-3xl shadow-xl border border-slate-200/90 bg-slate-100 group"
+                imageClassName="group-hover:scale-105 transition-transform duration-700 ease-out"
+                showIndicators={true}
+              />
             </div>
 
           </div>
@@ -565,15 +664,15 @@ export const LandingPageView: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
-            {/* Left Photo: Ghanaian Pupil in Uniform Holding Books */}
+            {/* Left Photo: Rotating Showcase (6 Rotating Images Every 6s) */}
             <div className="lg:col-span-4 flex justify-center w-full">
-              <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/10 w-full max-w-[280px] sm:max-w-xs group bg-slate-900">
-                <img
-                  src="/assets/ghana_pupil_books.jpg"
-                  alt="Ghanaian primary school pupil smiling with textbooks"
-                  className="w-full h-80 sm:h-96 lg:h-[410px] object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-              </div>
+              <RotatingImage
+                images={SOLUTIONS_IMAGES}
+                interval={6000}
+                className="w-full max-w-[280px] sm:max-w-xs h-80 sm:h-96 lg:h-[410px] rounded-3xl shadow-2xl border border-white/10 bg-slate-900 group"
+                imageClassName="group-hover:scale-105 transition-transform duration-700 ease-out"
+                showIndicators={true}
+              />
             </div>
 
             {/* Center: Details & Feature Checklist */}
@@ -955,15 +1054,15 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Photo Strip & Slogan */}
+            {/* Right Photo Strip & Slogan (6 Rotating Images Every 6s) */}
             <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-6 w-full">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full max-w-xs group">
-                <img
-                  src="/assets/ghana_students_hero.jpg"
-                  alt="Ghanaian school pupils"
-                  className="w-full h-40 object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
+              <RotatingImage
+                images={CTA_IMAGES}
+                interval={6000}
+                className="w-full max-w-xs h-40 rounded-2xl shadow-2xl border border-white/10 group"
+                imageClassName="group-hover:scale-105 transition-transform duration-500"
+                showIndicators={true}
+              />
               <div className="text-left space-y-2.5">
                 <p className="text-lg font-extrabold tracking-tight text-white leading-tight">
                   Better systems.<br />Brighter futures.

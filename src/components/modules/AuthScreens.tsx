@@ -25,6 +25,73 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { School } from '../../types';
+import { RotatingImage, SlideImage } from '../common/RotatingImage';
+
+const SIGN_IN_IMAGES: SlideImage[] = [
+  {
+    src: '/assets/login-hero.jpg',
+    alt: 'Joyful Ghanaian school pupils smiling happily together in classroom',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_teacher_headmistress.jpg',
+    alt: 'Dedicated Ghanaian teacher and school leadership',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_students_hero.jpg',
+    alt: 'Smiling Ghanaian pupils together on school grounds',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/school_computer_lab.jpg',
+    alt: 'Modern digital school campus and technology infrastructure',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_shs_class.jpg',
+    alt: 'Senior high school students in focused study',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/students_collaboration.jpg',
+    alt: 'Educators and learners collaborating together',
+    objectPosition: 'center',
+  },
+];
+
+const SIGN_UP_IMAGES: SlideImage[] = [
+  {
+    src: '/assets/signup-hero.jpg',
+    alt: 'Joyful Ghanaian pupils raising hands and singing in blue school uniforms',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_headmistress_crisp.jpg',
+    alt: 'Welcoming school principal and leadership in Ghana',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_roman_ridge.jpg',
+    alt: 'Vibrant school community and admitted pupils',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/african_stem_lab.jpg',
+    alt: 'Modern science and academic curriculum in action',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/ghana_english_class.jpg',
+    alt: 'Classroom enrollment and daily engaged learning',
+    objectPosition: 'center',
+  },
+  {
+    src: '/assets/future_leaders_students.jpg',
+    alt: 'Empowering the next generation of Ghanaian learners',
+    objectPosition: 'center',
+  },
+];
 
 export const AuthScreens: React.FC = () => {
   const { authScreen, setAuthScreen, setUserRole, setCurrentSchool, setCurrentUser, currentSchool, teachers } = useApp();
@@ -244,11 +311,13 @@ export const AuthScreens: React.FC = () => {
         <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden bg-white">
           {/* Left Hero Column: Authentic Editorial Brand Showcase */}
           <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full min-h-full self-stretch overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
-            {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
-            <img
-              src="/assets/login-hero.jpg"
-              alt="Joyful Ghanaian school pupils smiling happily together in classroom"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
+            {/* Background Image: 6 Rotating Photos changing every 6s */}
+            <RotatingImage
+              images={SIGN_IN_IMAGES}
+              interval={6000}
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              imageClassName="filter brightness-[0.95] contrast-[1.02]"
+              showIndicators={false}
             />
 
             {/* Subtle Aesthetic Gradient Overlays */}
@@ -547,11 +616,13 @@ export const AuthScreens: React.FC = () => {
         <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden bg-white">
           {/* Left Column: Exclusive Institutional Registration Showcase */}
           <div className="relative hidden lg:flex lg:w-1/2 xl:w-5/12 h-full min-h-full self-stretch overflow-hidden bg-[#0B2545] flex-col justify-between p-8 xl:p-10 shrink-0 border-r border-slate-800">
-            {/* Background Image: Crisp, vibrant Ghanaian pupils clearly visible */}
-            <img
-              src="/assets/signup-hero.jpg"
-              alt="Joyful Ghanaian pupils raising hands and singing in blue school uniforms"
-              className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.02] pointer-events-none"
+            {/* Background Image: 6 Rotating Photos changing every 6s */}
+            <RotatingImage
+              images={SIGN_UP_IMAGES}
+              interval={6000}
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              imageClassName="filter brightness-[0.95] contrast-[1.02]"
+              showIndicators={false}
             />
 
             {/* Subtle Aesthetic Gradient Overlays */}
