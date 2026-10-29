@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FormPageLayout } from '../common/FormPageLayout';
 import { useApp } from '../../context/AppContext';
 import { AcademicStage } from '../../types';
-import { School, Sparkles, BookOpen, Layers, Check, AlertCircle } from 'lucide-react';
+import { School, BookOpen, Layers, Check, AlertCircle } from 'lucide-react';
 
 interface AddClassViewProps {
   onBack: () => void;

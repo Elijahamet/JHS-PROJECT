@@ -4,7 +4,6 @@ import { useApp } from '../../context/AppContext';
 import {
   UserPlus,
   Users,
-  Sparkles,
   Check,
   AlertCircle,
   School,
@@ -422,7 +421,7 @@ export const AddAdmissionView: React.FC<AddAdmissionViewProps> = ({ onBack }) =>
 
             {/* Automatic Enrollment Highlight Callout */}
             <div className="flex items-start gap-3 p-3 bg-white/80 rounded-xl border border-indigo-200/60 text-indigo-900">
-              <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+              <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
               <div className="text-[11px] leading-relaxed">
                 <strong className="font-bold text-indigo-950">Automated Class Placement Guarantee:</strong> Upon recording this admission, the student is instantly added to the active class roster for{' '}
                 <span className="font-bold text-indigo-600">{formData.applyingForClass || 'selected class'}</span>, their daily attendance register card is activated, end-of-term terminal report card is initialized, and school fees ledger is generated.

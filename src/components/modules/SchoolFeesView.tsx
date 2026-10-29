@@ -11,7 +11,6 @@ import {
   AlertCircle,
   Coins,
   GraduationCap,
-  Sparkles,
   X,
   School,
 } from 'lucide-react';

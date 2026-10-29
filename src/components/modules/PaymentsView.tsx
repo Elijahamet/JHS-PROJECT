@@ -7,7 +7,6 @@ import {
   Plus,
   Eye,
   CheckCircle2,
-  Sparkles,
   Trash2,
   AlertTriangle,
 } from 'lucide-react';
@@ -93,7 +92,7 @@ export const PaymentsView: React.FC = () => {
         <div className="p-4 bg-gradient-to-r from-amber-50/90 via-orange-50/40 to-amber-50/80 border border-amber-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 shadow-xs animate-fadeIn">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-amber-700" />
+              <AlertTriangle className="w-4 h-4 text-amber-700" />
             </div>
             <div>
               <p className="font-bold text-slate-900">

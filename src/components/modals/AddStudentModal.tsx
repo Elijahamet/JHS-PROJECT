@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { useApp } from '../../context/AppContext';
-import { Users, Sparkles, Check, AlertCircle, GraduationCap, School } from 'lucide-react';
+import { Users, Check, AlertCircle, GraduationCap, School } from 'lucide-react';
 
 export const AddStudentModal: React.FC = () => {
   const {
@@ -356,7 +356,7 @@ export const AddStudentModal: React.FC = () => {
                     </div>
                   </div>
                   <p className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg p-2 font-medium flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span>This class will be automatically created with standard GES curriculum subjects and visible on the Classes & Subjects page.</span>
                   </p>
                 </div>

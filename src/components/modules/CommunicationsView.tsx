@@ -11,7 +11,6 @@ import {
   CheckCheck,
   Paperclip,
   CheckCircle2,
-  Sparkles,
   Smartphone,
   CreditCard,
   FileSpreadsheet,

@@ -10,7 +10,6 @@ import {
   UserPlus,
   ShieldCheck,
   GraduationCap,
-  Sparkles,
   Trash2,
   AlertTriangle,
 } from 'lucide-react';
@@ -318,9 +317,8 @@ export const ParentsListView: React.FC = () => {
                     <div className="mt-3 px-3 py-2 rounded-lg bg-amber-50/80 border border-amber-200/80 flex items-start gap-2 text-xs text-amber-950">
                       <ShieldCheck className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-bold text-[11px] text-amber-950 flex items-center gap-1">
-                          <span>Multi-Ward Sibling Network</span>
-                          <Sparkles className="w-3 h-3 text-amber-600" />
+                        <p className="font-bold text-[11px] text-amber-950">
+                          Multi-Ward Sibling Network
                         </p>
                         <p className="text-[10px] text-amber-800 leading-snug mt-0.5">
                           Parent has {wardCount} students enrolled. System unified account and fee ledger.

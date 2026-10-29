@@ -16,7 +16,6 @@ import {
   AlertCircle,
   Copy,
   Users,
-  Sparkles,
   ArrowRight,
 } from 'lucide-react';
 

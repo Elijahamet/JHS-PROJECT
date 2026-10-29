@@ -13,7 +13,6 @@ import {
   X,
   FileText,
   AlertCircle,
-  Sparkles,
   Users,
   Search,
 } from 'lucide-react';

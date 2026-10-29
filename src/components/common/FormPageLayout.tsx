@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, ChevronRight, Sparkles, LucideIcon } from 'lucide-react';
+import { ArrowLeft, ChevronRight, LucideIcon } from 'lucide-react';
 import { Button } from './Button';
 import { Badge, BadgeVariant } from './Badge';
 
@@ -101,7 +101,6 @@ export const FormPageLayout: React.FC<FormPageLayoutProps> = ({
         <div className="flex items-center gap-2">
           {badgeText && (
             <Badge variant={badgeVariant} size="sm">
-              <Sparkles className="w-3 h-3 mr-1 inline" />
               {badgeText}
             </Badge>
           )}

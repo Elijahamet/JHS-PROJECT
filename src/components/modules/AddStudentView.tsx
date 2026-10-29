@@ -4,7 +4,6 @@ import { useApp } from '../../context/AppContext';
 import {
   GraduationCap,
   Users,
-  Sparkles,
   Check,
   AlertCircle,
   School,
@@ -365,7 +364,7 @@ export const AddStudentView: React.FC<AddStudentViewProps> = ({ onBack }) => {
                     </div>
                   </div>
                   <p className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200/90 rounded-xl p-2.5 font-medium flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>This class will be automatically registered with standard GES curriculum subjects and visible on the Classes & Subjects platform.</span>
                   </p>
                 </div>

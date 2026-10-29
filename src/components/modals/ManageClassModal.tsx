@@ -12,7 +12,6 @@ import {
   Layers,
   Check,
   AlertTriangle,
-  Sparkles,
 } from 'lucide-react';
 
 interface ManageClassModalProps {

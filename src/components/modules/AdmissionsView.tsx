@@ -12,7 +12,6 @@ import {
   Eye,
   UserCheck,
   GraduationCap,
-  Sparkles,
   ExternalLink,
   BookOpen,
 } from 'lucide-react';
@@ -82,7 +81,7 @@ export const AdmissionsView: React.FC = () => {
       <div className="p-4 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5 text-indigo-300" />
+            <UserCheck className="w-5 h-5 text-indigo-300" />
           </div>
           <div>
             <h4 className="font-bold text-sm text-white">

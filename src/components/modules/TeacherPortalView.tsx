@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Award,
-  Sparkles,
   Save,
   Check,
   Search,

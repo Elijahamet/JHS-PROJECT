@@ -4,7 +4,7 @@ import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { useApp } from '../../context/AppContext';
 import { AcademicStage } from '../../types';
-import { School, UserCheck, BookOpen, Layers, Check, Sparkles, AlertCircle } from 'lucide-react';
+import { School, UserCheck, BookOpen, Layers, Check, AlertCircle } from 'lucide-react';
 
 const KINDERGARTEN_SUBJECTS = [
   'Language and Literacy',
@@ -367,7 +367,7 @@ export const AddClassModal: React.FC = () => {
               </div>
 
               <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5 text-[11px] text-indigo-700">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
+                <UserCheck className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
                 <span>
                   {selectedTeacher.fullName} will be officially appointed to manage daily attendance, student remarks, and terminal reports for <strong>{name || 'this new stream'}</strong>.
                 </span>

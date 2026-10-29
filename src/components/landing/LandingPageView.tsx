@@ -20,7 +20,6 @@ import {
   Facebook,
   Youtube,
   TrendingUp,
-  Sparkles,
   Phone,
   Mail,
   MapPin,
@@ -282,7 +281,6 @@ export const LandingPageView: React.FC = () => {
           
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/60 shadow-xs backdrop-blur-xs">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>INTEGRATED SCHOOL MANAGEMENT PLATFORM</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#0B2545] tracking-tight leading-tight">

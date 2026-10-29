@@ -3,7 +3,6 @@ import {
   Upload,
   Camera,
   ScanLine,
-  Sparkles,
   Brain,
   CheckCircle2,
   AlertTriangle,
@@ -505,7 +504,7 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 bg-slate-900 text-white border border-cyan-500/50 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 animate-bounce max-w-md">
-          <Sparkles className="w-5 h-5 text-cyan-400 shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" />
           <span className="text-xs font-semibold leading-relaxed">{toastMessage}</span>
         </div>
       )}
@@ -520,7 +519,7 @@ export const StudentTestDiagnosticView: React.FC<StudentTestDiagnosticViewProps>
           <div className="space-y-2">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400/20 to-orange-400/20 text-amber-300 border border-amber-400/40 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-amber-400" />
+                <ScanLine className="w-3 h-3 text-amber-400" />
                 AI Optical Diagnostic Engine
               </span>
               <span className="text-xs text-indigo-200">
