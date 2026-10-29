@@ -34,28 +34,23 @@ const HERO_IMAGES: SlideImage[] = [
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_roman_ridge.jpg',
-    alt: 'Roman Ridge School Ghanaian elementary students in uniform',
+    src: '/assets/hero_user_1.png',
+    alt: 'Ghanaian school pupils raising hands and participating in classroom',
     objectPosition: 'center',
   },
   {
-    src: '/assets/african_classroom_joy.jpg',
-    alt: 'Joyful students smiling together in modern classroom',
+    src: '/assets/hero_user_2.png',
+    alt: 'Primary school pupils raising hands eagerly in school uniforms',
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_english_class.jpg',
-    alt: 'Ghanaian school children during English class in Accra',
+    src: '/assets/hero_user_3.png',
+    alt: 'Ghanaian elementary school students smiling in neat school uniforms',
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_jhs_winneba.jpg',
-    alt: 'Ghana Junior High School students at Winneba campus',
-    objectPosition: 'center',
-  },
-  {
-    src: '/assets/african_stem_lab.jpg',
-    alt: 'Young students engaged in interactive science learning',
+    src: '/assets/hero_user_4.jpg',
+    alt: 'Joyful school pupils smiling together in vibrant blue sweaters',
     objectPosition: 'center',
   },
 ];
@@ -270,11 +265,11 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Hero Visual with Real Pupils (6 Rotating Images Every 6s) */}
+            {/* Right Column: Hero Visual with Real Pupils (Original + User Photos Rotating Every 5s) */}
             <div className="lg:col-span-6 relative w-full flex items-center justify-center">
               <RotatingImage
                 images={HERO_IMAGES}
-                interval={6000}
+                interval={5000}
                 className="w-full max-w-sm sm:max-w-md lg:max-w-[440px] h-64 sm:h-76 lg:h-[350px] rounded-3xl shadow-xl border border-slate-200/90 bg-slate-100 group"
                 imageClassName="group-hover:scale-105 transition-transform duration-700 ease-out"
                 showIndicators={true}
@@ -664,11 +659,11 @@ export const LandingPageView: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
-            {/* Left Photo: Rotating Showcase (6 Rotating Images Every 6s) */}
+            {/* Left Photo: Rotating Showcase (Rotating Images Every 5s) */}
             <div className="lg:col-span-4 flex justify-center w-full">
               <RotatingImage
                 images={SOLUTIONS_IMAGES}
-                interval={6000}
+                interval={5000}
                 className="w-full max-w-[280px] sm:max-w-xs h-80 sm:h-96 lg:h-[410px] rounded-3xl shadow-2xl border border-white/10 bg-slate-900 group"
                 imageClassName="group-hover:scale-105 transition-transform duration-700 ease-out"
                 showIndicators={true}
@@ -1054,11 +1049,11 @@ export const LandingPageView: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Photo Strip & Slogan (6 Rotating Images Every 6s) */}
+            {/* Right Photo Strip & Slogan (Rotating Images Every 5s) */}
             <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-6 w-full">
               <RotatingImage
                 images={CTA_IMAGES}
-                interval={6000}
+                interval={5000}
                 className="w-full max-w-xs h-40 rounded-2xl shadow-2xl border border-white/10 group"
                 imageClassName="group-hover:scale-105 transition-transform duration-500"
                 showIndicators={true}
