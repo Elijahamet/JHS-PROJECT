@@ -62,28 +62,23 @@ const SOLUTIONS_IMAGES: SlideImage[] = [
     objectPosition: 'top',
   },
   {
-    src: '/assets/ghana_pupils_learning.jpg',
-    alt: 'Ghanaian pupils actively learning inside classroom',
+    src: '/assets/action_user_1.png',
+    alt: 'Pupils in school uniform attentively raising hands in classroom',
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_shs_class.jpg',
-    alt: 'Senior high school students engaged in coursework',
+    src: '/assets/action_user_2.jpg',
+    alt: 'Students with school backpacks gathered together on school grounds',
     objectPosition: 'center',
   },
   {
-    src: '/assets/african_library_study.jpg',
-    alt: 'Students learning with teacher in modern school library',
+    src: '/assets/action_user_3.png',
+    alt: 'Smiling student in blue school uniform writing notes in class',
     objectPosition: 'center',
   },
   {
-    src: '/assets/pupils_outdoor_reading.jpg',
-    alt: 'Pupils reading storybooks outdoors in school yard',
-    objectPosition: 'center',
-  },
-  {
-    src: '/assets/african_class_reading.jpg',
-    alt: 'Students actively reading textbooks in classroom',
+    src: '/assets/action_user_4.png',
+    alt: 'Young school pupil smiling happily while writing in exercise book',
     objectPosition: 'center',
   },
 ];
