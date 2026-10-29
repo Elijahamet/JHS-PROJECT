@@ -142,7 +142,6 @@ export const LandingPageView: React.FC = () => {
             {/* Left Column: Headlines & Call to Actions */}
             <div className="lg:col-span-6 space-y-6 text-left animate-fade-in-up">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-[#2563EB] text-xs font-extrabold tracking-wider uppercase shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
                 <span>SCHOOL MANAGEMENT SOFTWARE</span>
               </div>
 
