@@ -34,8 +34,8 @@ const SIGN_IN_IMAGES: SlideImage[] = [
     objectPosition: 'center',
   },
   {
-    src: '/assets/ghana_teacher_headmistress.jpg',
-    alt: 'Dedicated Ghanaian teacher and school leadership',
+    src: '/assets/ghana_pupil_books.jpg',
+    alt: 'Smiling Ghanaian pupil proudly holding Mathematics and English textbooks on school campus',
     objectPosition: 'center',
   },
   {
