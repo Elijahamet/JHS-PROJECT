@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export interface SlideImage {
   src: string;
@@ -61,7 +62,7 @@ export const RotatingImage: React.FC<RotatingImageProps> = ({
   };
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div className={twMerge('relative overflow-hidden', className)}>
       {images.map((img, idx) => {
         const isActive = idx === currentIndex;
         return (
