@@ -23,6 +23,12 @@ import {
   Phone,
   Mail,
   MapPin,
+  Sparkles,
+  Star,
+  Wifi,
+  Battery,
+  Bell,
+  ArrowUpRight,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { RotatingImage, SlideImage } from '../common/RotatingImage';
@@ -137,148 +143,394 @@ export const LandingPageView: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-[#0B2545] selection:text-white">
       {/* =========================================================================
-          1. HEADER / NAVIGATION
+          1. HEADER / NAVIGATION (Modern Dark Glassmorphism)
           ========================================================================= */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all duration-300">
+      <header className="sticky top-0 z-50 bg-[#07090E]/85 backdrop-blur-md border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Brand Logo */}
+          {/* Brand Logo with Radiant Glowing Emblem */}
           <div
             onClick={() => scrollTo('hero')}
-            className="flex items-center gap-2.5 cursor-pointer select-none group"
+            className="flex items-center gap-3 cursor-pointer select-none group"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#0B2545] flex items-center justify-center text-white shadow-sm group-hover:scale-110 group-hover:rotate-[-4deg] transition-all duration-300">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 via-orange-500 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-orange-500/25 group-hover:scale-105 group-hover:rotate-[-4deg] transition-all duration-300 ring-1 ring-white/20">
               <GraduationCap className="w-5 h-5" />
             </div>
-            <span className="font-extrabold text-2xl text-[#0B2545] tracking-tight group-hover:text-blue-900 transition-colors">
-              SchoolOS
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-black text-2xl text-white tracking-tight group-hover:text-amber-300 transition-colors">
+                SchoolOS
+              </span>
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white/90 border border-white/15 backdrop-blur-xs">
+                Ghana
+              </span>
+            </div>
           </div>
 
-          {/* Navigation Links with Hover Underline Animations */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+          {/* Navigation Links with Warm Underline Glow */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <button
               onClick={() => scrollTo('hero')}
-              className="relative hover:text-[#0B2545] transition-colors py-1 group"
+              className="relative hover:text-white transition-colors py-1 group cursor-pointer"
             >
               <span>Home</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-400 group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('features')}
-              className="relative hover:text-[#0B2545] transition-colors py-1 group"
+              className="relative hover:text-white transition-colors py-1 group cursor-pointer"
             >
               <span>Features</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-400 group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('solutions')}
-              className="relative hover:text-[#0B2545] transition-colors py-1 group"
+              className="relative hover:text-white transition-colors py-1 group cursor-pointer"
             >
               <span>Solutions</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-400 group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('how-it-works')}
-              className="relative hover:text-[#0B2545] transition-colors py-1 group"
+              className="relative hover:text-white transition-colors py-1 group cursor-pointer"
             >
               <span>How It Works</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-400 group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('pricing')}
-              className="relative hover:text-[#0B2545] transition-colors py-1 group"
+              className="relative hover:text-white transition-colors py-1 group cursor-pointer"
             >
               <span>Pricing</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-400 group-hover:w-full transition-all duration-300"></span>
             </button>
             <button
               onClick={() => scrollTo('contact')}
-              className="relative hover:text-[#0B2545] transition-colors py-1 group"
+              className="relative hover:text-white transition-colors py-1 group cursor-pointer"
             >
               <span>Contact</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0B2545] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-400 group-hover:w-full transition-all duration-300"></span>
             </button>
           </nav>
 
-          {/* Action Buttons: Sign In + Sign Up */}
+          {/* Action Buttons: Sign In + Register School ↗ */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setAuthScreen('login')}
-              className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-[#0B2545] hover:bg-slate-50 rounded-xl transition-all"
+              className="px-4 py-2 text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer"
             >
               Sign In
             </button>
             <button
               onClick={() => setAuthScreen('signup')}
-              className="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+              className="relative px-5 py-2.5 text-xs sm:text-sm font-bold text-white rounded-full transition-all duration-200 group overflow-hidden bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 hover:from-red-500 hover:to-amber-400 shadow-md shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 cursor-pointer"
             >
-              Sign Up
+              <span>Register School</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </div>
         </div>
       </header>
 
       {/* =========================================================================
-          2. HERO SECTION WITH FLOATING DASHBOARD & ANIMATIONS
+          2. HERO SECTION: RADIANT SUNSET MESH & SMARTPHONE SHOWCASE
           ========================================================================= */}
-      <section id="hero" className="relative pt-10 pb-20 lg:pt-16 lg:pb-28 overflow-hidden bg-white">
-        {/* Subtle Ambient Glowing Aura in Background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-100/50 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+      <section id="hero" className="relative pt-12 pb-24 lg:pt-16 lg:pb-32 overflow-hidden bg-[#07090E] text-white">
+        {/* Radiant Ambient Atmospheric Gradient Mesh */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+          {/* Deep dark canvas base */}
+          <div className="absolute inset-0 bg-[#07090E]" />
+
+          {/* Fiery radiant aura top-left to center */}
+          <div className="absolute -top-40 -left-32 w-[760px] h-[760px] rounded-full bg-gradient-to-tr from-red-600 via-orange-500 to-amber-400 opacity-90 blur-[130px] animate-pulse-glow" />
+          <div className="absolute top-1/4 left-1/4 w-[540px] h-[540px] rounded-full bg-gradient-to-br from-amber-500 via-rose-600 to-red-700 opacity-60 blur-[150px]" />
+          <div className="absolute top-1/3 right-1/4 w-[480px] h-[480px] rounded-full bg-blue-600/10 opacity-40 blur-[140px]" />
+
+          {/* Right-side vignette fade */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#07090E]/30 to-[#07090E]/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07090E] via-transparent to-transparent" />
+
+          {/* Subtle micro dot texture overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:32px_32px] opacity-25" />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
-            {/* Left Column: Headlines & Call to Actions */}
+            {/* Left Column: Headlines, Action Buttons & Social Proof */}
             <div className="lg:col-span-6 space-y-6 text-left animate-fade-in-up">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-[#2563EB] text-xs font-extrabold tracking-wider uppercase shadow-2xs">
-                <span>SCHOOL MANAGEMENT SOFTWARE</span>
+              {/* Institutional Compliance Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/15 text-white/90 text-xs font-semibold backdrop-blur-md shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="uppercase tracking-wider text-[11px] font-bold">GES & NaCCA Standardized</span>
+                <span className="text-white/40">•</span>
+                <span className="text-amber-300 text-[11px] font-bold">Basic & JHS</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-[#0B2545] tracking-tight leading-[1.12]">
-                The operating system for modern schools.
+              {/* Headline with Paylix-style Mixed Sans & Editorial Italic Serif */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-black text-white tracking-tight leading-[1.08] drop-shadow-lg">
+                Smarter Ways to <br />
+                <span className="font-['Playfair_Display',serif] italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-orange-100 to-white">
+                  Run Modern Schools
+                </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl font-normal">
-                SchoolOS helps private schools manage students, fees, attendance, communication and more — all in one place. Save time, reduce workload and create a better learning experience for everyone.
+              {/* Subcopy tailored to Ghana's basic education */}
+              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl font-normal drop-shadow-sm">
+                Standardized continuous assessment, automated terminal reports, instant MoMo fee reconciliation, and guardian communications effortlessly—all inside one fast, secure platform.
               </p>
 
-              {/* Action Buttons: Sign Up + Explore Features */}
+              {/* Dual Action Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <button
                   onClick={() => setAuthScreen('signup')}
-                  className="px-7 py-3.5 text-sm font-bold text-white bg-[#0B2545] hover:bg-[#071A31] rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center gap-2 group"
+                  className="px-7 py-3.5 text-sm font-bold text-slate-950 bg-white hover:bg-slate-100 rounded-full shadow-xl shadow-orange-500/10 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 group cursor-pointer"
                 >
-                  <span>Sign Up</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                  <span>Start Free Trial</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
+
                 <button
-                  onClick={() => scrollTo('features')}
-                  className="px-7 py-3.5 text-sm font-semibold text-slate-700 hover:text-[#0B2545] bg-white border border-slate-300 rounded-xl hover:bg-slate-50 hover:shadow-sm active:scale-95 transition-all duration-200"
+                  onClick={() => setIsDemoModalOpen(true)}
+                  className="px-6 py-3.5 text-sm font-semibold text-white/90 hover:text-white bg-white/5 hover:bg-white/10 border border-white/15 rounded-full backdrop-blur-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
-                  Explore Features
+                  <span>View Live Demo</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 </button>
               </div>
+
+              {/* Social Proof Badge (Matching Paylix bottom-left badge) */}
+              <div className="pt-4 sm:pt-8 flex items-center">
+                <div className="p-2 sm:p-2.5 pr-4 sm:pr-5 rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 flex items-center gap-3.5 shadow-2xl">
+                  {/* Stacked Avatars */}
+                  <div className="flex -space-x-2.5 overflow-hidden">
+                    <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white/60 object-cover" src="/assets/hero_user_1.png" alt="Student" />
+                    <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white/60 object-cover" src="/assets/hero_user_2.png" alt="Student" />
+                    <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white/60 object-cover" src="/assets/action_user_3.png" alt="Student" />
+                    <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white/60 object-cover" src="/assets/ghana_headmistress_students.jpg" alt="Educator" />
+                  </div>
+                  {/* Rating & Text */}
+                  <div className="text-left space-y-0.5">
+                    <div className="flex items-center gap-1 text-amber-400 text-xs">
+                      <span>★★★★★</span>
+                      <span className="text-white/60 text-[10px] ml-0.5 font-bold">5.0</span>
+                    </div>
+                    <p className="text-[11px] sm:text-xs font-medium text-slate-300">
+                      Our trusted <span className="font-bold text-white">150+ Schools</span> Across Ghana
+                    </p>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-            {/* Right Column: Hero Visual with Real Pupils (Original + User Photos Rotating Every 5s) */}
-            <div className="lg:col-span-6 relative w-full flex items-center justify-center">
-              <RotatingImage
-                images={HERO_IMAGES}
-                interval={5000}
-                className="w-full max-w-sm sm:max-w-md lg:max-w-[440px] h-64 sm:h-76 lg:h-[350px] rounded-3xl shadow-xl border border-slate-200/90 bg-slate-100 group"
-                imageClassName="group-hover:scale-105 transition-transform duration-700 ease-out"
-                showIndicators={true}
-              />
+            {/* Right Column: High-Fidelity Smartphone Mockup & Floating Glass Cards */}
+            <div className="lg:col-span-6 relative flex items-center justify-center lg:justify-end py-6">
+              
+              {/* Outer Container with Floating Dynamics */}
+              <div className="relative w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] flex items-center justify-center">
+                
+                {/* 1. Realistic Smartphone Chassis */}
+                <div className="relative w-[285px] sm:w-[310px] rounded-[48px] p-3 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-950 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] border-2 border-slate-600/70 ring-1 ring-white/20 select-none animate-float-slow">
+                  
+                  {/* Smartphone Inner Screen */}
+                  <div className="rounded-[38px] overflow-hidden bg-slate-950 text-white border border-slate-800/80 p-3.5 space-y-3.5 relative">
+                    
+                    {/* Dynamic Island Notch & Status Bar */}
+                    <div className="flex items-center justify-between px-1 text-[11px] font-semibold text-slate-400">
+                      <span>09:41</span>
+                      <div className="w-20 h-4 bg-black rounded-full mx-auto relative flex items-center justify-end px-1.5">
+                        <span className="w-2 h-2 rounded-full bg-slate-800 border border-slate-700" />
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-300">
+                        <Wifi className="w-3 h-3" />
+                        <Battery className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+
+                    {/* App Header */}
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-white shadow-sm">
+                          <GraduationCap className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white leading-tight">Bright Future Academy</div>
+                          <div className="text-[10px] text-slate-400">Accra Metro, GES Reg.</div>
+                        </div>
+                      </div>
+                      <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center relative">
+                        <Bell className="w-3.5 h-3.5 text-slate-300" />
+                        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      </div>
+                    </div>
+
+                    {/* Virtual Institutional MoMo Card (Matches the Paylix silk card) */}
+                    <div className="relative rounded-2xl p-4 bg-gradient-to-br from-red-700 via-orange-600 to-amber-600 text-white shadow-lg overflow-hidden space-y-3">
+                      {/* Abstract decorative silk mesh lines */}
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.2),transparent_70%)] pointer-events-none" />
+                      
+                      <div className="flex items-center justify-between relative z-10 text-[10px] tracking-wider uppercase font-extrabold text-white/90">
+                        <span>SchoolOS MoMo Merchant</span>
+                        <div className="w-6 h-4 rounded bg-amber-300/40 border border-white/30 flex items-center justify-center text-[8px] font-black">
+                          GH
+                        </div>
+                      </div>
+
+                      <div className="relative z-10 space-y-0.5">
+                        <div className="text-[10px] text-white/70 font-medium">Reconciled School Balance</div>
+                        <div className="text-xl font-black text-white tracking-tight">GH₵ 48,250.00</div>
+                      </div>
+
+                      <div className="flex items-center justify-between relative z-10 text-[10px] text-white/80 font-mono">
+                        <span>GH • 024 • 491 • 8821</span>
+                        <span className="font-sans font-bold text-[9px] bg-black/25 px-1.5 py-0.5 rounded text-white">Active</span>
+                      </div>
+                    </div>
+
+                    {/* Quick Action Pills */}
+                    <div className="grid grid-cols-4 gap-1.5 text-center">
+                      <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center gap-1">
+                        <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                          <CreditCard className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-[9px] font-bold text-slate-300">Fees</span>
+                      </div>
+                      <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center gap-1">
+                        <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                          <CalendarCheck className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-[9px] font-bold text-slate-300">Roll Call</span>
+                      </div>
+                      <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center gap-1">
+                        <div className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                          <FileEdit className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-[9px] font-bold text-slate-300">30/70</span>
+                      </div>
+                      <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center gap-1">
+                        <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                          <MessageSquare className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-[9px] font-bold text-slate-300">SMS</span>
+                      </div>
+                    </div>
+
+                    {/* Live Operations & Feed List (Matches Paylix Transactions list) */}
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 px-1">
+                        <span>Live Activity</span>
+                        <span className="text-amber-400 text-[10px] font-medium">Real-Time</span>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        {/* Transaction 1 */}
+                        <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">
+                              GH₵
+                            </div>
+                            <div>
+                              <div className="text-[11px] font-bold text-white leading-tight">Kofi Mensah (Basic 6)</div>
+                              <div className="text-[9px] text-slate-400">MTN MoMo • Fee Payment</div>
+                            </div>
+                          </div>
+                          <span className="text-[11px] font-black text-emerald-400">+GH₵ 850</span>
+                        </div>
+
+                        {/* Transaction 2 */}
+                        <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] font-bold">
+                              ✓
+                            </div>
+                            <div>
+                              <div className="text-[11px] font-bold text-white leading-tight">JHS 2 Roll Call</div>
+                              <div className="text-[9px] text-slate-400">42/43 Students Present</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold text-blue-300 bg-blue-500/20 px-1.5 py-0.5 rounded">98%</span>
+                        </div>
+
+                        {/* Transaction 3 */}
+                        <div className="p-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px] font-bold">
+                              ★
+                            </div>
+                            <div>
+                              <div className="text-[11px] font-bold text-white leading-tight">Ama Darko (BECE)</div>
+                              <div className="text-[9px] text-slate-400">Terminal Report Generated</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded">Stanine 1</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* 2. Floating Card 1 (Top-Right: Term Cash Flow / Fee Collection) */}
+                <div className="hidden sm:block absolute -top-4 -right-10 sm:-right-12 z-20 w-48 rounded-2xl p-3.5 bg-white/95 backdrop-blur-md text-slate-900 shadow-2xl border border-white/80 animate-float-reverse">
+                  <div className="flex items-center justify-between text-[11px] font-bold mb-1">
+                    <span className="text-slate-800">Fee Collection</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-semibold">Term 1</span>
+                  </div>
+                  <div className="space-y-0.5 mb-2">
+                    <div className="text-[10px] text-slate-500 font-medium">Total Collected</div>
+                    <div className="text-base font-black text-[#0B2545]">GH₵ 148,500</div>
+                  </div>
+                  {/* Smooth SVG Area Chart Sparkline */}
+                  <div className="h-10 w-full relative">
+                    <svg className="w-full h-full overflow-visible" viewBox="0 0 100 35" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#EA580C" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#EA580C" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M 0 30 Q 15 28 25 18 T 50 20 T 75 8 T 100 12 L 100 35 L 0 35 Z" fill="url(#chartGrad)" />
+                      <path d="M 0 30 Q 15 28 25 18 T 50 20 T 75 8 T 100 12" fill="none" stroke="#EA580C" strokeWidth="2.5" strokeLinecap="round" />
+                      <circle cx="75" cy="8" r="3" fill="#EA580C" className="animate-ping" />
+                      <circle cx="75" cy="8" r="2.5" fill="#FFFFFF" stroke="#EA580C" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="pt-1 flex items-center justify-between text-[9px] font-bold text-emerald-600">
+                    <span>↑ 18.4% vs Last Term</span>
+                    <span className="text-slate-400 font-normal">94% Reconciled</span>
+                  </div>
+                </div>
+
+                {/* 3. Floating Card 2 (Bottom-Right: Terminal Report & Student Showcase) */}
+                <div className="hidden sm:block absolute -bottom-6 -right-6 sm:-right-8 z-20 w-44 rounded-2xl p-2.5 bg-gradient-to-br from-orange-600 via-rose-600 to-amber-600 text-white shadow-2xl border border-white/25 animate-float-slow">
+                  <div className="relative rounded-xl overflow-hidden h-24 mb-2 shadow-inner">
+                    <img
+                      src="/assets/ghana_pupil_books.jpg"
+                      alt="Student Academic Excellence"
+                      className="w-full h-full object-cover object-top"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-black/60 backdrop-blur-xs text-amber-300 border border-white/20">
+                      ★ BECE Stanine 1
+                    </span>
+                  </div>
+                  <div className="space-y-0.5 px-1">
+                    <div className="text-[10px] text-white/80 font-medium">Terminal Report Ready</div>
+                    <div className="text-xs font-black text-white">480 / 500 (96%)</div>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* =========================================================================
+{/* =========================================================================
           3. SECTION: THE CHALLENGE
           ========================================================================= */}
-      <section className="py-20 md:py-28 bg-[#0B2545] text-white relative overflow-hidden border-t border-slate-800">
+      <section className="py-20 md:py-28 bg-gradient-to-b from-[#07090E] via-[#0B2545] to-[#071A31] text-white relative overflow-hidden border-t border-white/10">
         {/* Subtle ambient radial gradient in background for richness */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
